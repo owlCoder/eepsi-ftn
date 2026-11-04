@@ -21,7 +21,7 @@ export async function publicTeachingStaff() {
           course: { select: { slug: true, title: true, code: true } },
         },
         orderBy: { course: { title: "asc" } },
-        take: 30,
+
       },
     },
     orderBy: { name: "asc" },
@@ -88,7 +88,7 @@ export const courseBySlug = cache(async (slug: string) => {
   return db.course.findUnique({
     where: { slug },
     include: {
-      materials: { orderBy: { createdAt: "desc" }, take: 100 },
+      materials: { orderBy: { createdAt: "desc" } },
       memberships: {
         where: { user: { active: true } },
         select: { role: true, user: { select: { id: true, name: true } } },

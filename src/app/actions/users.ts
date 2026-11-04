@@ -41,7 +41,10 @@ export async function assignCourseMemberAction(data: FormData) {
     select: { id: true, role: true, active: true },
   });
   if (!user || !user.active || user.role !== input.role) {
-    throw new Error("Nalog ne postoji, nije aktivan ili njegova globalna uloga nije odgovarajuća.");
+    const destination = returnToCourse
+      ? "/admin/predmeti/" + input.courseId + "?error=member"
+      : "/admin/korisnici?error=member";
+    redirect(destination);
   }
   await db.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: user.id }, select: { role: true, active: true } });

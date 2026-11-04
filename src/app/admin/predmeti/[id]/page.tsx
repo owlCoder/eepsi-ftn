@@ -20,7 +20,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
   const course = await db.course.findUnique({
     where: { id },
     include: {
-      materials: { orderBy: { createdAt: "desc" }, take: 100 },
+      materials: { orderBy: { createdAt: "desc" } },
       memberships: {
         orderBy: { role: "desc" },
         include: { user: { select: { name: true, email: true, active: true } } },
@@ -33,6 +33,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
+    {error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nastavnik nije dodeljen. Nalog mora postojati, biti aktivan i imati odgovarajuću globalnu ulogu.</p>}
     {(saved || material || team) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
     {mayEdit && <div className="admin-panel"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>

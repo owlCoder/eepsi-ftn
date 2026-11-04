@@ -112,6 +112,10 @@ Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal sa
 
 **Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.
 
+## Rad sa sadržajem
+
+Urednici prvo vide pregled i pretragu postojećih novosti i predmeta, a obrazac za kreiranje je jasno izdvojen ispod liste. Brisanje zahteva potvrdu u dijalogu dostupnom sa tastature. Novosti i predmeti mogu se podeliti kopiranjem linka sa javne stranice. Na manjim ekranima administrativne tabele se prikazuju kao kartice.
+
 ## Kategorije materijala i nastavni tim
 
 Svaki materijal ima jednu od pet kategorija: **predavanja**, **vežbe**, **laboratorijske vežbe**, **ispitni materijali** ili **ostalo**. Predmeti prikazuju materijale po kategorijama sa linkovima za brzu navigaciju. Ove kategorije su definisane u `src/domain/content/material-kinds.ts`, Zod validaciji i Prisma modelu.
