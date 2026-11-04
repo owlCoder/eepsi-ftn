@@ -172,6 +172,15 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
     await page.goto("/novosti?q=" + marker);
     await expect(page.getByRole("heading", { name: newsTitle })).toBeVisible();
+
+    // The same editor flow verifies the confirmation dialog and public removal.
+    await page.goto(editUrl);
+    await page.getByRole("button", { name: "Trajno obriši", exact: true }).click();
+    await expect(page.getByRole("dialog", { name: "Potvrdite brisanje" })).toBeVisible();
+    await page.getByRole("button", { name: "Potvrdi brisanje" }).click();
+    await expect(page).toHaveURL(/\/admin\/novosti\?deleted=1/);
+    await page.goto("/novosti?q=" + marker);
+    await expect(page.getByRole("heading", { name: newsTitle })).toHaveCount(0);
   });
 
   test("revoking a professor's course assignment invalidates their existing JWT", async ({ page, browser }) => {
