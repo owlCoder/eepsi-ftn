@@ -26,14 +26,16 @@ export const authOptions: NextAuthOptions = {
         const parsed = credentialsSchema.safeParse(credentials);
         if (!parsed.success || !process.env.DATABASE_URL || !process.env.NEXTAUTH_SECRET) return null;
         const secret = process.env.NEXTAUTH_SECRET;
-        if (await isLoginThrottled(parsed.data.email, secret)) return null;
         const user = await db.user.findUnique({
           where: { email: parsed.data.email },
           select: { id: true, email: true, name: true, passwordHash: true, active: true },
         });
+        // Only existing, active accounts generate DB throttle entries.
+        // Unknown email spam must not create an unbounded number of database rows.
+        if (user?.active && await isLoginThrottled(parsed.data.email, secret)) return null;
         const passwordValid = await compare(parsed.data.password, user?.passwordHash ?? DUMMY_HASH);
         if (!user?.active || !passwordValid) {
-          await recordLoginFailure(parsed.data.email, secret);
+          if (user?.active) await recordLoginFailure(parsed.data.email, secret);
           return null;
         }
         await clearLoginFailures(parsed.data.email, secret);

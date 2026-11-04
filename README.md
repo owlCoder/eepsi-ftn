@@ -14,7 +14,7 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 ## Šta portal sadrži
 
 - **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
-- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta po nalogu).
+- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
 - **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, uklanjanje materijala i pregled audit loga.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
 - **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
@@ -108,7 +108,7 @@ npm run test:integration  # Zahteva MySQL bazu sa primenjenim migracijama
 npm run build
 ```
 
-GitHub Actions za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, unit i integracione testove baze i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
+GitHub Actions (akcije vezane za proverene commit SHA-ove, umesto promenljivih tagova) za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, unit i integracione testove baze i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
 
 ### Zdravlje aplikacije i održavanje
 

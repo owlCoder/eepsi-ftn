@@ -57,7 +57,7 @@ Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obs
 - Validate input with Zod; use explicit `https:` URL schemes for external materials, and safe output encoding.
 - Hash passwords with bcrypt; use verified auth sessions for all writes.
 - Treat uploaded/user-authored text as untrusted. Do not render HTML from stored text without a reviewed sanitizer.
-- Protect login against brute-force abuse. DB-backed per-account throttling is present; production additionally requires edge/IP rate limiting.
+- Protect login against brute-force abuse. DB-backed per-active-account throttling is present; unknown emails must not create unbounded DB records. Production additionally requires edge/IP rate limiting.
 - Privileged content and user mutations must append an audit record **in the same database transaction**. Never log secrets or private content.
 - Minimize user data in public pages, logs and error responses.
 - Never broaden privileges to make tests pass.
