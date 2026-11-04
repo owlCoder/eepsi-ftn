@@ -74,8 +74,20 @@ jobs:
           for path in / /predmeti /novosti /prijava /robots.txt /sitemap.xml /api/auth/providers; do
             curl --fail --silent --show-error "http://localhost:3000$path" > /dev/null
           done
-          code="$(curl --silent -o /dev/null -w '%{http_code}' http://localhost:3000/admin)"
+          # App Router may stream the shell with HTTP 200 and then send a
+          # NEXT_REDIRECT instruction from the protected async layout.
+          code="$(curl --silent -o /tmp/eepsi-admin.html -w '%{http_code}' http://localhost:3000/admin)"
           case "$code" in
-            302|303|307|308) echo "Unauthenticated /admin correctly redirects: $code" ;;
-            *) echo "Unauthenticated /admin should redirect (got $code)" >&2; exit 1 ;;
+            302|303|307|308)
+              echo "Unauthenticated /admin redirected via HTTP $code" ;;
+            200)
+              if grep -q "NEXT_REDIRECT" /tmp/eepsi-admin.html; then
+                echo "Unauthenticated /admin redirected via RSC stream"
+              else
+                echo "Unauthenticated /admin returned 200 without a server redirect" >&2
+                exit 1
+              fi ;;
+            *)
+              echo "Unauthenticated /admin unexpected status: $code" >&2
+              exit 1 ;;
           esac
