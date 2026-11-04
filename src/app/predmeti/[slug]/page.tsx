@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, FileText, GraduationCap, Users } from "lucide-react";
 import { courseBySlug } from "@/infrastructure/repositories/content";
+import { groupMaterialsByKind } from "@/domain/content/material-kinds";
 
 export const revalidate = 300;
 
@@ -16,6 +17,7 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const course = await courseBySlug(slug);
   if (!course) notFound();
+  const groupedMaterials = groupMaterialsByKind(course.materials);
   return (
     <>
       <div className="page-banner"><div className="container-page">
@@ -27,10 +29,27 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
       <div className="container-page grid gap-7 py-16 lg:grid-cols-[1fr_350px]">
         <div className="space-y-7">
           <section className="card-surface p-8"><h2 className="text-2xl font-extrabold tracking-tight">O predmetu</h2><p className="prose-copy mt-6">{course.description}</p></section>
-          <section className="card-surface p-8"><h2 className="flex items-center gap-3 text-2xl font-extrabold tracking-tight"><FileText className="text-teal-700"/> Materijali</h2>
-            {course.materials.length ? <div className="mt-7 divide-y divide-slate-100">{course.materials.map((material) =>
-              <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between gap-4 py-4 text-sm font-semibold text-[#164f58] hover:text-teal-700">{material.title}<ArrowUpRight size={18} className="shrink-0"/></a>)}</div>
-              : <p className="mt-5 text-sm leading-7 text-slate-500">Nema dodatih materijala za ovaj predmet.</p>}
+          <section className="card-surface p-6 sm:p-8" aria-labelledby="course-materials">
+            <div className="flex flex-wrap items-center justify-between gap-3">
+              <h2 id="course-materials" className="flex items-center gap-3 text-2xl font-extrabold tracking-tight"><FileText className="text-teal-700"/> Nastavni materijali</h2>
+              <span className="pill pill-neutral">{course.materials.length} materijala</span>
+            </div>
+            {groupedMaterials.length ? <>
+              <nav className="mt-6 flex flex-wrap gap-2" aria-label="Kategorije materijala">
+                {groupedMaterials.map((group) => <a key={group.kind} href={"#materijali-" + group.kind.toLowerCase()} className="rounded-full border border-teal-100 bg-teal-50 px-3 py-2 text-xs font-bold text-teal-800 hover:bg-teal-100">{group.label} ({group.items.length})</a>)}
+              </nav>
+              <div className="mt-8 space-y-8">
+                {groupedMaterials.map((group) => <section key={group.kind} id={"materijali-" + group.kind.toLowerCase()} className="scroll-mt-26">
+                  <h3 className="mb-2 text-lg font-extrabold tracking-tight">{group.label}</h3>
+                  <div className="divide-y divide-slate-100">{group.items.map((material) =>
+                    <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer" className="group flex items-center justify-between gap-4 py-4 text-sm font-semibold text-[#164f58] hover:text-teal-700">
+                      <span className="min-w-0 break-words">{material.title}</span>
+                      <ArrowUpRight size={18} className="shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1" aria-hidden="true"/>
+                    </a>)}</div>
+                </section>)}
+              </div>
+              <p className="mt-8 border-t border-slate-100 pt-5 text-xs leading-6 text-slate-500">Materijali se otvaraju na eksternim HTTPS stranicama. Proverite izvor pre preuzimanja datoteka.</p>
+            </> : <p className="mt-5 text-sm leading-7 text-slate-500">Nema dodatih materijala za ovaj predmet.</p>}
           </section>
         </div>
         <aside className="card-surface h-fit p-8"><h2 className="flex items-center gap-3 text-xl font-extrabold tracking-tight"><Users size={20} className="text-teal-700"/> Nastavni tim</h2>
