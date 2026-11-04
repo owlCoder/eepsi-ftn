@@ -74,7 +74,6 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       },
       select: { id: true, slug: true },
     });
-    await db.courseMembership.create({ data: { userId: professor.id, courseId: course.id, role: "PROFESSOR" } });
     await db.material.create({
       data: { courseId: course.id, title: "E2E predavanje " + marker, kind: "LECTURE", url: "https://example.invalid/e2e.pdf" },
     });
@@ -97,6 +96,16 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     } finally {
       await db.$disconnect();
     }
+  });
+
+  test("admin assigns a professor to the course through the UI", async ({ page }) => {
+    await login(page, admin.email);
+    await page.goto("/admin/predmeti/" + course.id);
+    await page.getByLabel("Email naloga").fill(professor.email);
+    await page.getByLabel("Uloga na predmetu").selectOption("PROFESSOR");
+    await page.getByRole("button", { name: "Dodeli predmet" }).click();
+    await expect(page).toHaveURL(/team=updated/);
+    await expect(page.getByText(professor.name, { exact: true })).toBeVisible();
   });
 
   test("guest sees course, categorized materials, staff and filters without emails", async ({ page }) => {
