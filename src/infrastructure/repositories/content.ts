@@ -64,7 +64,7 @@ export async function listNews(q: string, page: number) {
     select: { id: true, slug: true, title: true, summary: true, publishedAt: true },
     orderBy: { publishedAt: "desc" },
     skip: (page - 1) * 12,
-    take: 12,
+    take: 13,
   });
 }
 
@@ -79,7 +79,7 @@ export async function listCourses(q = "", page = 1, filters?: CourseFilters) {
     select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true },
     orderBy: [{ semester: "asc" }, { title: "asc" }],
     skip: (page - 1) * 18,
-    take: 18,
+    take: 19,
   });
 }
 

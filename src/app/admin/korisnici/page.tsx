@@ -26,16 +26,20 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       select: { id: true, name: true, email: true, role: true, active: true },
       orderBy: { name: "asc" },
       skip: (page - 1) * 30,
-      take: 30,
+      take: 31,
     }),
     db.course.findMany({ select: { id: true, title: true, code: true }, orderBy: { title: "asc" }, take: 200 }),
     db.courseMembership.findMany({
       include: { user: { select: { name: true } }, course: { select: { title: true } } },
       skip: (memberPage - 1) * 30,
-      take: 30,
+      take: 31,
       orderBy: { courseId: "asc" },
     }),
   ]);
+  const hasNextUsers = users.length > 30;
+  const hasNextMembers = members.length > 30;
+  const pageUsers = users.slice(0, 30);
+  const pageMembers = members.slice(0, 30);
   function pageHref(nextPage: number, nextMemberPage = memberPage) {
     const params = new URLSearchParams();
     if (q) params.set("q", q);
@@ -84,7 +88,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         <p className="text-xs text-slate-500">Prikazani su filtrirani nalozi.</p>
         <Link href="/admin/korisnici" className="text-sm font-bold text-teal-700 hover:underline">Očisti filtere</Link>
       </div>}
-      <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Ime</th><th>Email</th><th>Uloga</th><th>Status</th><th>Upravljanje</th></tr></thead><tbody>{users.map((user)=>
+      <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Ime</th><th>Email</th><th>Uloga</th><th>Status</th><th>Upravljanje</th></tr></thead><tbody>{pageUsers.map((user)=>
         <tr key={user.id}>
           <td data-label="Ime" className="font-semibold">{user.name}</td>
           <td data-label="Email">{user.email}</td>
@@ -139,7 +143,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         </tr>)}</tbody></table></div>
       <nav className="mt-6 flex justify-between gap-3" aria-label="Stranice naloga">
         {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-        {users.length === 30 && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
+        {hasNextUsers && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
       </nav>
     </div>
     <div className="admin-panel" id="novi-nalog"><h2 className="flex items-center gap-3"><UserPlus className="text-teal-700"/> Dodaj nalog</h2>
@@ -156,12 +160,12 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         <SubmitButton pendingText="Dodeljivanje…" disabled={!courses.length}>Dodeli predmet</SubmitButton>
       </form>
       <h3 className="mt-8 border-t border-slate-100 pt-6 font-extrabold">Dodeljena članstva — strana {memberPage}</h3>
-      {members.length ? <div className="table-wrap mt-4"><table className="data-table stacked-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{members.map((m)=>
+      {pageMembers.length ? <div className="table-wrap mt-4"><table className="data-table stacked-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{pageMembers.map((m)=>
         <tr key={m.userId + m.courseId}><td data-label="Osoba">{m.user.name}</td><td data-label="Predmet">{m.course.title}</td><td data-label="Uloga">{m.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</td><td data-label="Akcija"><form action={revokeCourseMemberAction}><input type="hidden" name="courseId" value={m.courseId}/><input type="hidden" name="userId" value={m.userId}/><button className="inline-flex min-h-10 items-center font-bold text-rose-700 underline">Ukloni</button></form></td></tr>)}</tbody></table></div>
         : <p className="mt-3 text-sm text-slate-500">Nema dodeljenih članstava.</p>}
       <nav className="mt-6 flex justify-between gap-3" aria-label="Stranice angažovanja">
         {memberPage > 1 ? <Link href={pageHref(page, memberPage - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-        {members.length === 30 && <Link href={pageHref(page, memberPage + 1)} className="btn btn-light">Sledeća →</Link>}
+        {hasNextMembers && <Link href={pageHref(page, memberPage + 1)} className="btn btn-light">Sledeća →</Link>}
       </nav>
     </div>
   </div>;

@@ -12,7 +12,9 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
   const { q: rawQ, p } = await searchParams;
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0,80);
   const page = readPage(p);
-  const items = await listNews(q, page);
+  const results = await listNews(q, page);
+  const hasNext = results.length > 12;
+  const items = results.slice(0, 12);
   return (
     <>
       <div className="page-banner"><div className="container-page"><p className="eyebrow mb-4">Budite u toku</p><h1 className="page-title">Novosti i obaveštenja</h1><p className="section-copy mt-5 max-w-2xl">Važne informacije o nastavi, projektima, događajima i radu katedre.</p></div></div>
@@ -34,7 +36,7 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
           </div>}
         <nav className="mt-10 flex items-center justify-between" aria-label="Stranice">
           {page > 1 ? <Link href={"/novosti?q=" + encodeURIComponent(q) + "&p=" + (page-1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-          {items.length === 12 && <Link href={"/novosti?q=" + encodeURIComponent(q) + "&p=" + (page+1)} className="btn btn-light">Sledeća →</Link>}
+          {hasNext && <Link href={"/novosti?q=" + encodeURIComponent(q) + "&p=" + (page+1)} className="btn btn-light">Sledeća →</Link>}
         </nav>
       </div>
     </>

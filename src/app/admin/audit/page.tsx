@@ -39,15 +39,17 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
       actor: { select: { name: true } } },
     orderBy: { occurredAt: "desc" },
     skip: (page - 1) * 50,
-    take: 50,
+    take: 51,
   });
+  const hasNext = logs.length > 50;
+  const pageItems = logs.slice(0, 50);
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3"><ShieldCheck size={14}/> Evidencija izmena</p><h1 className="text-4xl font-extrabold tracking-tight">Audit log</h1>
       <p className="mt-3 text-sm leading-7 text-slate-500">Poslednje privilegovane izmene sadržaja i prava pristupa. Nema lozinki niti kompletnog sadržaja u zapisima.</p></div>
     <div className="admin-panel">
-      {logs.length ? <div className="table-wrap"><table className="data-table stacked-table">
+      {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table">
         <thead><tr><th>Vreme</th><th>Korisnik</th><th>Događaj</th><th>Resurs</th></tr></thead>
-        <tbody>{logs.map((entry) => <tr key={entry.id}>
+        <tbody>{pageItems.map((entry) => <tr key={entry.id}>
           <td data-label="Vreme" className="whitespace-nowrap"><span className="flex items-center gap-2"><Clock3 size={15}/>{entry.occurredAt.toLocaleString("sr-RS", { timeZone: "Europe/Belgrade" })}</span></td>
           <td data-label="Korisnik" className="font-semibold">{entry.actor?.name ?? "Obrisan nalog"}</td>
           <td data-label="Događaj">{eventLabels[entry.action] ?? entry.action}</td>
@@ -57,7 +59,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     </div>
     <nav className="flex items-center justify-between" aria-label="Stranice audit loga">
       {page > 1 ? <Link href={"/admin/audit?p=" + (page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-      {logs.length === 50 && <Link href={"/admin/audit?p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
+      {hasNext && <Link href={"/admin/audit?p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
     </nav>
   </div>;
 }

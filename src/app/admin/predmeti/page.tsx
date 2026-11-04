@@ -23,8 +23,10 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
     select: { id: true, title: true, code: true, semester: true, studyLevel: true, _count: { select: { materials: true } } },
     orderBy: [{ semester: "asc" }, { title: "asc" }],
     skip: (page - 1) * 20,
-    take: 20,
+    take: 21,
   });
+  const hasNext = courses.length > 20;
+  const pageItems = courses.slice(0, 20);
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3">Akademski program</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Šifra predmeta već postoji. Unesite drugu šifru ili izmenite postojeći predmet.</p>}
@@ -38,12 +40,12 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
         <input type="search" name="q" aria-label="Pretraga predmeta" defaultValue={q} placeholder="Naziv ili šifra predmeta" className="input-field flex-1"/>
         <button className="btn btn-primary">Pretraži</button>
       </form>
-      {courses.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Predmet</th><th>Šifra</th><th>Semestar</th><th>Materijali</th></tr></thead><tbody>{courses.map((item)=>
+      {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Predmet</th><th>Šifra</th><th>Semestar</th><th>Materijali</th></tr></thead><tbody>{pageItems.map((item)=>
         <tr key={item.id}><td data-label="Predmet"><Link href={"/admin/predmeti/"+item.id} className="font-bold hover:text-teal-700">{item.title} <ArrowUpRight size={14} className="inline"/></Link></td><td data-label="Šifra">{item.code}</td><td data-label="Semestar">{item.semester}.</td><td data-label="Materijali">{item._count.materials}</td></tr>)}</tbody></table></div>
         : <p className="text-sm text-slate-500">Nema dostupnih predmeta.</p>}
       <nav aria-label="Stranice predmeta" className="mt-6 flex justify-between gap-3">
         {page > 1 ? <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-        {courses.length === 20 && <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
+        {hasNext && <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
       </nav>
     </div>
     {canCreate && <div className="admin-panel" id="novi-predmet">

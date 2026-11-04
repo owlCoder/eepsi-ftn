@@ -14,7 +14,9 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const filters = parseCourseFilters({ level: rawLevel, semester: rawSemester });
-  const items = await listCourses(q, page, filters);
+  const results = await listCourses(q, page, filters);
+  const hasNext = results.length > 18;
+  const items = results.slice(0, 18);
   const filtered = Boolean(q || filters.level || filters.semester);
   function pageHref(nextPage: number) {
     const query = new URLSearchParams();
@@ -59,7 +61,7 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
           : <div className="empty-state">Nema predmeta za zadatu pretragu. {filtered && <Link href="/predmeti" className="font-bold text-teal-700 underline">Obriši filtere</Link>}</div>}
         <nav className="mt-10 flex items-center justify-between" aria-label="Stranice">
           {page > 1 ? <Link className="btn btn-light" href={pageHref(page - 1)}>← Prethodna</Link> : <span/>}
-          {items.length === 18 && <Link className="btn btn-light" href={pageHref(page + 1)}>Sledeća →</Link>}
+          {hasNext && <Link className="btn btn-light" href={pageHref(page + 1)}>Sledeća →</Link>}
         </nav>
       </div>
     </>

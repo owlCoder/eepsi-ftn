@@ -20,9 +20,11 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
     },
     select: { id: true, title: true, status: true, updatedAt: true },
     skip: (page - 1) * 30,
-    take: 30,
+    take: 31,
     orderBy: { updatedAt: "desc" },
   });
+  const hasNext = news.length > 30;
+  const pageItems = news.slice(0, 30);
   const pageHref = (nextPage: number) =>
     "/admin/novosti?" + new URLSearchParams({ ...(q ? { q } : {}), ...(status ? { status } : {}), p: String(nextPage) }).toString();
   return (
@@ -43,12 +45,12 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           </select>
           <button className="btn btn-primary">Prikaži</button>
         </form>
-        {news.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Naslov</th><th>Status</th><th>Izmena</th><th>Akcija</th></tr></thead><tbody>
-          {news.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-teal-700">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija"><form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><button className="text-sm font-bold text-teal-700 underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form></td></tr>)}
+        {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Naslov</th><th>Status</th><th>Izmena</th><th>Akcija</th></tr></thead><tbody>
+          {pageItems.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-teal-700">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija"><form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><button className="text-sm font-bold text-teal-700 underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form></td></tr>)}
         </tbody></table></div> : <p className="text-sm text-slate-500">Nema novosti za zadatu pretragu. Promenite filter ili dodajte novu objavu.</p>}
         <nav aria-label="Stranice novosti" className="mt-6 flex justify-between gap-3">
           {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-          {news.length === 30 && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
+          {hasNext && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
         </nav>
       </div>      <div className="admin-panel" id="nova-novost">
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="!mb-0">Nova novost</h2><a href="#spisak-novosti" className="text-sm font-bold text-teal-700 hover:underline">↑ Nazad na spisak</a></div>
