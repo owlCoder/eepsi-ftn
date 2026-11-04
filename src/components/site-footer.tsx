@@ -31,7 +31,7 @@ export function SiteFooter() {
       <div className="border-t border-white/10 py-5">
         <div className="container-page flex flex-wrap justify-between gap-3 text-xs text-slate-400">
           <span>© {new Date().getFullYear()} EEPSI • Fakultet tehničkih nauka</span>
-          <span>Moderni akademski portal</span>
+          <span>Za studente, nastavnike i saradnike</span>
         </div>
       </div>
     </footer>

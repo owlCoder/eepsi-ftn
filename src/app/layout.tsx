@@ -14,7 +14,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="sr">
       <body className="flex min-h-screen flex-col">
         <SiteHeader/>
-        <main className="flex-1">{children}</main>
+        <a className="skip-link" href="#glavni-sadrzaj">Preskoči navigaciju</a>
+        <main id="glavni-sadrzaj" className="flex-1" tabIndex={-1}>{children}</main>
         <SiteFooter/>
       </body>
     </html>
