@@ -35,14 +35,19 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
     {error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nastavnik nije dodeljen. Nalog mora postojati, biti aktivan i imati odgovarajuću globalnu ulogu.</p>}
     {(saved || material || team) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
-    {mayEdit && <div className="admin-panel"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
+    <nav className="flex flex-wrap items-center gap-2" aria-label="Sekcije predmeta">
+      {mayEdit && <a href="#podaci-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Podaci o predmetu</a>}
+      {mayUpload && <a href="#materijali-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Materijali ({course.materials.length})</a>}
+      <a href="#nastavni-tim" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Nastavni tim ({course.memberships.length})</a>
+    </nav>
+    {mayEdit && <div className="admin-panel" id="podaci-predmeta"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>
       <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5}/></div></div>
       <div className="form-grid"><div><label htmlFor="level" className="form-label">Nivo studija</label><select id="level" name="studyLevel" className="input-field" defaultValue={course.studyLevel}><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option></select></div><div><label htmlFor="semester" className="form-label">Semestar</label><select id="semester" name="semester" className="input-field" defaultValue={course.semester}>{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}.</option>)}</select></div></div>
       <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} defaultValue={course.description}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>}
-    {mayUpload && <div className="admin-panel"><h2 className="flex items-center gap-3"><FilePlus2 className="text-teal-700"/> Dodaj materijal</h2>
+    {mayUpload && <div className="admin-panel" id="materijali-predmeta"><h2 className="flex items-center gap-3"><FilePlus2 className="text-teal-700"/> Dodaj materijal</h2>
       <form action={createMaterialAction} className="space-y-5"><input name="courseId" type="hidden" value={course.id}/>
         <div><label htmlFor="material-title" className="form-label">Naziv materijala</label><input id="material-title" name="title" required minLength={3} className="input-field" placeholder="Vežba 1 — prezentacija"/></div>
         <div><label htmlFor="material-url" className="form-label">HTTPS adresa dokumenta</label><input id="material-url" name="url" type="url" pattern="https://.*" required className="input-field" placeholder="https://..."/></div>
@@ -78,7 +83,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
           </details>
         </div>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
     </div>}
-    <section className="admin-panel">
+    <section className="admin-panel" id="nastavni-tim">
       <h2 className="flex items-center gap-3"><Users className="text-teal-700" size={23}/> Nastavni tim</h2>
       {course.memberships.length
         ? <div className="divide-y divide-slate-100">{course.memberships.map((entry) =>

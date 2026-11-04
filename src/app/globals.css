@@ -331,3 +331,5 @@ summary::marker { content: ""; }
 }
 
 #spisak-naloga, #novi-nalog, #angazovanja { scroll-margin-top: 105px; }
+
+#podaci-predmeta, #materijali-predmeta, #nastavni-tim { scroll-margin-top: 112px; }

@@ -44,13 +44,13 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     <div><p className="eyebrow mb-3"><ShieldCheck size={14}/> Evidencija izmena</p><h1 className="text-4xl font-extrabold tracking-tight">Audit log</h1>
       <p className="mt-3 text-sm leading-7 text-slate-500">Poslednje privilegovane izmene sadržaja i prava pristupa. Nema lozinki niti kompletnog sadržaja u zapisima.</p></div>
     <div className="admin-panel">
-      {logs.length ? <div className="table-wrap"><table className="data-table">
+      {logs.length ? <div className="table-wrap"><table className="data-table stacked-table">
         <thead><tr><th>Vreme</th><th>Korisnik</th><th>Događaj</th><th>Resurs</th></tr></thead>
         <tbody>{logs.map((entry) => <tr key={entry.id}>
-          <td className="whitespace-nowrap"><span className="flex items-center gap-2"><Clock3 size={15}/>{entry.occurredAt.toLocaleString("sr-RS", { timeZone: "Europe/Belgrade" })}</span></td>
-          <td className="font-semibold">{entry.actor?.name ?? "Obrisan nalog"}</td>
-          <td>{eventLabels[entry.action] ?? entry.action}</td>
-          <td className="max-w-64 break-all text-xs text-slate-500">{entry.subjectType}: {entry.subjectId}</td>
+          <td data-label="Vreme" className="whitespace-nowrap"><span className="flex items-center gap-2"><Clock3 size={15}/>{entry.occurredAt.toLocaleString("sr-RS", { timeZone: "Europe/Belgrade" })}</span></td>
+          <td data-label="Korisnik" className="font-semibold">{entry.actor?.name ?? "Obrisan nalog"}</td>
+          <td data-label="Događaj">{eventLabels[entry.action] ?? entry.action}</td>
+          <td data-label="Resurs" className="max-w-64 break-all text-xs text-slate-500">{entry.subjectType}: {entry.subjectId}</td>
         </tr>)}</tbody>
       </table></div> : <p className="text-sm text-slate-500">Još nema audit događaja.</p>}
     </div>
