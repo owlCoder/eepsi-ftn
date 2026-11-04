@@ -1,6 +1,7 @@
 import "server-only";
 import { cache } from "react";
 import { db } from "@/infrastructure/db/prisma";
+import type { CourseFilters } from "@/domain/courses/filters";
 
 export async function featuredCourses(limit = 3) {
   if (!process.env.DATABASE_URL) return [];
@@ -41,10 +42,14 @@ export async function listNews(q: string, page: number) {
   });
 }
 
-export async function listCourses(q = "", page = 1) {
+export async function listCourses(q = "", page = 1, filters?: CourseFilters) {
   if (!process.env.DATABASE_URL) return [];
   return db.course.findMany({
-    where: q ? { OR: [{ title: { contains: q } }, { code: { contains: q } }] } : {},
+    where: {
+      ...(q ? { OR: [{ title: { contains: q } }, { code: { contains: q } }] } : {}),
+      ...(filters?.level ? { studyLevel: filters.level } : {}),
+      ...(filters?.semester ? { semester: filters.semester } : {}),
+    },
     select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true },
     orderBy: [{ semester: "asc" }, { title: "asc" }],
     skip: (page - 1) * 18,
