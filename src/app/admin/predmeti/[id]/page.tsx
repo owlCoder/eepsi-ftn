@@ -1,21 +1,36 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, FilePlus2 } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FilePlus2, Users } from "lucide-react";
 import { can } from "@/application/authorization";
 import { createMaterialAction, deleteMaterialAction, updateMaterialAction, updateCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
+import { materialKindLabels, materialKinds } from "@/domain/content/material-kinds";
+import { assignCourseMemberAction, revokeCourseMemberAction } from "@/app/actions/users";
 
-export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string }> }) {
+export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string; team?: string }> }) {
   const { id } = await params;
-  const [mayEdit, mayUpload] = await Promise.all([can("courses.edit", id), can("materials.create", id)]);
-  if (!mayEdit && !mayUpload) notFound();
-  const course = await db.course.findUnique({ where: { id }, include: { materials: { orderBy: { createdAt: "desc" }, take: 100 }, memberships: { include: { user: { select: { name: true } } } } } });
+  const [mayEdit, mayUpload, canManageTeam] = await Promise.all([
+    can("courses.edit", id),
+    can("materials.create", id),
+    can("users.manage"),
+  ]);
+  if (!mayEdit && !mayUpload && !canManageTeam) notFound();
+  const course = await db.course.findUnique({
+    where: { id },
+    include: {
+      materials: { orderBy: { createdAt: "desc" }, take: 100 },
+      memberships: {
+        orderBy: { role: "desc" },
+        include: { user: { select: { name: true, email: true, active: true } } },
+      },
+    },
+  });
   if (!course) notFound();
-  const { saved, material } = await searchParams;
+  const { saved, material, team } = await searchParams;
   return <div className="space-y-7">
     <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
-    {(saved || material) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
+    {(saved || material || team) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
     {mayEdit && <div className="admin-panel"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>
       <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5}/></div></div>
@@ -27,12 +42,20 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       <form action={createMaterialAction} className="space-y-5"><input name="courseId" type="hidden" value={course.id}/>
         <div><label htmlFor="material-title" className="form-label">Naziv materijala</label><input id="material-title" name="title" required minLength={3} className="input-field" placeholder="Vežba 1 — prezentacija"/></div>
         <div><label htmlFor="material-url" className="form-label">HTTPS adresa dokumenta</label><input id="material-url" name="url" type="url" pattern="https://.*" required className="input-field" placeholder="https://..."/></div>
+        <div><label htmlFor="material-kind" className="form-label">Kategorija</label>
+          <select id="material-kind" name="kind" className="input-field" defaultValue="OTHER">
+            {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
+          </select>
+        </div>
         <button className="btn btn-primary">Dodaj materijal</button>
       </form>
       <div className="mt-8 border-t border-slate-100 pt-6"><h3 className="font-bold">Objavljeni materijali</h3><div className="mt-4 space-y-3">{course.materials.length ? course.materials.map((item) =>
         <div key={item.id} className="rounded-xl border border-slate-200 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
+            <div className="flex min-w-0 flex-wrap items-center gap-3">
+              <span className="pill pill-neutral">{materialKindLabels[item.kind]}</span>
+              <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
+            </div>
             <form action={deleteMaterialAction}><input type="hidden" name="materialId" value={item.id}/><button type="submit" className="text-xs font-bold text-rose-700 underline">Ukloni</button></form>
           </div>
           <details className="mt-3">
@@ -41,12 +64,52 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <input type="hidden" name="materialId" value={item.id}/>
               <div><label htmlFor={"material-name-" + item.id} className="form-label">Naziv</label><input id={"material-name-" + item.id} name="title" className="input-field" defaultValue={item.title} minLength={3} maxLength={180} required/></div>
               <div><label htmlFor={"material-link-" + item.id} className="form-label">HTTPS link</label><input id={"material-link-" + item.id} name="url" className="input-field" type="url" pattern="https://.*" defaultValue={item.url} required/></div>
+              <div><label htmlFor={"material-kind-" + item.id} className="form-label">Kategorija</label>
+                <select id={"material-kind-" + item.id} name="kind" defaultValue={item.kind} className="input-field">
+                  {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
+                </select>
+              </div>
               <button type="submit" className="btn btn-primary w-fit">Sačuvaj materijal</button>
             </form>
           </details>
         </div>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
     </div>}
-    <div className="admin-panel"><h2>Nastavni tim</h2>{course.memberships.length ? <div className="space-y-3">{course.memberships.map((entry) =>
-      <p key={entry.userId} className="text-sm"><strong>{entry.user.name}</strong> <span className="text-slate-500">— {entry.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</span></p>)}</div> : <p className="text-sm text-slate-500">Nije dodeljen nastavni tim. Administrator može da dodeli nastavnike i saradnike.</p>}</div>
+    <section className="admin-panel">
+      <h2 className="flex items-center gap-3"><Users className="text-teal-700" size={23}/> Nastavni tim</h2>
+      {course.memberships.length
+        ? <div className="divide-y divide-slate-100">{course.memberships.map((entry) =>
+          <div key={entry.userId} className="flex flex-wrap items-center justify-between gap-3 py-4">
+            <div>
+              <strong className="text-sm">{entry.user.name}</strong>
+              <span className="ml-2 text-xs text-slate-500">{entry.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</span>
+              {canManageTeam && <p className="mt-1 break-all text-xs text-slate-500">{entry.user.email}{!entry.user.active ? " · Neaktivan nalog" : ""}</p>}
+            </div>
+            {canManageTeam && <form action={revokeCourseMemberAction}>
+              <input type="hidden" name="userId" value={entry.userId}/>
+              <input type="hidden" name="courseId" value={course.id}/>
+              <input type="hidden" name="returnToCourse" value="1"/>
+              <button className="text-xs font-bold text-rose-700 underline" type="submit">Ukloni angažovanje</button>
+            </form>}
+          </div>)}</div>
+        : <p className="text-sm text-slate-500">Nastavni tim još nije dodeljen.</p>}
+      {canManageTeam && <div className="mt-6 border-t border-slate-100 pt-6">
+        <h3 className="text-lg font-extrabold tracking-tight">Dodaj nastavnika ili saradnika</h3>
+        <p className="mt-2 text-sm leading-6 text-slate-500">Nalog mora već postojati i imati odgovarajuću globalnu ulogu. Promena angažovanja zahteva novu prijavu tog korisnika.</p>
+        <form action={assignCourseMemberAction} className="mt-5 space-y-4">
+          <input type="hidden" name="courseId" value={course.id}/>
+          <input type="hidden" name="returnToCourse" value="1"/>
+          <div><label className="form-label" htmlFor="team-email">Email naloga</label>
+            <input className="input-field" id="team-email" name="email" type="email" placeholder="ime@uns.ac.rs" required/>
+          </div>
+          <div><label className="form-label" htmlFor="team-role">Uloga na predmetu</label>
+            <select className="input-field" id="team-role" name="role">
+              <option value="PROFESSOR">Nastavnik</option>
+              <option value="ASSISTANT">Saradnik</option>
+            </select>
+          </div>
+          <button type="submit" className="btn btn-primary">Dodeli predmet</button>
+        </form>
+      </div>}
+    </section>
   </div>;
 }

@@ -28,6 +28,7 @@ export async function createUserAction(data: FormData) {
 
 export async function assignCourseMemberAction(data: FormData) {
   const actor = await requirePermission("users.manage");
+  const returnToCourse = data.get("returnToCourse") === "1";
   const input = membershipInput.parse({
     courseId: String(data.get("courseId") ?? ""),
     email: String(data.get("email") ?? ""),
@@ -59,13 +60,14 @@ export async function assignCourseMemberAction(data: FormData) {
   revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + input.courseId);
-  redirect("/admin/korisnici?assigned=1");
+  redirect(returnToCourse ? "/admin/predmeti/" + input.courseId + "?team=updated" : "/admin/korisnici?assigned=1");
 }
 
 export async function revokeCourseMemberAction(data: FormData) {
   const actor = await requirePermission("users.manage");
   const userId = String(data.get("userId") ?? "");
   const courseId = String(data.get("courseId") ?? "");
+  const returnToCourse = data.get("returnToCourse") === "1";
   if (!userId || userId.length > 40 || !courseId || courseId.length > 40) {
     throw new Error("Neispravan ID.");
   }
@@ -83,7 +85,7 @@ export async function revokeCourseMemberAction(data: FormData) {
   revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
-  redirect("/admin/korisnici?revoked=1");
+  redirect(returnToCourse ? "/admin/predmeti/" + courseId + "?team=updated" : "/admin/korisnici?revoked=1");
 }
 
 export async function updateUserAccessAction(data: FormData) {
