@@ -69,3 +69,8 @@ export const passwordChangeInput = z.object({
   path: ["newPassword"],
   message: "Nova lozinka mora biti različita od prethodne.",
 });
+
+export const passwordResetInput = z.object({
+  id: z.string().min(5).max(40),
+  password: z.string().min(12).max(200),
+});

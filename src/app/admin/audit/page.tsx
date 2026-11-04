@@ -23,6 +23,7 @@ const eventLabels: Record<string, string> = {
   "user.create": "Nalog: kreiran",
   "user.profile.update": "Nalog: izmenjen profil",
   "user.password.change": "Nalog: promenjena lozinka",
+  "user.password.reset": "Nalog: administrator resetovao lozinku",
   "user.access.update": "Nalog: promenjena prava",
   "membership.assign": "Predmet: dodeljeno angažovanje",
   "membership.revoke": "Predmet: uklonjeno angažovanje",

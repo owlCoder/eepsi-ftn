@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hash } from "bcryptjs";
-import { accessInput, membershipInput, userInput } from "@/application/validation";
+import { accessInput, membershipInput, userInput, passwordResetInput } from "@/application/validation";
 import { requirePermission } from "@/application/authorization";
 import { db } from "@/infrastructure/db/prisma";
 
@@ -123,4 +123,26 @@ export async function updateUserAccessAction(data: FormData) {
   revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/nastavnici");
   redirect("/admin/korisnici?updated=1");
+}
+
+export async function resetUserPasswordAction(data: FormData) {
+  const actor = await requirePermission("users.manage");
+  const input = passwordResetInput.parse({
+    id: String(data.get("id") ?? ""),
+    password: String(data.get("password") ?? ""),
+  });
+  const passwordHash = await hash(input.password, 12);
+  await db.$transaction(async (tx) => {
+    const result = await tx.user.updateMany({
+      // Another super admin cannot be reset from the general users table.
+      where: { id: input.id, role: { not: "SUPER_ADMIN" } },
+      data: { passwordHash, sessionVersion: { increment: 1 } },
+    });
+    if (result.count !== 1) throw new Error("Nalog nije pronađen ili je zaštićen.");
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "user.password.reset", subjectType: "User", subjectId: input.id },
+    });
+  });
+  revalidatePath("/admin/korisnici");
+  redirect("/admin/korisnici?reset=1");
 }

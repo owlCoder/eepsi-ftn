@@ -191,3 +191,5 @@ Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusir
 **Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.
 
 **Studentski nalog:** nakon prijave student ima sopstveni prikaz na `/admin` sa javnim katalogom, objavljenim novostima, nastavnim timom i pristupom svom profilu/promeni lozinke. Studentski nalog **nema pristup** uredničkim rutama i serverskim akcijama za upravljanje korisnicima, predmetima ili novostima.
+
+**Oporavak naloga:** super administrator može da postavi novu privremenu lozinku za običan korisnički nalog. Lozinka se čuva isključivo kao bcrypt hash, prethodne sesije se opozivaju, a promena se evidentira u audit logu. Lozinka se korisniku dostavlja van sistema bezbednim kanalom; automatizovana email distribucija nije implementirana.
