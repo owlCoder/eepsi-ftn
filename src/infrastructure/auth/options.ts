@@ -1,9 +1,13 @@
 import "server-only";
 import CredentialsProvider from "next-auth/providers/credentials";
 import type { NextAuthOptions } from "next-auth";
-import { compare } from "bcryptjs";
+import { compare, hashSync } from "bcryptjs";
 import { z } from "zod";
 import { db } from "@/infrastructure/db/prisma";
+import { clearLoginFailures, isLoginThrottled, recordLoginFailure } from "@/infrastructure/auth/login-throttle";
+
+// Precomputed once to avoid distinguishing unknown accounts by a cheap code path.
+const DUMMY_HASH = hashSync("eepsi-invalid-account", 12);
 
 const credentialsSchema = z.object({
   email: z.email().max(191).transform((v) => v.toLowerCase().trim()),
@@ -20,13 +24,19 @@ export const authOptions: NextAuthOptions = {
       },
       async authorize(credentials) {
         const parsed = credentialsSchema.safeParse(credentials);
-        if (!parsed.success || !process.env.DATABASE_URL) return null;
+        if (!parsed.success || !process.env.DATABASE_URL || !process.env.NEXTAUTH_SECRET) return null;
+        const secret = process.env.NEXTAUTH_SECRET;
+        if (await isLoginThrottled(parsed.data.email, secret)) return null;
         const user = await db.user.findUnique({
           where: { email: parsed.data.email },
           select: { id: true, email: true, name: true, passwordHash: true, active: true },
         });
-        if (!user || !user.active) return null;
-        if (!(await compare(parsed.data.password, user.passwordHash))) return null;
+        const passwordValid = await compare(parsed.data.password, user?.passwordHash ?? DUMMY_HASH);
+        if (!user?.active || !passwordValid) {
+          await recordLoginFailure(parsed.data.email, secret);
+          return null;
+        }
+        await clearLoginFailures(parsed.data.email, secret);
         return { id: user.id, name: user.name, email: user.email };
       },
     }),

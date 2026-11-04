@@ -35,6 +35,7 @@ model User {
   createdAt     DateTime           @default(now())
   memberships   CourseMembership[]
   news          News[]
+  auditEntries  AuditLog[]
 }
 
 model News {
@@ -88,4 +89,24 @@ model Material {
   course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId, createdAt])
+}
+
+model AuditLog {
+  id          String   @id @default(cuid())
+  actorId     String?
+  action      String   @db.VarChar(70)
+  subjectType String   @db.VarChar(40)
+  subjectId   String   @db.VarChar(191)
+  occurredAt  DateTime @default(now())
+  actor       User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([occurredAt])
+  @@index([subjectType, subjectId])
+}
+
+/// The key is an HMAC of the normalized email, never plain email.
+model LoginThrottle {
+  key       String   @id @db.VarChar(64)
+  failures  Int      @default(0)
+  resetAt   DateTime
 }
