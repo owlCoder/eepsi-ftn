@@ -25,6 +25,14 @@ enum NewsStatus {
   PUBLISHED
 }
 
+enum MaterialKind {
+  LECTURE
+  EXERCISE
+  LAB
+  EXAM
+  OTHER
+}
+
 model User {
   id            String             @id @default(cuid())
   email         String             @unique @db.VarChar(191)
@@ -84,12 +92,14 @@ model CourseMembership {
 model Material {
   id        String   @id @default(cuid())
   courseId  String
-  title     String   @db.VarChar(180)
-  url       String   @db.VarChar(1500)
-  createdAt DateTime @default(now())
-  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  title     String       @db.VarChar(180)
+  url       String       @db.VarChar(1500)
+  kind      MaterialKind @default(OTHER)
+  createdAt DateTime     @default(now())
+  course    Course       @relation(fields: [courseId], references: [id], onDelete: Cascade)
 
   @@index([courseId, createdAt])
+  @@index([courseId, kind, createdAt])
 }
 
 model AuditLog {

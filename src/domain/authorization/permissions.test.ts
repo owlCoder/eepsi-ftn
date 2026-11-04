@@ -9,6 +9,7 @@ describe("RBAC", () => {
   it("editors cannot provision users", () => {
     expect(hasGlobalPermission("EDITOR", "news.publish")).toBe(true);
     expect(hasGlobalPermission("EDITOR", "users.manage")).toBe(false);
+    expect(hasGlobalPermission("EDITOR", "materials.edit")).toBe(true);
   });
   it("only professors edit their own course", () => {
     expect(hasScopedPermission("PROFESSOR", "courses.edit", "PROFESSOR")).toBe(true);

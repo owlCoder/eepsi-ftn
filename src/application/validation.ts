@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { materialKinds } from "@/domain/content/material-kinds";
 
 export const newsInput = z.object({
   title: z.string().trim().min(5).max(180),
@@ -27,6 +28,7 @@ export const materialInput = z.object({
   courseId: z.string().min(5).max(40),
   title: z.string().trim().min(3).max(180),
   url: secureMaterialUrl,
+  kind: z.enum(materialKinds).default("OTHER"),
 });
 
 export const materialEditInput = materialInput.omit({ courseId: true }).extend({

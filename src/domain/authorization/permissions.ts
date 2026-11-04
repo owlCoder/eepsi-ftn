@@ -12,7 +12,7 @@ export type Permission =
 
 const grants: Record<Role, readonly Permission[]> = {
   SUPER_ADMIN: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.edit", "materials.delete", "users.manage"],
-  EDITOR: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.delete"],
+  EDITOR: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.edit", "materials.delete"],
   PROFESSOR: [],
   ASSISTANT: [],
   STUDENT: [],

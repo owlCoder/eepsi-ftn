@@ -33,11 +33,18 @@ describe("versioned MySQL schema integration", () => {
       courseId = course.id;
       await db.courseMembership.create({ data: { userId: user.id, courseId: course.id, role: "ASSISTANT" } });
       const material = await db.material.create({
-        data: { courseId: course.id, title: "CI Material", url: "https://example.invalid/test" },
+        data: { courseId: course.id, title: "CI Material", url: "https://example.invalid/test", kind: "LECTURE" },
       });
       await db.auditLog.create({
         data: { actorId: user.id, action: "material.create", subjectType: "Material", subjectId: material.id },
       });
+      expect((await db.material.findUniqueOrThrow({ where: { id: material.id } })).kind).toBe("LECTURE");
+      const editedMaterial = await db.material.update({
+        where: { id: material.id },
+        data: { kind: "EXERCISE" },
+        select: { kind: true },
+      });
+      expect(editedMaterial.kind).toBe("EXERCISE");
       const assigned = await db.courseMembership.findUnique({
         where: { userId_courseId: { userId: user.id, courseId: course.id } },
       });

@@ -54,6 +54,7 @@ export async function createMaterialAction(data: FormData) {
     courseId: String(data.get("courseId") ?? ""),
     title: String(data.get("title") ?? ""),
     url: String(data.get("url") ?? ""),
+    kind: String(data.get("kind") ?? "OTHER"),
   });
   const actor = await requirePermission("materials.create", input.courseId);
   const course = await db.course.findUnique({
@@ -92,6 +93,7 @@ export async function updateMaterialAction(data: FormData) {
     materialId: String(data.get("materialId") ?? ""),
     title: String(data.get("title") ?? ""),
     url: String(data.get("url") ?? ""),
+    kind: String(data.get("kind") ?? "OTHER"),
   });
   // Resolve the owning course on the server; never authorize using a form's course ID.
   const material = await db.material.findUnique({
@@ -103,7 +105,7 @@ export async function updateMaterialAction(data: FormData) {
   await db.$transaction(async (tx) => {
     const result = await tx.material.updateMany({
       where: { id: input.materialId, courseId: material.courseId },
-      data: { title: input.title, url: input.url },
+      data: { title: input.title, url: input.url, kind: input.kind },
     });
     if (result.count !== 1) throw new Error("Materijal nije moguće ažurirati.");
     await tx.auditLog.create({
