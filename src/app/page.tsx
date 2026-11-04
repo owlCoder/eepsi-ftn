@@ -18,6 +18,7 @@ export default async function Home() {
             <div className="mt-9 flex flex-wrap gap-3">
               <Link href="/predmeti" className="btn btn-primary">Istraži predmete <ArrowRight size={18}/></Link>
               <Link href="/o-katedri" className="btn btn-light">Upoznaj katedru <ArrowUpRight size={17}/></Link>
+              <Link href="/nastavnici" className="inline-flex min-h-11 items-center gap-2 px-3 text-sm font-bold text-teal-800 hover:underline">Nastavni tim <ArrowRight size={16}/></Link>
             </div>
             <div className="mt-12 flex flex-wrap gap-6 border-t border-slate-200 pt-7 text-sm font-semibold text-slate-600">
               <span className="flex items-center gap-2"><GraduationCap size={18} className="text-teal-700"/> Obrazovanje</span>

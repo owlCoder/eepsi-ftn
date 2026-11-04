@@ -25,6 +25,17 @@ export default async function EditNews({ params, searchParams }: { params: Promi
       <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} rows={11} defaultValue={item.body}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>
+    <div className="admin-panel">
+      <details>
+        <summary className="flex items-center gap-2 font-extrabold text-teal-800 hover:text-teal-600">Pregled sačuvanog teksta novosti</summary>
+        <article className="mt-6 border-t border-slate-100 pt-6">
+          <p className="eyebrow mb-3">Pregled objave</p>
+          <h2 className="!mb-4 text-2xl font-extrabold">{item.title}</h2>
+          <p className="mb-6 border-l-4 border-teal-500 pl-4 text-lg font-semibold leading-8 text-slate-600">{item.summary}</p>
+          <div className="prose-copy">{item.body}</div>
+        </article>
+      </details>
+    </div>
     <div className="admin-panel"><div className="flex flex-wrap items-center justify-between gap-4">
       <div><p className="text-sm font-semibold">Status: <span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></p>
         <p className="mt-2 text-xs text-slate-500">Objavljivanje određuje dostupnost novosti na javnom portalu.</p></div>

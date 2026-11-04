@@ -15,6 +15,8 @@ export async function createUserAction(data: FormData) {
     password: String(data.get("password") ?? ""),
     role: String(data.get("role") ?? ""),
   });
+  const duplicate = await db.user.findUnique({ where: { email: input.email }, select: { id: true } });
+  if (duplicate) redirect("/admin/korisnici?error=duplicate");
   const passwordHash = await hash(input.password, 12);
   await db.$transaction(async (tx) => {
     const created = await tx.user.create({

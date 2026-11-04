@@ -8,7 +8,7 @@ import { assignCourseMemberAction, createUserAction, revokeCourseMemberAction, u
 import { roleLabels } from "@/domain/authorization/permissions";
 import { db } from "@/infrastructure/db/prisma";
 
-export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ created?: string; assigned?: string; revoked?: string; updated?: string; reset?: string; q?: string; p?: string; mp?: string }> }) {
+export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ created?: string; assigned?: string; revoked?: string; updated?: string; reset?: string; error?: string; q?: string; p?: string; mp?: string }> }) {
   if (!(await can("users.manage"))) notFound();
   const query = await searchParams;
   const q = (query.q || "").trim().slice(0, 80);
@@ -33,6 +33,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3"><ShieldCheck size={15}/> Upravljanje pristupom</p><h1 className="text-4xl font-extrabold tracking-tight">Korisnici i RBAC</h1><p className="mt-3 text-sm leading-7 text-slate-500">Globalne uloge i članstva na predmetima su odvojeni. Sve izmene proveravaju se na serveru.</p></div>
     {(query.created || query.assigned || query.revoked || query.updated || query.reset) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmena je sačuvana.</p>}
+    {query.error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nalog sa tom email adresom već postoji. Koristite pretragu da biste ga pronašli.</p>}
     <div className="admin-panel"><h2 className="flex items-center gap-3"><UserPlus className="text-teal-700"/> Dodaj nalog</h2>
       <form action={createUserAction} className="space-y-5">
         <div className="form-grid"><div><label htmlFor="name" className="form-label">Ime i prezime</label><input id="name" name="name" className="input-field" required minLength={3}/></div><div><label htmlFor="email" className="form-label">Email</label><input id="email" name="email" type="email" className="input-field" required/></div></div>

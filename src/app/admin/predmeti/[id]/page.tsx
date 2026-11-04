@@ -9,7 +9,7 @@ import { db } from "@/infrastructure/db/prisma";
 import { materialKindLabels, materialKinds } from "@/domain/content/material-kinds";
 import { assignCourseMemberAction, revokeCourseMemberAction } from "@/app/actions/users";
 
-export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string; team?: string }> }) {
+export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string; team?: string; error?: string }> }) {
   const { id } = await params;
   const [mayEdit, mayUpload, canManageTeam] = await Promise.all([
     can("courses.edit", id),
@@ -28,10 +28,11 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     },
   });
   if (!course) notFound();
-  const { saved, material, team } = await searchParams;
+  const { saved, material, team, error } = await searchParams;
   return <div className="space-y-7">
     <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
+    {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
     {(saved || material || team) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
     {mayEdit && <div className="admin-panel"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>

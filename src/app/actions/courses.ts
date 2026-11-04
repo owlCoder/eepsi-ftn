@@ -21,6 +21,8 @@ function courseFields(data: FormData) {
 export async function createCourseAction(data: FormData) {
   const actor = await requirePermission("courses.create");
   const input = courseInput.parse(courseFields(data));
+  const duplicate = await db.course.findUnique({ where: { code: input.code }, select: { id: true } });
+  if (duplicate) redirect("/admin/predmeti?error=duplicate");
   const course = await db.$transaction(async (tx) => {
     const created = await tx.course.create({
       data: { ...input, slug: toSlug(input.title) + "-" + randomUUID().slice(0, 7) },
@@ -38,6 +40,8 @@ export async function updateCourseAction(data: FormData) {
   if (!id || id.length > 40) throw new Error("Neispravan predmet.");
   const actor = await requirePermission("courses.edit", id);
   const input = courseInput.parse(courseFields(data));
+  const duplicate = await db.course.findUnique({ where: { code: input.code }, select: { id: true } });
+  if (duplicate && duplicate.id !== id) redirect("/admin/predmeti/" + id + "?error=duplicate");
   const course = await db.$transaction(async (tx) => {
     const updated = await tx.course.update({ where: { id }, data: input });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "course.update", subjectType: "Course", subjectId: updated.id } });

@@ -7,12 +7,12 @@ import { db } from "@/infrastructure/db/prisma";
 import { readPage } from "@/lib/pagination";
 import { SubmitButton } from "@/components/submit-button";
 
-export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; deleted?: string }> }) {
+export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; deleted?: string; error?: string }> }) {
   const actor = await currentUser();
   if (!actor) return null;
   if (actor.role === "STUDENT") notFound();
   const canCreate = await can("courses.create");
-  const { q: rawQ, p, deleted } = await searchParams;
+  const { q: rawQ, p, deleted, error } = await searchParams;
   const q = (rawQ || "").trim().slice(0, 80);
   const page = readPage(p);
   const courses = await db.course.findMany({
@@ -27,6 +27,7 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
   });
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3">Akademski program</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
+    {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Šifra predmeta već postoji. Unesite drugu šifru ili izmenite postojeći predmet.</p>}
     {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-800">Predmet je trajno uklonjen, zajedno sa materijalima i angažovanjima.</p>}
     {canCreate && <div className="admin-panel"><h2>Novi predmet</h2><form action={createCourseAction} className="space-y-5">
       <div className="form-grid"><div><label htmlFor="c-code" className="form-label">Šifra predmeta</label><input id="c-code" name="code" className="input-field" required minLength={2} maxLength={30} placeholder="EE-101"/></div><div><label htmlFor="c-title" className="form-label">Naziv predmeta</label><input id="c-title" name="title" className="input-field" required minLength={5} maxLength={180}/></div></div>
