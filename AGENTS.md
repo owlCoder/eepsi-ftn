@@ -110,3 +110,10 @@ This is a newly built portal foundation, **not a verified migration of the origi
 
 
 - Assigning or removing course memberships must atomically bump the affected user's `sessionVersion` so existing JWTs cannot retain old assumptions about access scope.
+
+## Browser E2E test isolation
+
+- New browser tests live under `tests/e2e` and run with the stable Playwright test runner in Chromium. Always seed uniquely named synthetic `example.invalid` accounts on **loopback-only disposable MySQL**, never real accounts or production databases.
+- Test setup must require `E2E_TEST_MODE=true`, local `NEXTAUTH_URL`, and an ephemeral password; reject unsafe environments before any database write.
+- Cleanup E2E users, materials, news and audit rows in an `afterAll` hook. Do not log passwords.
+- CI must perform a production build before browser tests. Browser tests complement, not replace, domain, integration and build checks.

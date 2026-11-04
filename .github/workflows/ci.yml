@@ -54,6 +54,16 @@ jobs:
         run: npm run test:integration
       - name: Production build
         run: npm run build
+      - name: Install E2E browser
+        run: npx playwright install --with-deps chromium
+      - name: Browser E2E (synthetic accounts, isolated MySQL)
+        env:
+          E2E_TEST_MODE: "true"
+        shell: bash
+        run: |
+          set -euo pipefail
+          export E2E_TEST_PASSWORD="$(openssl rand -hex 24)"
+          npm run test:e2e
       - name: Runtime smoke checks (production server)
         shell: bash
         run: |

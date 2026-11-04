@@ -172,3 +172,17 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
+
+## Browser E2E testovi
+
+Playwright (stabilna verzija `1.64.1`) pokreće **stvaran Chromium browser** nad izgrađenom aplikacijom i izolovanom lokalnom MySQL bazom. Testovi koriste isključivo sintetičke `@example.invalid` naloge, testiraju prijavu i RBAC, javni katalog i materijale, rad sa novostima i opoziv pristupa. Nakon testova brišu svoje naloge i sadržaj.
+
+Lokalno, nakon što su migracije primenjene i aplikacija izgrađena:
+
+```bash
+npx playwright install chromium
+npm run build
+E2E_TEST_MODE=true E2E_TEST_PASSWORD="$(openssl rand -hex 24)" npm run test:e2e
+```
+
+**Zaštita baze:** E2E testovi odbijaju pokretanje bez `E2E_TEST_MODE=true`, bez dovoljno duge generisane lozinke, sa produkcionim URL-om ili kada baza nije na loopback adresi. **Nikada ih ne pokretati nad stvarnom produkcionom bazom.** GitHub Actions pokreće ih tek posle migracija, unit/integracionih testova i uspešnog produkcionog builda.
