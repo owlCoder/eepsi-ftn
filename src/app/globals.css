@@ -329,3 +329,5 @@ summary::marker { content: ""; }
   .hero-visual .float-panel strong { font-size: 12px; }
   .hero-visual .float-panel:nth-child(4) { top: 22%; right: 3%; }
 }
+
+#spisak-naloga, #novi-nalog, #angazovanja { scroll-margin-top: 105px; }
