@@ -80,10 +80,11 @@ export async function updateUserAccessAction(data: FormData) {
   }
   const active = input.active === "true";
   await db.$transaction(async (tx) => {
-    await tx.user.update({
-      where: { id: input.id },
+    const updated = await tx.user.updateMany({
+      where: { id: input.id, role: { not: "SUPER_ADMIN" } },
       data: { role: input.role, active },
     });
+    if (updated.count !== 1) throw new Error("Zaštićen nalog ili konkurentna promena.");
     // Stare dodele predmeta nikada ne preživljavaju promenu uloge ili deaktivaciju.
     if (target.role !== input.role || !active) {
       await tx.courseMembership.deleteMany({ where: { userId: input.id } });
