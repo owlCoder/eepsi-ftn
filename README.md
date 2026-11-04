@@ -33,6 +33,8 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 | Validacija / testovi | Zod 4, Vitest 5 |
 | CI | GitHub Actions |
 
+**Održavanje paketa:** Dependabot jednom nedeljno otvara PR-ove za npm i GitHub Actions izmene; ništa se ne merge-uje automatski bez zelenog CI-ja i pregleda. 
+
 **Verzije:** `package.json` je izvor istine. Prednost imaju najnovije *stabilne i međusobno kompatibilne* verzije. TypeScript 7 još nije kompatibilan sa `typescript-eslint` verzijom koju zahteva aktuelni Next ESLint stack, zato je trenutno TS 6.
 
 ## Arhitektura

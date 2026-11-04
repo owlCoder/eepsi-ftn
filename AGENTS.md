@@ -7,6 +7,7 @@ This file is guidance for AI coding agents and human contributors working in thi
 Build a maintainable, accessible, high-performance academic portal for the Faculty of Technical Sciences (Novi Sad), with Serbian-language UI, robust role-based access control (RBAC), and MySQL persistence.
 
 - Use the latest **stable, mutually compatible** dependencies. Avoid prereleases unless explicitly approved.
+- Dependabot opens update PRs weekly. Review major version migrations and require green CI; never blindly merge major upgrades.
 - Preserve the Clean Architecture boundary and SOLID principles; prefer focused, testable changes.
 - Do not claim an implementation is production-ready merely because it builds.
 - Keep public-facing copy accurate. Never invent real faculty, course, contact, or student details.
