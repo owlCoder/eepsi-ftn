@@ -81,6 +81,7 @@ npm run db:deploy
 npm run typecheck
 npm run lint
 npm test
+npm run test:integration # requires migrated MySQL
 npm run build
 ```
 

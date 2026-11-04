@@ -104,10 +104,17 @@ Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
 npm run typecheck
 npm run lint
 npm test
+npm run test:integration  # Zahteva MySQL bazu sa primenjenim migracijama
 npm run build
 ```
 
-GitHub Actions za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, testove i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
+GitHub Actions za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, unit i integracione testove baze i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
+
+### Zdravlje aplikacije i održavanje
+
+- `GET /api/health` vraća `200` kada baza odgovara ili `503` kada je nedostupna. Ne izlaže connection stringove ni detalje izuzetka.
+- `npm run db:cleanup-throttles` briše istekle HMAC-bazirane zapise neuspešnih prijava. Pokretati periodično kroz pouzdan scheduler/cron. Ne briše audit log.
+- Za audit log napraviti posebnu politiku čuvanja/retencije pre produkcije.
 
 ### Izmena šeme
 
