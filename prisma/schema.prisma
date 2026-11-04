@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+enum Role {
+  SUPER_ADMIN
+  EDITOR
+  PROFESSOR
+  ASSISTANT
+  STUDENT
+}
+
+enum CourseMemberRole {
+  PROFESSOR
+  ASSISTANT
+}
+
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model User {
+  id            String             @id @default(cuid())
+  email         String             @unique @db.VarChar(191)
+  passwordHash  String             @db.VarChar(255)
+  name          String             @db.VarChar(120)
+  role          Role               @default(STUDENT)
+  active        Boolean            @default(true)
+  createdAt     DateTime           @default(now())
+  memberships   CourseMembership[]
+  news          News[]
+}
+
+model News {
+  id          String     @id @default(cuid())
+  slug        String     @unique @db.VarChar(191)
+  title       String     @db.VarChar(180)
+  summary     String     @db.VarChar(300)
+  body        String     @db.LongText
+  status      NewsStatus @default(DRAFT)
+  authorId    String
+  author      User       @relation(fields: [authorId], references: [id])
+  publishedAt DateTime?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  @@index([status, publishedAt])
+}
+
+model Course {
+  id          String             @id @default(cuid())
+  slug        String             @unique @db.VarChar(191)
+  code        String             @unique @db.VarChar(30)
+  title       String             @db.VarChar(180)
+  description String             @db.Text
+  semester    Int
+  studyLevel  String             @db.VarChar(60)
+  createdAt   DateTime           @default(now())
+  memberships CourseMembership[]
+  materials   Material[]
+
+  @@index([semester, title])
+}
+
+model CourseMembership {
+  userId    String
+  courseId  String
+  role      CourseMemberRole
+  user      User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course    Course           @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@id([userId, courseId])
+  @@index([courseId])
+}
+
+model Material {
+  id        String   @id @default(cuid())
+  courseId  String
+  title     String   @db.VarChar(180)
+  url       String   @db.VarChar(1500)
+  createdAt DateTime @default(now())
+  course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+
+  @@index([courseId, createdAt])
+}
