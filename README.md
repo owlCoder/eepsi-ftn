@@ -108,7 +108,7 @@ npm run test:integration  # Zahteva MySQL bazu sa primenjenim migracijama
 npm run build
 ```
 
-GitHub Actions (akcije vezane za proverene commit SHA-ove, umesto promenljivih tagova) za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, unit i integracione testove baze i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
+GitHub Actions (akcije vezane za proverene commit SHA-ove, umesto promenljivih tagova) za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, unit i integracione testove baze, optimizovani produkcioni build i runtime smoke-test ruta (uključujući zaštitu /admin). Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
 
 ### Zdravlje aplikacije i održavanje
 

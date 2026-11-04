@@ -89,7 +89,7 @@ npm run build
 - Update tests when changing permissions, validators or user flows.
 - Update `README.md`, `.env.example` and migrations when setup changes.
 - When using a public repository, do not push sample data that resembles real private student/employee records.
-- If a check fails, inspect logs, fix the root cause, then verify the newest commit again.
+- If a check fails, inspect logs, fix the root cause, then verify the newest commit again. CI also boots the production server and smoke-tests public, auth and protected routes.
 
 ## Working on main
 
