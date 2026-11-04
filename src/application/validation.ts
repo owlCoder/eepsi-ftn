@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { materialKinds } from "@/domain/content/material-kinds";
+import { materialKinds } from "../domain/content/material-kinds";
 
 export const newsInput = z.object({
   title: z.string().trim().min(5).max(180),
