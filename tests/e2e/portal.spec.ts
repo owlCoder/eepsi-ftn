@@ -16,7 +16,6 @@ let admin: TestIdentity;
 let professor: TestIdentity;
 let student: TestIdentity;
 let course: { id: string; slug: string };
-let materialId: string;
 
 function assertDisposableEnvironment() {
   const host = process.env.DATABASE_HOST;
@@ -76,11 +75,9 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       select: { id: true, slug: true },
     });
     await db.courseMembership.create({ data: { userId: professor.id, courseId: course.id, role: "PROFESSOR" } });
-    const material = await db.material.create({
+    await db.material.create({
       data: { courseId: course.id, title: "E2E predavanje " + marker, kind: "LECTURE", url: "https://example.invalid/e2e.pdf" },
-      select: { id: true },
     });
-    materialId = material.id;
   });
 
   test.afterAll(async () => {
