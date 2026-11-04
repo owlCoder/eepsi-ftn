@@ -227,4 +227,5 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     } finally {
       await previousContext.close();
     }
+  });
 });
