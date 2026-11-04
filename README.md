@@ -15,7 +15,7 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 
 - **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
 - **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
-- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, uklanjanje materijala, pretraga i paginacija predmeta/novosti, pregled audit loga.
+- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, uklanjanje materijala, pretraga i paginacija predmeta, novosti i naloga, pregled audit loga.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
 - **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
 - **Performanse i SEO:** server-rendered liste sa paginacijom, ISR javnih stranica, optimizovani DB upiti, robots i sitemap.
