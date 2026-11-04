@@ -58,6 +58,7 @@ export async function assignCourseMemberAction(data: FormData) {
   });
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/[slug]", "page");
+  revalidatePath("/nastavnici");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + input.courseId);
   redirect(returnToCourse ? "/admin/predmeti/" + input.courseId + "?team=updated" : "/admin/korisnici?assigned=1");
@@ -83,6 +84,7 @@ export async function revokeCourseMemberAction(data: FormData) {
   });
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/[slug]", "page");
+  revalidatePath("/nastavnici");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
   redirect(returnToCourse ? "/admin/predmeti/" + courseId + "?team=updated" : "/admin/korisnici?revoked=1");
@@ -119,5 +121,6 @@ export async function updateUserAccessAction(data: FormData) {
   revalidatePath("/admin/predmeti");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/[slug]", "page");
+  revalidatePath("/nastavnici");
   redirect("/admin/korisnici?updated=1");
 }

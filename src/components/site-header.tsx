@@ -5,6 +5,7 @@ const links = [
   { href: "/", label: "Početna" },
   { href: "/o-katedri", label: "O katedri" },
   { href: "/predmeti", label: "Predmeti" },
+  { href: "/nastavnici", label: "Nastavni tim" },
   { href: "/novosti", label: "Novosti" },
 ] as const;
 

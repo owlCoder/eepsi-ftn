@@ -3,6 +3,32 @@ import { cache } from "react";
 import { db } from "@/infrastructure/db/prisma";
 import type { CourseFilters } from "@/domain/courses/filters";
 
+export async function publicTeachingStaff() {
+  if (!process.env.DATABASE_URL) return [];
+  return db.user.findMany({
+    where: {
+      active: true,
+      role: { in: ["PROFESSOR", "ASSISTANT"] },
+      memberships: { some: {} },
+    },
+    select: {
+      id: true,
+      name: true,
+      role: true,
+      memberships: {
+        select: {
+          role: true,
+          course: { select: { slug: true, title: true, code: true } },
+        },
+        orderBy: { course: { title: "asc" } },
+        take: 30,
+      },
+    },
+    orderBy: { name: "asc" },
+    take: 200,
+  });
+}
+
 export async function featuredCourses(limit = 3) {
   if (!process.env.DATABASE_URL) return [];
   return db.course.findMany({

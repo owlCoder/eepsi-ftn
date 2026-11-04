@@ -13,6 +13,7 @@ export function SiteFooter() {
           <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Navigacija</h3>
           <div className="grid gap-3 text-sm">
             <Link href="/predmeti">Predmeti</Link>
+            <Link href="/nastavnici">Nastavni tim</Link>
             <Link href="/novosti">Novosti i obaveštenja</Link>
             <Link href="/o-katedri">O katedri</Link>
             <Link href="/prijava">Prijava</Link>

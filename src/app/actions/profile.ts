@@ -26,6 +26,8 @@ export async function updateProfileAction(data: FormData) {
   });
   revalidatePath("/admin");
   revalidatePath("/admin/profil");
+  revalidatePath("/nastavnici");
+  revalidatePath("/predmeti/[slug]", "page");
   redirect("/admin/profil?updated=1");
 }
 
