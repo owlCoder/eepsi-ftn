@@ -9,7 +9,7 @@
 
 Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architecture i automatizovane provere kvaliteta.
 
-> **Status:** Funkcionalna razvojna osnova. Repozitorijum je prethodno bio prazan; ovaj projekat **nije automatski preuzeo sadržaj** sa starog EEPSI sajta i nije javno deployovan. Nisu sprovedeni produkcioni pentest, E2E i kompletan accessibility audit.
+> **Status:** Funkcionalna razvojna osnova. Repozitorijum je prethodno bio prazan; ovaj projekat **nije automatski preuzeo sadržaj** sa starog EEPSI sajta i nije javno deployovan. Nisu sprovedeni nezavisan produkcioni pentest i kompletan audit pristupačnosti.
 
 ## Šta portal sadrži
 
@@ -20,7 +20,7 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 - **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora i indeksi za kategorije materijala.
 - **Performanse i SEO:** server-rendered liste sa paginacijom, ISR javnih stranica, optimizovani DB upiti, robots i sitemap.
 - **Audit:** administratorske izmene se evidentiraju u istoj transakciji sa upisom.
-- **Kvalitet:** Vitest, TypeScript strict, ESLint, Playwright Chromium browser E2E i GitHub Actions (migracije, testovi, produkcioni build i runtime provere).
+- **Kvalitet:** Vitest, TypeScript strict, ESLint, Playwright Chromium E2E i GitHub Actions (migracije, testovi, produkcioni build i runtime provere).
 
 ## Tehnološki stack
 
@@ -33,7 +33,7 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 | Validacija / testovi | Zod 4, Vitest 5 |
 | CI | GitHub Actions |
 
-**Održavanje paketa:** Dependabot jednom nedeljno otvara PR-ove za npm i GitHub Actions izmene; ništa se ne merge-uje automatski bez zelenog CI-ja i pregleda. 
+**Održavanje paketa:** Dependabot jednom nedeljno otvara PR-ove za npm i GitHub Actions izmene; ništa se ne merge-uje automatski bez zelenog CI-ja i pregleda.
 
 **Verzije:** `package.json` je izvor istine. Prednost imaju najnovije *stabilne i međusobno kompatibilne* verzije. TypeScript 7 još nije kompatibilan sa `typescript-eslint` verzijom koju zahteva aktuelni Next ESLint stack, zato je trenutno TS 6.
 
@@ -101,10 +101,16 @@ npm run dev
 
 ## Profil i opoziv sesija
 
-Na `/admin/profil` korisnik sa administratorskim/nastavničkim pristupom može da izmeni ime i promeni lozinku. Nakon promene lozinke povećava se `User.sessionVersion`, zbog čega prethodne JWT sesije više nisu prihvaćene. Promena uloge ili deaktivacija takođe opozivaju stare sesije. Promene se evidentiraju bez čuvanja lozinki u audit logu.
+Na `/admin/profil` svaki prijavljeni korisnik, uključujući studenta, može da izmeni ime i promeni lozinku. Nakon promene lozinke povećava se `User.sessionVersion`, zbog čega prethodne JWT sesije više nisu prihvaćene. Promena uloge ili deaktivacija takođe opozivaju stare sesije. Promene se evidentiraju bez čuvanja lozinki u audit logu.
 
 Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo za predmet na kom ima angažovanje. To mogu i urednik i super administrator. U pitanju su javni HTTPS linkovi, ne privatni upload dokumenata.
 
+**Oporavak naloga:** super administrator može da postavi novu privremenu lozinku za običan korisnički nalog. Lozinka se čuva isključivo kao bcrypt hash, prethodne sesije se opozivaju, a promena se evidentira u audit logu. Lozinka se korisniku dostavlja van sistema bezbednim kanalom; automatizovana email distribucija nije implementirana.
+
+**Studentski nalog:** nakon prijave student ima sopstveni prikaz na `/admin` sa javnim katalogom, objavljenim novostima, nastavnim timom i pristupom svom profilu/promeni lozinke. Studentski nalog **nema pristup** uredničkim rutama i serverskim akcijama za upravljanje korisnicima, predmetima ili novostima.
+
+
+**Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.
 
 ## Kategorije materijala i nastavni tim
 
@@ -125,6 +131,8 @@ Na javnoj stranici `/nastavnici` vide se samo **aktivni** nastavnici i saradnici
 | Dodavanje/uređivanje/uklanjanje materijala | ✓ | ✓ | ✓ | ✓ | — |
 | Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
 | Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
+| Brisanje predmeta | ✓ | — | — | — | — |
+| Resetovanje lozinke drugog korisnika | ✓ | — | — | — | — |
 
 \* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva i uvećava `sessionVersion`, čime se prethodne JWT sesije odbijaju na serveru. Dodela ili uklanjanje angažovanja i promena lozinke takođe opozivaju prethodne sesije. Super-admin nalog se ne uređuje kroz standardan formular.
 
@@ -187,9 +195,3 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
-
-**Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.
-
-**Studentski nalog:** nakon prijave student ima sopstveni prikaz na `/admin` sa javnim katalogom, objavljenim novostima, nastavnim timom i pristupom svom profilu/promeni lozinke. Studentski nalog **nema pristup** uredničkim rutama i serverskim akcijama za upravljanje korisnicima, predmetima ili novostima.
-
-**Oporavak naloga:** super administrator može da postavi novu privremenu lozinku za običan korisnički nalog. Lozinka se čuva isključivo kao bcrypt hash, prethodne sesije se opozivaju, a promena se evidentira u audit logu. Lozinka se korisniku dostavlja van sistema bezbednim kanalom; automatizovana email distribucija nije implementirana.
