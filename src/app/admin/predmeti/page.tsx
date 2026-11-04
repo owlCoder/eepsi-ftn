@@ -3,16 +3,24 @@ import { ArrowUpRight } from "lucide-react";
 import { can, currentUser } from "@/application/authorization";
 import { createCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
+import { readPage } from "@/lib/pagination";
 
-export default async function AdminCourses() {
+export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
   const actor = await currentUser();
   if (!actor) return null;
   const canCreate = await can("courses.create");
+  const { q: rawQ, p } = await searchParams;
+  const q = (rawQ || "").trim().slice(0, 80);
+  const page = readPage(p);
   const courses = await db.course.findMany({
-    where: canCreate ? {} : { memberships: { some: { userId: actor.id } } },
+    where: {
+      ...(!canCreate ? { memberships: { some: { userId: actor.id } } } : {}),
+      ...(q ? { OR: [{ title: { contains: q } }, { code: { contains: q } }] } : {}),
+    },
     select: { id: true, title: true, code: true, semester: true, studyLevel: true, _count: { select: { materials: true } } },
     orderBy: [{ semester: "asc" }, { title: "asc" }],
-    take: 100,
+    skip: (page - 1) * 20,
+    take: 20,
   });
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3">Akademski program</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
@@ -22,10 +30,18 @@ export default async function AdminCourses() {
       <div><label htmlFor="c-desc" className="form-label">Opis predmeta</label><textarea id="c-desc" name="description" className="input-field" required rows={5} minLength={15}/></div>
       <button className="btn btn-primary">Kreiraj predmet</button>
     </form></div>}
-    <div className="admin-panel"><h2>Predmeti ({courses.length})</h2>
+    <div className="admin-panel"><h2>Predmeti — strana {page}</h2>
+      <form role="search" className="mb-5 flex flex-wrap gap-3">
+        <input type="search" name="q" aria-label="Pretraga predmeta" defaultValue={q} placeholder="Naziv ili šifra predmeta" className="input-field flex-1"/>
+        <button className="btn btn-primary">Pretraži</button>
+      </form>
       {courses.length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>Predmet</th><th>Šifra</th><th>Semestar</th><th>Materijali</th></tr></thead><tbody>{courses.map((item)=>
         <tr key={item.id}><td><Link href={"/admin/predmeti/"+item.id} className="font-bold hover:text-teal-700">{item.title} <ArrowUpRight size={14} className="inline"/></Link></td><td>{item.code}</td><td>{item.semester}.</td><td>{item._count.materials}</td></tr>)}</tbody></table></div>
         : <p className="text-sm text-slate-500">Nema dostupnih predmeta.</p>}
+      <nav aria-label="Stranice predmeta" className="mt-6 flex justify-between gap-3">
+        {page > 1 ? <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+        {courses.length === 20 && <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
+      </nav>
     </div>
   </div>;
 }

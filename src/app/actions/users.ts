@@ -51,6 +51,7 @@ export async function assignCourseMemberAction(data: FormData) {
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
   });
   revalidatePath("/predmeti");
+  revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + input.courseId);
   redirect("/admin/korisnici?assigned=1");
@@ -70,6 +71,7 @@ export async function revokeCourseMemberAction(data: FormData) {
     }
   });
   revalidatePath("/predmeti");
+  revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
   redirect("/admin/korisnici?revoked=1");
@@ -105,5 +107,6 @@ export async function updateUserAccessAction(data: FormData) {
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti");
   revalidatePath("/predmeti");
+  revalidatePath("/predmeti/[slug]", "page");
   redirect("/admin/korisnici?updated=1");
 }
