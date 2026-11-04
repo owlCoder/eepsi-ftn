@@ -38,6 +38,8 @@ jobs:
           node-version: '24'
       - name: Install
         run: npm install --no-audit --no-fund
+      - name: Validate local Docker Compose configuration
+        run: docker compose config --quiet
       - name: Validate schema
         run: npx prisma validate
       - name: Apply versioned MySQL migrations

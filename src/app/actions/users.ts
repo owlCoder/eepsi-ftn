@@ -94,10 +94,10 @@ export async function updateUserAccessAction(data: FormData) {
   const active = input.active === "true";
   await db.$transaction(async (tx) => {
     const updated = await tx.user.updateMany({
-      where: { id: input.id, role: { not: "SUPER_ADMIN" } },
+      where: { id: input.id, role: target.role, active: target.active },
       data: { role: input.role, active, sessionVersion: { increment: 1 } },
     });
-    if (updated.count !== 1) throw new Error("Zaštićen nalog ili konkurentna promena.");
+    if (updated.count !== 1) throw new Error("Korisnička uloga ili status je u međuvremenu promenjen.");
     // Stare dodele predmeta nikada ne preživljavaju promenu uloge ili deaktivaciju.
     if (target.role !== input.role || !active) {
       await tx.courseMembership.deleteMany({ where: { userId: input.id } });

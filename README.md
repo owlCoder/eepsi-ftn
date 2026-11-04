@@ -165,3 +165,5 @@ Na `/admin/profil` korisnik sa pravom pristupa administraciji može da izmeni sv
 ## Uređivanje materijala
 
 Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo ako je angažovan na predmetu. Isti postupci su dostupni uredniku i super administratoru. Prava se proveravaju na serveru prema predmetu pronađenom u bazi, a materijali ostaju javni HTTPS linkovi.
+
+**Napomena za Docker na Linux/macOS:** `.env.example` sada koristi `127.0.0.1` za povezivanje sa MySQL-om, jer `localhost` na pojedinim sistemima može da se razreši kao IPv6 (`::1`). Compose mapira MySQL samo na IPv4 loopback interfejs.
