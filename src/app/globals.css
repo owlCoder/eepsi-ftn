@@ -333,3 +333,8 @@ summary::marker { content: ""; }
 #spisak-naloga, #novi-nalog, #angazovanja { scroll-margin-top: 105px; }
 
 #podaci-predmeta, #materijali-predmeta, #nastavni-tim { scroll-margin-top: 112px; }
+
+/* Simple active/inactive material filters; usable on touchscreens. */
+.material-filter { min-height: 39px; border: 1px solid #d2e6e1; border-radius: 9999px; padding: 8px 13px; background: #f2faf8; color: #12695f; font-size: 12px; font-weight: 800; transition: background .15s, color .15s; }
+.material-filter:hover { background: #dcefe8; }
+.material-filter-active, .material-filter-active:hover { background: #087c71; color: #fff; border-color: #087c71; }
