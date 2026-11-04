@@ -13,11 +13,11 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 
 ## Šta portal sadrži
 
-- **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
+- **Javni sajt:** početna, o katedri, katalog predmeta sa filtrima za nivo studija i semestar, stranice predmeta sa grupisanim nastavnim materijalima, nastavni tim (`/nastavnici`) i pretražive novosti.
 - **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga, opoziv starih JWT sesija preko `sessionVersion` i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
-- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, pregled audit loga i lični profil sa promenom lozinke.
+- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, kategorizacija/uređivanje materijala i upravljanje korisnicima; super administrator dodeljuje nastavni tim direktno sa stranice predmeta. Tu su i audit log i profil sa promenom lozinke.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
-- **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
+- **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora i indeksi za kategorije materijala.
 - **Performanse i SEO:** server-rendered liste sa paginacijom, ISR javnih stranica, optimizovani DB upiti, robots i sitemap.
 - **Audit:** administratorske izmene se evidentiraju u istoj transakciji sa upisom.
 - **Kvalitet:** Vitest, TypeScript strict, ESLint i GitHub Actions (instalacija, migracije, provere i produkcioni build).
@@ -104,6 +104,15 @@ npm run dev
 Na `/admin/profil` korisnik sa administratorskim/nastavničkim pristupom može da izmeni ime i promeni lozinku. Nakon promene lozinke povećava se `User.sessionVersion`, zbog čega prethodne JWT sesije više nisu prihvaćene. Promena uloge ili deaktivacija takođe opozivaju stare sesije. Promene se evidentiraju bez čuvanja lozinki u audit logu.
 
 Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo za predmet na kom ima angažovanje. To mogu i urednik i super administrator. U pitanju su javni HTTPS linkovi, ne privatni upload dokumenata.
+
+
+## Kategorije materijala i nastavni tim
+
+Svaki materijal ima jednu od pet kategorija: **predavanja**, **vežbe**, **laboratorijske vežbe**, **ispitni materijali** ili **ostalo**. Predmeti prikazuju materijale po kategorijama sa linkovima za brzu navigaciju. Ove kategorije su definisane u `src/domain/content/material-kinds.ts`, Zod validaciji i Prisma modelu.
+
+Migracija `20261104235500_material_categories` zadržava sve postojeće materijale i postavlja im kategoriju `OTHER` (Ostalo). Novi materijali biraju kategoriju pri kreiranju; nastavnici/saradnici dodeljeni predmetu, urednici i super administratori mogu da je promene.
+
+Na javnoj stranici `/nastavnici` vide se samo **aktivni** nastavnici i saradnici koji imaju angažovanje na najmanje jednom predmetu. Prikazuju se ime, akademska uloga i predmeti, **bez email adresa**. Administrator može da dodeli ili ukloni angažovanje i direktno na `/admin/predmeti/[id]`, a sistem opoziva prethodne sesije korisnika na koga se promena odnosi.
 
 ## RBAC matrica
 

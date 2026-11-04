@@ -49,6 +49,21 @@ describe("versioned MySQL schema integration", () => {
         where: { userId_courseId: { userId: user.id, courseId: course.id } },
       });
       expect(assigned?.role).toBe("ASSISTANT");
+      const directoryEntry = await db.user.findFirst({
+        where: { id: user.id, active: true, role: { in: ["PROFESSOR", "ASSISTANT"] }, memberships: { some: {} } },
+        select: {
+          id: true,
+          name: true,
+          memberships: { select: { course: { select: { title: true, slug: true } } } },
+        },
+      });
+      expect(directoryEntry?.id).toBe(user.id);
+      expect(directoryEntry?.memberships[0]?.course.slug).toBe(course.slug);
+      const filteredCourses = await db.course.findMany({
+        where: { id: course.id, semester: 2, studyLevel: "OAS" },
+        select: { id: true },
+      });
+      expect(filteredCourses).toEqual([{ id: course.id }]);
       expect(isSessionVersionCurrent(0, user.sessionVersion)).toBe(true);
       const revised = await db.user.update({
         where: { id: user.id },

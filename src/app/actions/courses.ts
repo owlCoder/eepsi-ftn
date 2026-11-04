@@ -46,6 +46,7 @@ export async function updateCourseAction(data: FormData) {
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
+  revalidatePath("/nastavnici");
   redirect("/admin/predmeti/" + id + "?saved=1");
 }
 

@@ -11,6 +11,7 @@ Build a maintainable, accessible, high-performance academic portal for the Facul
 - Preserve the Clean Architecture boundary and SOLID principles; prefer focused, testable changes.
 - Do not claim an implementation is production-ready merely because it builds.
 - Keep public-facing copy accurate. Never invent real faculty, course, contact, or student details.
+- The public teaching-staff directory displays **only active assigned professors/assistants**; never expose their login email addresses in public queries or UI.
 
 ## Architecture and module boundaries
 
@@ -48,6 +49,7 @@ Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obs
 - MySQL 8+ through Prisma and `@prisma/adapter-mariadb`.
 - All schema changes require a **committed** SQL migration in `prisma/migrations`. Never edit an applied migration.
 - Preserve referential integrity, add indexes for filtering/order-by queries, and use `select` to avoid unnecessary data transfer.
+- Material category enum must remain consistent across Prisma schema, SQL migration, `domain/content/material-kinds.ts`, and Zod validation. Do not modify an applied migration; create another migration instead.
 - Use `npm run db:deploy` for reproducible schema setup; migrations must pass in GitHub Actions.
 - Seeds may create an admin only with explicit environment variables. Never add default, hard-coded or sample production passwords.
 
