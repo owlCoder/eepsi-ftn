@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, FilePlus2, Users, Trash2 } from "lucide-react";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { SubmitButton } from "@/components/submit-button";
 import { can } from "@/application/authorization";
 import { createMaterialAction, deleteMaterialAction, deleteCourseAction, updateMaterialAction, updateCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
@@ -37,7 +38,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5}/></div></div>
       <div className="form-grid"><div><label htmlFor="level" className="form-label">Nivo studija</label><select id="level" name="studyLevel" className="input-field" defaultValue={course.studyLevel}><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option></select></div><div><label htmlFor="semester" className="form-label">Semestar</label><select id="semester" name="semester" className="input-field" defaultValue={course.semester}>{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}.</option>)}</select></div></div>
       <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} defaultValue={course.description}/></div>
-      <button className="btn btn-primary">Sačuvaj izmene</button>
+      <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>}
     {mayUpload && <div className="admin-panel"><h2 className="flex items-center gap-3"><FilePlus2 className="text-teal-700"/> Dodaj materijal</h2>
       <form action={createMaterialAction} className="space-y-5"><input name="courseId" type="hidden" value={course.id}/>
@@ -48,7 +49,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
           </select>
         </div>
-        <button className="btn btn-primary">Dodaj materijal</button>
+        <SubmitButton pendingText="Dodavanje…">Dodaj materijal</SubmitButton>
       </form>
       <div className="mt-8 border-t border-slate-100 pt-6"><h3 className="font-bold">Objavljeni materijali</h3><div className="mt-4 space-y-3">{course.materials.length ? course.materials.map((item) =>
         <div key={item.id} className="rounded-xl border border-slate-200 p-4">
@@ -70,7 +71,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
                   {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
                 </select>
               </div>
-              <button type="submit" className="btn btn-primary w-fit">Sačuvaj materijal</button>
+              <SubmitButton className="btn btn-primary w-fit">Sačuvaj materijal</SubmitButton>
             </form>
           </details>
         </div>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
@@ -108,7 +109,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <option value="ASSISTANT">Saradnik</option>
             </select>
           </div>
-          <button type="submit" className="btn btn-primary">Dodeli predmet</button>
+          <SubmitButton pendingText="Dodeljivanje…">Dodeli predmet</SubmitButton>
         </form>
       </div>}
     </section>

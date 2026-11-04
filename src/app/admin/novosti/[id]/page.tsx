@@ -2,6 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, Trash2, ExternalLink } from "lucide-react";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
+import { SubmitButton } from "@/components/submit-button";
 import { can } from "@/application/authorization";
 import { updateNewsAction, togglePublishNewsAction, deleteNewsAction } from "@/app/actions/news";
 import { db } from "@/infrastructure/db/prisma";
@@ -22,12 +23,12 @@ export default async function EditNews({ params, searchParams }: { params: Promi
       <div><label htmlFor="news-title" className="form-label">Naslov</label><input id="news-title" name="title" className="input-field" required minLength={5} maxLength={180} defaultValue={item.title}/></div>
       <div><label htmlFor="news-summary" className="form-label">Opis</label><textarea id="news-summary" name="summary" className="input-field" required minLength={10} maxLength={300} rows={3} defaultValue={item.summary}/></div>
       <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} rows={11} defaultValue={item.body}/></div>
-      <button className="btn btn-primary">Sačuvaj izmene</button>
+      <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>
     <div className="admin-panel"><div className="flex flex-wrap items-center justify-between gap-4">
       <div><p className="text-sm font-semibold">Status: <span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></p>
         <p className="mt-2 text-xs text-slate-500">Objavljivanje određuje dostupnost novosti na javnom portalu.</p></div>
-      <form action={togglePublishNewsAction}><input name="id" type="hidden" value={item.id}/><button className="btn btn-light">{item.status === "PUBLISHED" ? "Povuci objavu" : "Objavi sada"}</button></form>
+      <form action={togglePublishNewsAction}><input name="id" type="hidden" value={item.id}/><SubmitButton className="btn btn-light" pendingText="Ažuriranje…">{item.status === "PUBLISHED" ? "Povuci objavu" : "Objavi sada"}</SubmitButton></form>
     </div></div>
     <div className="admin-panel border-rose-100 bg-rose-50/30">
       <h2 className="!mb-2 text-rose-900">Ukloni novost</h2>

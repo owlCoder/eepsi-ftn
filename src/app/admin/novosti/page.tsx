@@ -5,6 +5,7 @@ import { can } from "@/application/authorization";
 import { createNewsAction, togglePublishNewsAction } from "@/app/actions/news";
 import { db } from "@/infrastructure/db/prisma";
 import { readPage } from "@/lib/pagination";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function AdminNews({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; status?: string; deleted?: string }> }) {
   if (!(await can("news.write"))) notFound();
@@ -35,7 +36,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           <div><label className="form-label" htmlFor="news-title">Naslov</label><input className="input-field" id="news-title" name="title" required minLength={5} maxLength={180}/></div>
           <div><label className="form-label" htmlFor="news-summary">Kratak opis</label><textarea className="input-field" id="news-summary" name="summary" rows={3} required minLength={10} maxLength={300}/></div>
           <div><label className="form-label" htmlFor="news-body">Tekst novosti</label><textarea className="input-field" id="news-body" name="body" rows={7} required minLength={20}/></div>
-          <div className="flex flex-wrap gap-3"><button type="submit" name="publish" value="false" className="btn btn-light">Sačuvaj nacrt</button><button type="submit" name="publish" value="true" className="btn btn-primary">Objavi novost</button></div>
+          <div className="flex flex-wrap gap-3"><SubmitButton name="publish" value="false" className="btn btn-light" pendingText="Čuvanje…">Sačuvaj nacrt</SubmitButton><SubmitButton name="publish" value="true" pendingText="Objavljivanje…">Objavi novost</SubmitButton></div>
         </form>
       </div>
       <div className="admin-panel">

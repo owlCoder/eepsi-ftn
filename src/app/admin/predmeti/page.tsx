@@ -5,6 +5,7 @@ import { can, currentUser } from "@/application/authorization";
 import { createCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
 import { readPage } from "@/lib/pagination";
+import { SubmitButton } from "@/components/submit-button";
 
 export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; deleted?: string }> }) {
   const actor = await currentUser();
@@ -31,7 +32,7 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
       <div className="form-grid"><div><label htmlFor="c-code" className="form-label">Šifra predmeta</label><input id="c-code" name="code" className="input-field" required minLength={2} maxLength={30} placeholder="EE-101"/></div><div><label htmlFor="c-title" className="form-label">Naziv predmeta</label><input id="c-title" name="title" className="input-field" required minLength={5} maxLength={180}/></div></div>
       <div className="form-grid"><div><label htmlFor="c-level" className="form-label">Nivo studija</label><select id="c-level" name="studyLevel" className="input-field"><option value="OAS">Osnovne akademske studije</option><option value="MAS">Master akademske studije</option><option value="DAS">Doktorske akademske studije</option></select></div><div><label htmlFor="c-sem" className="form-label">Semestar</label><select id="c-sem" name="semester" className="input-field">{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}. semestar</option>)}</select></div></div>
       <div><label htmlFor="c-desc" className="form-label">Opis predmeta</label><textarea id="c-desc" name="description" className="input-field" required rows={5} minLength={15}/></div>
-      <button className="btn btn-primary">Kreiraj predmet</button>
+      <SubmitButton pendingText="Kreiranje…">Kreiraj predmet</SubmitButton>
     </form></div>}
     <div className="admin-panel"><h2>Predmeti — strana {page}</h2>
       <form role="search" className="mb-5 flex flex-wrap gap-3">
