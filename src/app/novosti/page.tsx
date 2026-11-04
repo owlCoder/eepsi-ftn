@@ -10,7 +10,7 @@ export const metadata: Metadata = { title: "Novosti", description: "Najnovija ob
 
 export default async function News({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
   const { q: rawQ, p } = await searchParams;
-  const q = (rawQ || "").trim().slice(0,80);
+  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0,80);
   const page = readPage(p);
   const items = await listNews(q, page);
   return (

@@ -13,7 +13,7 @@ export default async function TeachingStaffPage({
   searchParams,
 }: { searchParams: Promise<{ q?: string }> }) {
   const { q: rawQ } = await searchParams;
-  const q = (rawQ ?? "").trim().slice(0, 80);
+  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const people = await publicTeachingStaff();
   const search = q.toLocaleLowerCase("sr-RS");
   const staff = search

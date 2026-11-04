@@ -11,7 +11,7 @@ import { db } from "@/infrastructure/db/prisma";
 export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ created?: string; assigned?: string; revoked?: string; updated?: string; reset?: string; details?: string; unchanged?: string; error?: string; q?: string; role?: string; active?: string; p?: string; mp?: string }> }) {
   if (!(await can("users.manage"))) notFound();
   const query = await searchParams;
-  const q = (query.q || "").trim().slice(0, 80);
+  const q = (typeof query.q === "string" ? query.q : "").trim().slice(0, 80);
   const role = roles.find((item) => item === query.role);
   const active = query.active === "true" ? true : query.active === "false" ? false : undefined;
   const page = readPage(query.p);

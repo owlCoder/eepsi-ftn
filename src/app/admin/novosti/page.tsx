@@ -10,7 +10,7 @@ import { SubmitButton } from "@/components/submit-button";
 export default async function AdminNews({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; status?: string; deleted?: string }> }) {
   if (!(await can("news.write"))) notFound();
   const { q: rawQ, p, status: rawStatus, deleted } = await searchParams;
-  const q = (rawQ || "").trim().slice(0, 80);
+  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const status = rawStatus === "DRAFT" || rawStatus === "PUBLISHED" ? rawStatus : "";
   const news = await db.news.findMany({

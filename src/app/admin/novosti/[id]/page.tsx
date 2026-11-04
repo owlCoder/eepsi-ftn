@@ -22,7 +22,7 @@ export default async function EditNews({ params, searchParams }: { params: Promi
       <input type="hidden" name="id" value={item.id}/>
       <div><label htmlFor="news-title" className="form-label">Naslov</label><input id="news-title" name="title" className="input-field" required minLength={5} maxLength={180} defaultValue={item.title}/></div>
       <div><label htmlFor="news-summary" className="form-label">Opis</label><textarea id="news-summary" name="summary" className="input-field" required minLength={10} maxLength={300} rows={3} defaultValue={item.summary}/></div>
-      <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} rows={11} defaultValue={item.body}/></div>
+      <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} maxLength={30000} rows={11} defaultValue={item.body}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>
     <div className="admin-panel">

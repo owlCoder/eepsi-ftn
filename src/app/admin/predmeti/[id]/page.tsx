@@ -42,15 +42,15 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     </nav>
     {mayEdit && <div className="admin-panel" id="podaci-predmeta"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>
-      <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5}/></div></div>
+      <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" title="Samo latinična slova, brojevi i crtica" required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5} maxLength={180}/></div></div>
       <div className="form-grid"><div><label htmlFor="level" className="form-label">Nivo studija</label><select id="level" name="studyLevel" className="input-field" defaultValue={course.studyLevel}><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option></select></div><div><label htmlFor="semester" className="form-label">Semestar</label><select id="semester" name="semester" className="input-field" defaultValue={course.semester}>{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}.</option>)}</select></div></div>
-      <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} defaultValue={course.description}/></div>
+      <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} maxLength={5000} defaultValue={course.description}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>}
     {mayUpload && <div className="admin-panel" id="materijali-predmeta"><h2 className="flex items-center gap-3"><FilePlus2 className="text-teal-700"/> Dodaj materijal</h2>
       <form action={createMaterialAction} className="space-y-5"><input name="courseId" type="hidden" value={course.id}/>
-        <div><label htmlFor="material-title" className="form-label">Naziv materijala</label><input id="material-title" name="title" required minLength={3} className="input-field" placeholder="Vežba 1 — prezentacija"/></div>
-        <div><label htmlFor="material-url" className="form-label">HTTPS adresa dokumenta</label><input id="material-url" name="url" type="url" pattern="https://.*" required className="input-field" placeholder="https://..."/></div>
+        <div><label htmlFor="material-title" className="form-label">Naziv materijala</label><input id="material-title" name="title" required minLength={3} maxLength={180} className="input-field" placeholder="Vežba 1 — prezentacija"/></div>
+        <div><label htmlFor="material-url" className="form-label">HTTPS adresa dokumenta</label><input id="material-url" name="url" type="url" pattern="https://.*" maxLength={1500} required className="input-field" placeholder="https://..."/></div>
         <div><label htmlFor="material-kind" className="form-label">Kategorija</label>
           <select id="material-kind" name="kind" className="input-field" defaultValue="OTHER">
             {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
@@ -72,7 +72,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             <form action={updateMaterialAction} className="mt-4 grid gap-4">
               <input type="hidden" name="materialId" value={item.id}/>
               <div><label htmlFor={"material-name-" + item.id} className="form-label">Naziv</label><input id={"material-name-" + item.id} name="title" className="input-field" defaultValue={item.title} minLength={3} maxLength={180} required/></div>
-              <div><label htmlFor={"material-link-" + item.id} className="form-label">HTTPS link</label><input id={"material-link-" + item.id} name="url" className="input-field" type="url" pattern="https://.*" defaultValue={item.url} required/></div>
+              <div><label htmlFor={"material-link-" + item.id} className="form-label">HTTPS link</label><input id={"material-link-" + item.id} name="url" className="input-field" type="url" pattern="https://.*" maxLength={1500} defaultValue={item.url} required/></div>
               <div><label htmlFor={"material-kind-" + item.id} className="form-label">Kategorija</label>
                 <select id={"material-kind-" + item.id} name="kind" defaultValue={item.kind} className="input-field">
                   {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}

@@ -11,7 +11,7 @@ export const metadata: Metadata = { title: "Predmeti", description: "Pregled pre
 
 export default async function Courses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }) {
   const { q: rawQ, p, level: rawLevel, semester: rawSemester } = await searchParams;
-  const q = (rawQ || "").trim().slice(0, 80);
+  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const filters = parseCourseFilters({ level: rawLevel, semester: rawSemester });
   const items = await listCourses(q, page, filters);
