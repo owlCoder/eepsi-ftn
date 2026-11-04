@@ -228,4 +228,23 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await previousContext.close();
     }
   });
+
+  test("mobile menu and public course filters work at phone width", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const mobileMenu = page.locator("header details");
+    await mobileMenu.locator('summary[aria-label="Otvori meni"]').click();
+    await expect(mobileMenu.getByRole("link", { name: "Predmeti" })).toBeVisible();
+    await mobileMenu.getByRole("link", { name: "Predmeti" }).click();
+    await expect(page.getByRole("heading", { name: "Katalog predmeta" })).toBeVisible();
+
+    // A fresh page load resets the expandable mobile navigation before using filters.
+    await page.goto("/predmeti");
+    await page.getByLabel("Nivo studija").selectOption("OAS");
+    await page.getByLabel("Semestar").selectOption("2");
+    await page.getByRole("button", { name: "Prikaži" }).click();
+    await expect(page).toHaveURL(/level=OAS/);
+    await expect(page).toHaveURL(/semester=2/);
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+  });
 });
