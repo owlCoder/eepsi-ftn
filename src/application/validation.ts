@@ -32,3 +32,9 @@ export const membershipInput = z.object({
   email: z.email().transform((email) => email.trim().toLowerCase()),
   role: z.enum(["PROFESSOR", "ASSISTANT"]),
 });
+
+export const accessInput = z.object({
+  id: z.string().min(5).max(40),
+  role: z.enum(["EDITOR", "PROFESSOR", "ASSISTANT", "STUDENT"]),
+  active: z.enum(["true", "false"]),
+});

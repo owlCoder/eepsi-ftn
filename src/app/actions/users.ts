@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hash } from "bcryptjs";
-import { membershipInput, userInput } from "@/application/validation";
+import { accessInput, membershipInput, userInput } from "@/application/validation";
 import { requirePermission } from "@/application/authorization";
 import { db } from "@/infrastructure/db/prisma";
 
@@ -62,4 +62,34 @@ export async function revokeCourseMemberAction(data: FormData) {
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
   redirect("/admin/korisnici?revoked=1");
+}
+
+export async function updateUserAccessAction(data: FormData) {
+  await requirePermission("users.manage");
+  const input = accessInput.parse({
+    id: String(data.get("id") ?? ""),
+    role: String(data.get("role") ?? ""),
+    active: String(data.get("active") ?? ""),
+  });
+  const target = await db.user.findUnique({
+    where: { id: input.id },
+    select: { role: true, active: true },
+  });
+  if (!target || target.role === "SUPER_ADMIN") {
+    throw new Error("Super administratorski nalog je zaštićen ili nalog ne postoji.");
+  }
+  const active = input.active === "true";
+  await db.$transaction(async (tx) => {
+    await tx.user.update({
+      where: { id: input.id },
+      data: { role: input.role, active },
+    });
+    // Stare dodele predmeta nikada ne preživljavaju promenu uloge ili deaktivaciju.
+    if (target.role !== input.role || !active) {
+      await tx.courseMembership.deleteMany({ where: { userId: input.id } });
+    }
+  });
+  revalidatePath("/admin/korisnici");
+  revalidatePath("/admin/predmeti");
+  redirect("/admin/korisnici?updated=1");
 }

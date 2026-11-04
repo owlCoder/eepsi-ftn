@@ -25,7 +25,7 @@ Komande: `npm run typecheck`, `npm test`, `npm run build`, `npm run db:studio`.
 
 | Uloga | Dozvole |
 | --- | --- |
-| SUPER_ADMIN | Sve, uključujući kreiranje naloga |
+| SUPER_ADMIN | Sve, uključujući kreiranje, deaktivaciju i izmenu uloga naloga |
 | EDITOR | Kreiranje/objavljivanje novosti; kreiranje i uređivanje predmeta i materijala |
 | PROFESSOR | Izmena sadržaja i materijala **samo dodeljenih predmeta** |
 | ASSISTANT | Dodavanje materijala **samo dodeljenih predmeta** |
@@ -35,6 +35,7 @@ Uloge iz sesije se **ne smatraju izvorom istine**: server svaku privilegovanu ak
 
 ## Napomene za produkciju
 
+- Promena globalne uloge ili deaktivacija automatski uklanja sva članstva na predmetima. SUPER_ADMIN nalozi su zaštićeni od izmene kroz administratorski formular.
 - Bez postojećeg koda u repozitorijumu ovo je nova osnova, a ne refaktor migriranog sajta; sadržaj starog Wix sajta nije automatski preuzet.
 - Dokumenta su za sada linkovi ka eksternim HTTPS resursima, ne privatno skladište datoteka.
 - Pre javne produkcije: obavezno podesi domen i `NEXTAUTH_URL`, HTTPS, rate limiting na loginu (gateway/WAF), audit logove, backup baze i strategiju migracije sadržaja.
