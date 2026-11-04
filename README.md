@@ -105,6 +105,8 @@ Na `/admin/profil` svaki prijavljeni korisnik, uključujući studenta, može da 
 
 Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo za predmet na kom ima angažovanje. To mogu i urednik i super administrator. U pitanju su javni HTTPS linkovi, ne privatni upload dokumenata.
 
+**Upravljanje podacima naloga:** super administrator može ispraviti ime ili email korisnika, bez menjanja njegovih dozvola. Promena emaila opoziva stare sesije, jer je to identitet za prijavu. Ponovno čuvanje nepromenjene uloge ili već postojećeg angažovanja ne odjavljuje korisnika.
+
 **Oporavak naloga:** super administrator može da postavi novu privremenu lozinku za običan korisnički nalog. Lozinka se čuva isključivo kao bcrypt hash, prethodne sesije se opozivaju, a promena se evidentira u audit logu. Lozinka se korisniku dostavlja van sistema bezbednim kanalom; automatizovana email distribucija nije implementirana.
 
 **Studentski nalog:** nakon prijave student ima sopstveni prikaz na `/admin` sa javnim katalogom, objavljenim novostima, nastavnim timom i pristupom svom profilu/promeni lozinke. Studentski nalog **nema pristup** uredničkim rutama i serverskim akcijama za upravljanje korisnicima, predmetima ili novostima.

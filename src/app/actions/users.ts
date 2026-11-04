@@ -46,9 +46,14 @@ export async function assignCourseMemberAction(data: FormData) {
       : "/admin/korisnici?error=member";
     redirect(destination);
   }
-  await db.$transaction(async (tx) => {
+  const assigned = await db.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: user.id }, select: { role: true, active: true } });
     if (!current?.active || current.role !== input.role) throw new Error("Korisnička uloga je promenjena.");
+    const existing = await tx.courseMembership.findUnique({
+      where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
+      select: { role: true },
+    });
+    if (existing?.role === input.role) return false;
     await tx.courseMembership.upsert({
       where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
       create: { userId: user.id, courseId: input.courseId, role: input.role },
@@ -60,7 +65,13 @@ export async function assignCourseMemberAction(data: FormData) {
       data: { sessionVersion: { increment: 1 } },
     });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
+    return true;
   });
+  if (!assigned) {
+    redirect(returnToCourse
+      ? "/admin/predmeti/" + input.courseId + "?team=unchanged"
+      : "/admin/korisnici?unchanged=1");
+  }
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/nastavnici");
