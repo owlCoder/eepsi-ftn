@@ -14,10 +14,12 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 ## Šta portal sadrži
 
 - **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
-- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, server-side provera aktivnog naloga.
-- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima.
+- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta po nalogu).
+- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, uklanjanje materijala i pregled audit loga.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
 - **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
+- **Performanse i SEO:** server-rendered liste sa paginacijom, ISR javnih stranica, optimizovani DB upiti, robots i sitemap.
+- **Audit:** administratorske izmene se evidentiraju u istoj transakciji sa upisom.
 - **Kvalitet:** Vitest, TypeScript strict, ESLint i GitHub Actions (instalacija, migracije, provere i produkcioni build).
 
 ## Tehnološki stack
@@ -90,7 +92,7 @@ Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
 | Kreiranje i objava novosti | ✓ | ✓ | — | — | — |
 | Kreiranje predmeta | ✓ | ✓ | — | — | — |
 | Izmena podataka o predmetu | ✓ | ✓ | ✓ | — | — |
-| Dodavanje materijala | ✓ | ✓ | ✓ | ✓ | — |
+| Dodavanje/uklanjanje materijala | ✓ | ✓ | ✓ | ✓ | — |
 | Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
 | Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
 
@@ -121,10 +123,12 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 
 - Svi credentials i produkcione vrednosti konfigurišu se kroz environment variables/secrets — nikada kroz git.
 - Endpointi koji menjaju podatke moraju imati serversku validaciju, autentifikaciju i RBAC proveru.
-- Za javni deploy obezbedi HTTPS, pravilne `NEXTAUTH_URL` / `NEXTAUTH_SECRET`, zaštitu login endpointa na infrastrukturi, backup i restore procedure.
+- Za javni deploy obezbedi HTTPS, pravilne `NEXTAUTH_URL` / `NEXTAUTH_SECRET`, dodatni IP/edge rate limiter (DB zaštita je po nalogu i može privremeno blokirati tuđi nalog), backup i restore procedure.
+- Audit zapisi čuvaju aktera, akciju, tip/ID resursa i vreme — bez lozinki i tela novosti. Definisati politiku retencije, redovno čistiti istekle login throttle zapise.
 - Proveri stvarnu politiku upravljanja korisnicima, retenciju podataka, dozvole za objavljivanje dokumenata i bezbednosni review pre produkcije.
 - Trenutni materijali su **HTTPS linkovi**, ne sistem privatnog upload-a ili upravljanja fajlovima; tekst novosti je običan tekst.
 - Trenutno ne postoji integracija sa starim CMS-om niti migracija stvarnih kurseva, zaposlenih i novosti.
+- Javni SEO URL-ovi i sitemap preuzimaju osnovni URL iz `NEXTAUTH_URL`; u produkciji on mora biti stvarni HTTPS domen.
 
 ## Doprinosi i licenca
 

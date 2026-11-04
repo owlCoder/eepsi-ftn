@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { Activity, ArrowRight, ArrowUpRight, Atom, BookOpen, GraduationCap, Lightbulb, Network, Sparkles, Zap } from "lucide-react";
 import { CourseCard, NewsCard } from "@/components/content-cards";
-import { latestNews, listCourses } from "@/infrastructure/repositories/content";
+import { latestNews, featuredCourses } from "@/infrastructure/repositories/content";
+
+export const revalidate = 300;
 
 export default async function Home() {
-  const [news, courses] = await Promise.all([latestNews(3), listCourses()]);
+  const [news, courses] = await Promise.all([latestNews(3), featuredCourses(3)]);
   return (
     <>
       <section className="hero py-16 md:py-24">
@@ -51,7 +53,7 @@ export default async function Home() {
             <div><p className="eyebrow mb-4">Akademski program</p><h2 className="section-heading">Predmeti katedre</h2></div>
             <Link href="/predmeti" className="btn btn-light">Svi predmeti <ArrowUpRight size={17}/></Link>
           </div>
-          {courses.length ? <div className="grid gap-5 md:grid-cols-3">{courses.slice(0,3).map((item) => <CourseCard key={item.id} item={item}/>)}</div>
+          {courses.length ? <div className="grid gap-5 md:grid-cols-3">{courses.map((item) => <CourseCard key={item.id} item={item}/>)}</div>
             : <div className="empty-state">Predmeti će biti prikazani kada ih urednik doda u bazu. <Link href="/predmeti" className="font-bold text-teal-700 underline">Otvori katalog</Link></div>}
         </div>
       </section>

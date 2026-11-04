@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 
 export default function robots(): MetadataRoute.Robots {
   return {
-    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin/", "/api/"] }],
+    rules: [{ userAgent: "*", allow: "/", disallow: ["/admin", "/admin/", "/api/", "/prijava"] }],
+    sitemap: new URL("/sitemap.xml", process.env.NEXTAUTH_URL || "http://localhost:3000").toString(),
   };
 }

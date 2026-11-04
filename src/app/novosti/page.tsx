@@ -4,6 +4,8 @@ import { NewsCard } from "@/components/content-cards";
 import { listNews } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = { title: "Novosti", description: "Najnovija obaveštenja i vesti sa Katedre EEPSI." };
 
 export default async function News({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {

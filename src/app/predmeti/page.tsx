@@ -4,6 +4,8 @@ import { CourseCard } from "@/components/content-cards";
 import { listCourses } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
+export const revalidate = 300;
+
 export const metadata: Metadata = { title: "Predmeti", description: "Pregled predmeta Katedre EEPSI na FTN-u." };
 
 export default async function Courses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {

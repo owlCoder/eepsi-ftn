@@ -1,9 +1,13 @@
 import Link from "next/link";
+import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import { BookOpen, LayoutDashboard, Newspaper, ShieldCheck, Users, ScrollText } from "lucide-react";
 import { currentUser } from "@/application/authorization";
 import { roleLabels } from "@/domain/authorization/permissions";
 import { SignOutButton } from "@/components/sign-out-button";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
+export const dynamic = "force-dynamic";
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const actor = await currentUser();

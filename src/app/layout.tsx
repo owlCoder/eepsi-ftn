@@ -6,7 +6,7 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: { default: "EEPSI FTN | Katedra", template: "%s | EEPSI FTN" },
   description: "Katedra za elektroenergetiku i primenjeno softversko inženjerstvo, Fakultet tehničkih nauka, Novi Sad.",
-  metadataBase: new URL("https://www.eepsi.ftn.uns.ac.rs"),
+  metadataBase: new URL(process.env.NEXTAUTH_URL || "http://localhost:3000"),
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

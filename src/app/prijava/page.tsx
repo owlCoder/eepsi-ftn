@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
 import { LoginForm } from "@/components/login-form";
 
-export const metadata: Metadata = { title: "Prijava" };
+export const metadata: Metadata = { title: "Prijava", robots: { index: false, follow: false } };
 
 export default function LoginPage() {
   return (

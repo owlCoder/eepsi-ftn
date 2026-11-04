@@ -4,6 +4,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, FileText, GraduationCap, Users } from "lucide-react";
 import { courseBySlug } from "@/infrastructure/repositories/content";
 
+export const revalidate = 300;
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const course = await courseBySlug(slug);
