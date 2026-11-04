@@ -48,8 +48,8 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         <SubmitButton pendingText="Dodeljivanje…" disabled={!courses.length}>Dodeli predmet</SubmitButton>
       </form>
       <h3 className="mt-8 border-t border-slate-100 pt-6 font-extrabold">Dodeljena članstva — strana {memberPage}</h3>
-      {members.length ? <div className="table-wrap mt-4"><table className="data-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{members.map((m)=>
-        <tr key={m.userId + m.courseId}><td>{m.user.name}</td><td>{m.course.title}</td><td>{m.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</td><td><form action={revokeCourseMemberAction}><input type="hidden" name="courseId" value={m.courseId}/><input type="hidden" name="userId" value={m.userId}/><button className="font-bold text-rose-700 underline">Ukloni</button></form></td></tr>)}</tbody></table></div>
+      {members.length ? <div className="table-wrap mt-4"><table className="data-table stacked-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{members.map((m)=>
+        <tr key={m.userId + m.courseId}><td data-label="Osoba">{m.user.name}</td><td data-label="Predmet">{m.course.title}</td><td data-label="Uloga">{m.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</td><td data-label="Akcija"><form action={revokeCourseMemberAction}><input type="hidden" name="courseId" value={m.courseId}/><input type="hidden" name="userId" value={m.userId}/><button className="inline-flex min-h-10 items-center font-bold text-rose-700 underline">Ukloni</button></form></td></tr>)}</tbody></table></div>
         : <p className="mt-3 text-sm text-slate-500">Nema dodeljenih članstava.</p>}
       <nav className="mt-6 flex justify-between gap-3" aria-label="Stranice angažovanja">
         {memberPage > 1 ? <Link href={"/admin/korisnici?mp=" + (memberPage - 1) + "&p=" + page + "&q=" + encodeURIComponent(q)} className="btn btn-light">← Prethodna</Link> : <span/>}
@@ -61,23 +61,23 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         <input type="search" name="q" defaultValue={q} aria-label="Pretraga naloga" placeholder="Ime ili email" className="input-field flex-1"/>
         <button className="btn btn-primary">Pretraži</button>
       </form>
-      <div className="table-wrap"><table className="data-table"><thead><tr><th>Ime</th><th>Email</th><th>Uloga</th><th>Status</th><th>Upravljanje</th></tr></thead><tbody>{users.map((user)=>
+      <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Ime</th><th>Email</th><th>Uloga</th><th>Status</th><th>Upravljanje</th></tr></thead><tbody>{users.map((user)=>
         <tr key={user.id}>
-          <td className="font-semibold">{user.name}</td>
-          <td>{user.email}</td>
-          <td>{roleLabels[user.role]}</td>
-          <td>{user.active ? "Aktivan" : "Neaktivan"}</td>
-          <td>{user.role === "SUPER_ADMIN" ? <span className="text-xs font-bold text-slate-500">Zaštićen nalog</span> :
+          <td data-label="Ime" className="font-semibold">{user.name}</td>
+          <td data-label="Email">{user.email}</td>
+          <td data-label="Uloga">{roleLabels[user.role]}</td>
+          <td data-label="Status"><span className={user.active ? "pill" : "pill pill-neutral"}>{user.active ? "Aktivan" : "Neaktivan"}</span></td>
+          <td data-label="Upravljanje">{user.role === "SUPER_ADMIN" ? <span className="text-xs font-bold text-slate-500">Zaštićen nalog</span> :
             <div className="space-y-3">
-              <form action={updateUserAccessAction} className="flex min-w-80 items-center gap-2">
+              <form action={updateUserAccessAction} className="flex flex-wrap items-center gap-2">
                 <input type="hidden" name="id" value={user.id}/>
-                <select name="role" defaultValue={user.role} className="input-field !w-33" aria-label={"Uloga za "+user.name}>
+                <select name="role" defaultValue={user.role} className="input-field !w-auto min-w-32 flex-1" aria-label={"Uloga za "+user.name}>
                   <option value="STUDENT">Student</option>
                   <option value="ASSISTANT">Saradnik</option>
                   <option value="PROFESSOR">Nastavnik</option>
                   <option value="EDITOR">Urednik</option>
                 </select>
-                <select name="active" defaultValue={String(user.active)} className="input-field !w-29" aria-label={"Status za "+user.name}>
+                <select name="active" defaultValue={String(user.active)} className="input-field !w-auto min-w-28 flex-1" aria-label={"Status za "+user.name}>
                   <option value="true">Aktivan</option>
                   <option value="false">Neaktivan</option>
                 </select>

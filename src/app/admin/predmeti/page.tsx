@@ -40,8 +40,8 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
         <input type="search" name="q" aria-label="Pretraga predmeta" defaultValue={q} placeholder="Naziv ili šifra predmeta" className="input-field flex-1"/>
         <button className="btn btn-primary">Pretraži</button>
       </form>
-      {courses.length ? <div className="table-wrap"><table className="data-table"><thead><tr><th>Predmet</th><th>Šifra</th><th>Semestar</th><th>Materijali</th></tr></thead><tbody>{courses.map((item)=>
-        <tr key={item.id}><td><Link href={"/admin/predmeti/"+item.id} className="font-bold hover:text-teal-700">{item.title} <ArrowUpRight size={14} className="inline"/></Link></td><td>{item.code}</td><td>{item.semester}.</td><td>{item._count.materials}</td></tr>)}</tbody></table></div>
+      {courses.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Predmet</th><th>Šifra</th><th>Semestar</th><th>Materijali</th></tr></thead><tbody>{courses.map((item)=>
+        <tr key={item.id}><td data-label="Predmet"><Link href={"/admin/predmeti/"+item.id} className="font-bold hover:text-teal-700">{item.title} <ArrowUpRight size={14} className="inline"/></Link></td><td data-label="Šifra">{item.code}</td><td data-label="Semestar">{item.semester}.</td><td data-label="Materijali">{item._count.materials}</td></tr>)}</tbody></table></div>
         : <p className="text-sm text-slate-500">Nema dostupnih predmeta.</p>}
       <nav aria-label="Stranice predmeta" className="mt-6 flex justify-between gap-3">
         {page > 1 ? <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
