@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, BookOpenCheck, Mail, MapPin } from "lucide-react";
+import { ArrowUpRight, BookOpenCheck, Mail, MapPin, Phone } from "lucide-react";
 
 export function SiteFooter() {
   return (
@@ -22,7 +22,8 @@ export function SiteFooter() {
           <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Kontakt</h3>
           <div className="grid gap-4 text-sm">
             <span className="flex gap-3"><MapPin size={17} className="shrink-0 text-teal-300"/> Fruškogorska 11, Novi Sad</span>
-            <a href="mailto:eepsi@uns.ac.rs" className="flex gap-3"><Mail size={17} className="shrink-0 text-teal-300"/> eepsi@uns.ac.rs <ArrowUpRight size={13}/></a>
+            <a href="mailto:eespsi@uns.ac.rs" className="flex gap-3"><Mail size={17} className="shrink-0 text-teal-300"/> eespsi@uns.ac.rs <ArrowUpRight size={13}/></a>
+            <a href="tel:+381214854533" className="flex gap-3"><Phone size={17} className="shrink-0 text-teal-300"/> 021/485-4533</a>
           </div>
         </div>
       </div>

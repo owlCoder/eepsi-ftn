@@ -69,7 +69,7 @@ export default async function Home() {
         <div className="overflow-hidden rounded-[30px] bg-[#0c3b4a] px-8 py-12 text-white md:px-14 md:py-16">
           <div className="grid items-center gap-7 md:grid-cols-[1fr_auto]">
             <div><p className="eyebrow !text-emerald-300">Pitanja i saradnja</p><h2 className="mt-4 max-w-2xl text-3xl font-extrabold tracking-tight md:text-4xl">Budimo u kontaktu.</h2><p className="mt-3 text-slate-300">Za informacije o katedri, nastavi i saradnji obratite nam se putem elektronske pošte.</p></div>
-            <a href="mailto:eepsi@uns.ac.rs" className="btn btn-primary whitespace-nowrap">Kontaktirajte nas <ArrowUpRight size={18}/></a>
+            <a href="mailto:eespsi@uns.ac.rs" className="btn btn-primary whitespace-nowrap">Kontaktirajte nas <ArrowUpRight size={18}/></a>
           </div>
         </div>
       </section>
