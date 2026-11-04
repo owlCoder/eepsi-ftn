@@ -16,7 +16,7 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
     (!normalized || item.title.toLocaleLowerCase("sr-RS").includes(normalized)),
   );
   const grouped = groupMaterialsByKind(filtered);
-  const counts = new Map(materialKinds.map((item) => [item, materials.filter((material) => material.kind === item).length]));
+  const counts = new Map(materialKinds.map((item) => [item, materials.filter((material) => material.kind === item).length] as const));
   const reset = () => { setSearch(""); setKind("ALL"); };
 
   return <div className="mt-6">
