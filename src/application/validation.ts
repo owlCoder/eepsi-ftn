@@ -38,3 +38,19 @@ export const accessInput = z.object({
   role: z.enum(["EDITOR", "PROFESSOR", "ASSISTANT", "STUDENT"]),
   active: z.enum(["true", "false"]),
 });
+
+export const profileInput = z.object({
+  name: z.string().trim().min(3).max(120),
+});
+
+export const passwordChangeInput = z.object({
+  currentPassword: z.string().min(1).max(200),
+  newPassword: z.string().min(12).max(200),
+  confirmPassword: z.string().min(12).max(200),
+}).refine((value) => value.newPassword === value.confirmPassword, {
+  path: ["confirmPassword"],
+  message: "Nove lozinke se ne poklapaju.",
+}).refine((value) => value.newPassword !== value.currentPassword, {
+  path: ["newPassword"],
+  message: "Nova lozinka mora biti različita od prethodne.",
+});

@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
         const secret = process.env.NEXTAUTH_SECRET;
         const user = await db.user.findUnique({
           where: { email: parsed.data.email },
-          select: { id: true, email: true, name: true, passwordHash: true, active: true },
+          select: { id: true, email: true, name: true, passwordHash: true, active: true, sessionVersion: true },
         });
         // Only existing, active accounts generate DB throttle entries.
         // Unknown email spam must not create an unbounded number of database rows.
@@ -39,11 +39,25 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
         await clearLoginFailures(parsed.data.email, secret);
-        return { id: user.id, name: user.name, email: user.email };
+        return { id: user.id, name: user.name, email: user.email, sessionVersion: user.sessionVersion };
       },
     }),
   ],
   session: { strategy: "jwt", maxAge: 8 * 60 * 60 },
+  callbacks: {
+    async jwt({ token, user }) {
+      // Store only a revocation counter, NEVER a role or permission list.
+      if (user) token.sessionVersion = (user as typeof user & { sessionVersion: number }).sessionVersion;
+      return token;
+    },
+    async session({ session, token }) {
+      if (session.user) {
+        (session.user as typeof session.user & { sessionVersion: number }).sessionVersion =
+          typeof token.sessionVersion === "number" ? token.sessionVersion : -1;
+      }
+      return session;
+    },
+  },
   pages: { signIn: "/prijava" },
   secret: process.env.NEXTAUTH_SECRET,
 };

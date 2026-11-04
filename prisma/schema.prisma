@@ -32,6 +32,7 @@ model User {
   name          String             @db.VarChar(120)
   role          Role               @default(STUDENT)
   active        Boolean            @default(true)
+  sessionVersion Int               @default(0)
   createdAt     DateTime           @default(now())
   memberships   CourseMembership[]
   news          News[]

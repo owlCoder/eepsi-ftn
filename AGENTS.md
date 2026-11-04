@@ -39,7 +39,7 @@ Global roles: `SUPER_ADMIN`, `EDITOR`, `PROFESSOR`, `ASSISTANT`, `STUDENT`.
 - `ASSISTANT`: create/manage materials **only where assigned as ASSISTANT**.
 - `STUDENT`: public content only.
 
-**Every privileged write must call `requirePermission` (or equivalent) on the server, before mutation.** For scoped writes, derive the course ID from validated inputs and re-check `CourseMembership` against the database. Never trust client-side hidden inputs, JWT role claims, UI visibility or browser routes as proof of permission. Re-read active user status on the server; do not let stale sessions preserve elevated permissions.
+**Every privileged write must call `requirePermission` (or equivalent) on the server, before mutation.** For scoped writes, derive the course ID from validated inputs and re-check `CourseMembership` against the database. Never trust client-side hidden inputs, JWT role claims, UI visibility or browser routes as proof of permission. Re-read active user status **and current `sessionVersion`** on the server. Password and access changes MUST increment the version to invalidate all preexisting JWT sessions; never let stale sessions preserve permissions.
 
 Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obsolete course memberships when user roles change or users are disabled. Treat concurrent role changes and content mutations as security-sensitive; use transactions where appropriate.
 

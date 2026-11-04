@@ -14,8 +14,8 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 ## Šta portal sadrži
 
 - **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
-- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
-- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, uklanjanje materijala, pretraga i paginacija predmeta, novosti i naloga, pregled audit loga.
+- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga, opoziv starih JWT sesija preko `sessionVersion` i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
+- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima, pregled audit loga i lični profil sa promenom lozinke.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
 - **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
 - **Performanse i SEO:** server-rendered liste sa paginacijom, ISR javnih stranica, optimizovani DB upiti, robots i sitemap.
@@ -98,7 +98,7 @@ Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
 | Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
 | Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
 
-\* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva. Super-admin nalog se ne uređuje kroz standardan formular.
+\* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva i uvećava `sessionVersion`, čime se prethodne JWT sesije odbijaju na serveru. Promena lozinke takođe opoziva stare sesije. Super-admin nalog se ne uređuje kroz standardan formular.
 
 ## Razvoj i kvalitet
 
