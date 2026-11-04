@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { notFound, redirect } from "next/navigation";
+import { redirect } from "next/navigation";
 import { ShieldCheck } from "lucide-react";
 import { AdminNavigation } from "@/components/admin-navigation";
 import { currentUser } from "@/application/authorization";
@@ -12,7 +12,6 @@ export const dynamic = "force-dynamic";
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const actor = await currentUser();
   if (!actor) redirect("/prijava");
-  if (actor.role === "STUDENT") notFound();
   const canNews = actor.role === "EDITOR" || actor.role === "SUPER_ADMIN";
   const canUsers = actor.role === "SUPER_ADMIN";
   return (
@@ -24,7 +23,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
           <p className="mt-1 text-sm font-semibold text-slate-700">{actor.name}</p>
           <p className="mt-1 text-xs text-slate-500">{roleLabels[actor.role]}</p>
         </div>
-        <AdminNavigation canNews={canNews} canUsers={canUsers}/>
+        <AdminNavigation canNews={canNews} canUsers={canUsers} isStudent={actor.role === "STUDENT"}/>
         <div className="mt-5 border-t border-slate-100 pt-3"><SignOutButton/></div>
       </aside>
       <section className="admin-pane">{children}</section>

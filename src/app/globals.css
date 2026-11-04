@@ -241,3 +241,8 @@ textarea.input-field { min-height: 120px; resize: vertical; }
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }
+
+.dashboard-action { display: flex; align-items: center; justify-content: space-between; gap: 14px; min-height: 60px; padding: 15px 17px; border: 1px solid #e1ebee; border-radius: 13px; background: #fff; color: #294458; font-size: 14px; font-weight: 700; transition: color .15s, background .15s, border-color .15s; }
+.dashboard-action:hover { background: #eff9f5; border-color: #b6ded5; color: #076d64; }
+.btn-danger { color: #fff; background: #ba3645; border: 1px solid #aa2c3b; }
+.btn-danger:hover { background: #9f2535; }

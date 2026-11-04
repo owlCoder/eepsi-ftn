@@ -4,12 +4,12 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { BookOpen, LayoutDashboard, Newspaper, Users, ScrollText, UserRound } from "lucide-react";
 
-export function AdminNavigation({ canNews, canUsers }: { canNews: boolean; canUsers: boolean }) {
+export function AdminNavigation({ canNews, canUsers, isStudent }: { canNews: boolean; canUsers: boolean; isStudent: boolean }) {
   const path = usePathname();
   const links = [
     { href: "/admin", label: "Pregled", icon: LayoutDashboard },
     ...(canNews ? [{ href: "/admin/novosti", label: "Novosti", icon: Newspaper }] : []),
-    { href: "/admin/predmeti", label: "Predmeti", icon: BookOpen },
+    { href: isStudent ? "/predmeti" : "/admin/predmeti", label: isStudent ? "Katalog predmeta" : "Predmeti", icon: BookOpen },
     { href: "/admin/profil", label: "Moj profil", icon: UserRound },
     ...(canUsers ? [
       { href: "/admin/korisnici", label: "Korisnici / RBAC", icon: Users },

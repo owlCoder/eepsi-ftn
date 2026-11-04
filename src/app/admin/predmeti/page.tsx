@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { notFound } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { can, currentUser } from "@/application/authorization";
 import { createCourseAction } from "@/app/actions/courses";
@@ -8,6 +9,7 @@ import { readPage } from "@/lib/pagination";
 export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
   const actor = await currentUser();
   if (!actor) return null;
+  if (actor.role === "STUDENT") notFound();
   const canCreate = await can("courses.create");
   const { q: rawQ, p } = await searchParams;
   const q = (rawQ || "").trim().slice(0, 80);

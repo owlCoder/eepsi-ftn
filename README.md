@@ -189,3 +189,5 @@ Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusir
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
 
 **Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.
+
+**Studentski nalog:** nakon prijave student ima sopstveni prikaz na `/admin` sa javnim katalogom, objavljenim novostima, nastavnim timom i pristupom svom profilu/promeni lozinke. Studentski nalog **nema pristup** uredničkim rutama i serverskim akcijama za upravljanje korisnicima, predmetima ili novostima.
