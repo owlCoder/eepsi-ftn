@@ -28,6 +28,12 @@ describe("RBAC", () => {
     expect(hasScopedPermission("ASSISTANT", "materials.delete", null)).toBe(false);
     expect(hasGlobalPermission("STUDENT", "materials.delete")).toBe(false);
   });
+  it("editing a material is scoped to its assigned course", () => {
+    expect(hasScopedPermission("ASSISTANT", "materials.edit", "ASSISTANT")).toBe(true);
+    expect(hasScopedPermission("PROFESSOR", "materials.edit", "PROFESSOR")).toBe(true);
+    expect(hasScopedPermission("ASSISTANT", "materials.edit", null)).toBe(false);
+    expect(hasScopedPermission("STUDENT", "materials.edit", "ASSISTANT")).toBe(false);
+  });
   it("super admins can do everything", () => {
     expect(hasGlobalPermission("SUPER_ADMIN", "users.manage")).toBe(true);
     expect(hasScopedPermission("SUPER_ADMIN", "materials.create", null)).toBe(true);

@@ -6,11 +6,12 @@ export type Permission =
   | "courses.create"
   | "courses.edit"
   | "materials.create"
+  | "materials.edit"
   | "materials.delete"
   | "users.manage";
 
 const grants: Record<Role, readonly Permission[]> = {
-  SUPER_ADMIN: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.delete", "users.manage"],
+  SUPER_ADMIN: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.edit", "materials.delete", "users.manage"],
   EDITOR: ["news.write", "news.publish", "courses.create", "courses.edit", "materials.create", "materials.delete"],
   PROFESSOR: [],
   ASSISTANT: [],
@@ -28,7 +29,7 @@ export function hasScopedPermission(
 ): boolean {
   if (hasGlobalPermission(role, permission)) return true;
   if (permission === "courses.edit") return role === "PROFESSOR" && courseMembershipRole === "PROFESSOR";
-  if (permission === "materials.create" || permission === "materials.delete") return (role === "PROFESSOR" && courseMembershipRole === "PROFESSOR") || (role === "ASSISTANT" && courseMembershipRole === "ASSISTANT");
+  if (permission === "materials.create" || permission === "materials.edit" || permission === "materials.delete") return (role === "PROFESSOR" && courseMembershipRole === "PROFESSOR") || (role === "ASSISTANT" && courseMembershipRole === "ASSISTANT");
   return false;
 }
 

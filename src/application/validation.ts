@@ -14,10 +14,23 @@ export const courseInput = z.object({
   studyLevel: z.enum(["OAS", "MAS", "DAS"]),
 });
 
+const secureMaterialUrl = z.url().max(1500).refine((value) => {
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:" && !url.username && !url.password;
+  } catch {
+    return false;
+  }
+}, "Dozvoljeni su samo HTTPS linkovi bez korisničkih podataka.");
+
 export const materialInput = z.object({
   courseId: z.string().min(5).max(40),
   title: z.string().trim().min(3).max(180),
-  url: z.url().max(1500).refine((url) => url.startsWith("https://"), "Dozvoljeni su samo HTTPS linkovi."),
+  url: secureMaterialUrl,
+});
+
+export const materialEditInput = materialInput.omit({ courseId: true }).extend({
+  materialId: z.string().min(5).max(40),
 });
 
 export const userInput = z.object({

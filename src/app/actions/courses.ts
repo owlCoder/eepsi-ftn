@@ -3,7 +3,7 @@
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
-import { courseInput, materialInput } from "@/application/validation";
+import { courseInput, materialInput, materialEditInput } from "@/application/validation";
 import { requirePermission } from "@/application/authorization";
 import { toSlug } from "@/domain/content/slug";
 import { db } from "@/infrastructure/db/prisma";
@@ -85,4 +85,31 @@ export async function deleteMaterialAction(data: FormData) {
   });
   revalidatePath("/predmeti/" + material.course.slug);
   redirect("/admin/predmeti/" + material.courseId + "?material=deleted");
+}
+
+export async function updateMaterialAction(data: FormData) {
+  const input = materialEditInput.parse({
+    materialId: String(data.get("materialId") ?? ""),
+    title: String(data.get("title") ?? ""),
+    url: String(data.get("url") ?? ""),
+  });
+  // Resolve the owning course on the server; never authorize using a form's course ID.
+  const material = await db.material.findUnique({
+    where: { id: input.materialId },
+    select: { courseId: true, course: { select: { slug: true } } },
+  });
+  if (!material) throw new Error("Materijal nije pronađen.");
+  const actor = await requirePermission("materials.edit", material.courseId);
+  await db.$transaction(async (tx) => {
+    const result = await tx.material.updateMany({
+      where: { id: input.materialId, courseId: material.courseId },
+      data: { title: input.title, url: input.url },
+    });
+    if (result.count !== 1) throw new Error("Materijal nije moguće ažurirati.");
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "material.update", subjectType: "Material", subjectId: input.materialId },
+    });
+  });
+  revalidatePath("/predmeti/" + material.course.slug);
+  redirect("/admin/predmeti/" + material.courseId + "?material=updated");
 }
