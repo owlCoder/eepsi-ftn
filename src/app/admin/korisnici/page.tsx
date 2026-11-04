@@ -1,14 +1,14 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { readPage } from "@/lib/pagination";
-import { ShieldCheck, UserPlus, Users, KeyRound } from "lucide-react";
+import { ShieldCheck, UserPlus, Users, KeyRound, Pencil } from "lucide-react";
 import { SubmitButton } from "@/components/submit-button";
 import { can } from "@/application/authorization";
-import { assignCourseMemberAction, createUserAction, revokeCourseMemberAction, updateUserAccessAction, resetUserPasswordAction } from "@/app/actions/users";
+import { assignCourseMemberAction, createUserAction, revokeCourseMemberAction, updateUserAccessAction, resetUserPasswordAction, updateUserIdentityAction } from "@/app/actions/users";
 import { roleLabels, roles } from "@/domain/authorization/permissions";
 import { db } from "@/infrastructure/db/prisma";
 
-export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ created?: string; assigned?: string; revoked?: string; updated?: string; reset?: string; error?: string; q?: string; role?: string; active?: string; p?: string; mp?: string }> }) {
+export default async function AdminUsers({ searchParams }: { searchParams: Promise<{ created?: string; assigned?: string; revoked?: string; updated?: string; reset?: string; details?: string; unchanged?: string; error?: string; q?: string; role?: string; active?: string; p?: string; mp?: string }> }) {
   if (!(await can("users.manage"))) notFound();
   const query = await searchParams;
   const q = (query.q || "").trim().slice(0, 80);
@@ -55,7 +55,8 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         <a href="#angazovanja" className="btn btn-light">Angažovanja na predmetima</a>
       </div>
     </div>
-    {(query.created || query.assigned || query.revoked || query.updated || query.reset) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmena je sačuvana.</p>}
+    {(query.created || query.assigned || query.revoked || query.updated || query.reset || query.details) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmena je sačuvana.</p>}
+    {query.unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Nema izmena — podaci su ostali isti.</p>}
     {query.error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nalog sa tom email adresom već postoji. Koristite pretragu da biste ga pronašli.</p>}
     {query.error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Angažovanje nije sačuvano. Proverite email, aktivnost naloga i da li je njegova globalna uloga odgovarajuća.</p>}
     <div className="admin-panel" id="spisak-naloga">
@@ -105,6 +106,24 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                 </select>
                 <SubmitButton className="btn btn-light whitespace-nowrap">Sačuvaj</SubmitButton>
               </form>
+              <details className="max-w-md rounded-xl border border-slate-200 p-3">
+                <summary className="flex items-center gap-2 text-xs font-bold text-slate-600"><Pencil size={15}/> Uredi osnovne podatke</summary>
+                <form action={updateUserIdentityAction} className="mt-3 space-y-3">
+                  <input type="hidden" name="id" value={user.id}/>
+                  <div>
+                    <label className="form-label" htmlFor={"edit-name-" + user.id}>Ime i prezime</label>
+                    <input id={"edit-name-" + user.id} className="input-field" name="name"
+                      defaultValue={user.name} minLength={3} maxLength={120} required/>
+                  </div>
+                  <div>
+                    <label className="form-label" htmlFor={"edit-email-" + user.id}>Email za prijavu</label>
+                    <input id={"edit-email-" + user.id} className="input-field" name="email" type="email"
+                      defaultValue={user.email} maxLength={191} required/>
+                  </div>
+                  <p className="text-xs leading-5 text-slate-500">Promena emaila zahteva ponovnu prijavu korisnika.</p>
+                  <SubmitButton className="btn btn-light" pendingText="Čuvanje…">Sačuvaj podatke</SubmitButton>
+                </form>
+              </details>
               <details className="max-w-md rounded-xl border border-slate-200 p-3">
                 <summary className="flex items-center gap-2 text-xs font-bold text-slate-600"><KeyRound size={15}/> Resetuj lozinku</summary>
                 <form action={resetUserPasswordAction} className="mt-3 space-y-3">

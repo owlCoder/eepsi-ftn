@@ -21,6 +21,7 @@ const eventLabels: Record<string, string> = {
   "material.update": "Materijal: uređen",
   "material.delete": "Materijal: uklonjen",
   "user.create": "Nalog: kreiran",
+  "user.identity.update": "Nalog: ispravljeni ime ili email",
   "user.profile.update": "Nalog: izmenjen profil",
   "user.password.change": "Nalog: promenjena lozinka",
   "user.password.reset": "Nalog: administrator resetovao lozinku",

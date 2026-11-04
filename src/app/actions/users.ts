@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { hash } from "bcryptjs";
-import { accessInput, membershipInput, userInput, passwordResetInput } from "@/application/validation";
+import { accessInput, membershipInput, userInput, passwordResetInput, userIdentityInput } from "@/application/validation";
 import { requirePermission } from "@/application/authorization";
 import { db } from "@/infrastructure/db/prisma";
 
@@ -110,6 +110,9 @@ export async function updateUserAccessAction(data: FormData) {
     throw new Error("Super administratorski nalog je zaštićen ili nalog ne postoji.");
   }
   const active = input.active === "true";
+  if (target.role === input.role && target.active === active) {
+    redirect("/admin/korisnici?unchanged=1");
+  }
   await db.$transaction(async (tx) => {
     const updated = await tx.user.updateMany({
       where: { id: input.id, role: target.role, active: target.active },
@@ -150,4 +153,53 @@ export async function resetUserPasswordAction(data: FormData) {
   });
   revalidatePath("/admin/korisnici");
   redirect("/admin/korisnici?reset=1");
+}
+
+export async function updateUserIdentityAction(data: FormData) {
+  const actor = await requirePermission("users.manage");
+  const input = userIdentityInput.parse({
+    id: String(data.get("id") ?? ""),
+    name: String(data.get("name") ?? ""),
+    email: String(data.get("email") ?? ""),
+  });
+  const target = await db.user.findUnique({
+    where: { id: input.id },
+    select: { name: true, email: true, role: true, sessionVersion: true },
+  });
+  if (!target || target.role === "SUPER_ADMIN") {
+    throw new Error("Super administratorski nalog je zaštićen ili nalog ne postoji.");
+  }
+  if (target.name === input.name && target.email === input.email) {
+    redirect("/admin/korisnici?unchanged=1");
+  }
+  if (target.email !== input.email) {
+    const duplicate = await db.user.findUnique({ where: { email: input.email }, select: { id: true } });
+    if (duplicate) redirect("/admin/korisnici?error=duplicate");
+  }
+
+  await db.$transaction(async (tx) => {
+    const result = await tx.user.updateMany({
+      where: {
+        id: input.id,
+        role: { not: "SUPER_ADMIN" },
+        name: target.name,
+        email: target.email,
+        sessionVersion: target.sessionVersion,
+      },
+      data: {
+        name: input.name,
+        email: input.email,
+        ...(target.email !== input.email ? { sessionVersion: { increment: 1 } } : {}),
+      },
+    });
+    if (result.count !== 1) throw new Error("Nalog je u međuvremenu izmenjen.");
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "user.identity.update", subjectType: "User", subjectId: input.id },
+    });
+  });
+  revalidatePath("/admin/korisnici");
+  revalidatePath("/admin");
+  revalidatePath("/nastavnici");
+  revalidatePath("/predmeti/[slug]", "page");
+  redirect("/admin/korisnici?details=1");
 }
