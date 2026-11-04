@@ -140,7 +140,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.goto("/admin/predmeti/" + course.id);
     await expect(page.getByRole("heading", { name: title })).toBeVisible();
 
-    const details = page.locator("details").first();
+    const details = page.locator("details").filter({ hasText: "Uredi naziv ili link" }).first();
     await details.locator("summary").click();
     await details.locator('select[name="kind"]').selectOption("EXERCISE");
     await details.getByRole("button", { name: "Sačuvaj materijal" }).click();

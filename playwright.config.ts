@@ -14,6 +14,8 @@ export default defineConfig({
     baseURL: process.env.NEXTAUTH_URL || "http://localhost:3000",
     trace: "retain-on-failure",
     screenshot: "only-on-failure",
+    actionTimeout: 10_000,
+    navigationTimeout: 20_000,
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
   webServer: {
