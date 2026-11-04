@@ -117,7 +117,7 @@ Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal sa
 | Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
 | Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
 
-\* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva i uvećava `sessionVersion`, čime se prethodne JWT sesije odbijaju na serveru. Promena lozinke takođe opoziva stare sesije. Super-admin nalog se ne uređuje kroz standardan formular.
+\* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva i uvećava `sessionVersion`, čime se prethodne JWT sesije odbijaju na serveru. Dodela ili uklanjanje angažovanja i promena lozinke takođe opozivaju prethodne sesije. Super-admin nalog se ne uređuje kroz standardan formular.
 
 ## Razvoj i kvalitet
 

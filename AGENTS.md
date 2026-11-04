@@ -106,3 +106,5 @@ The project owner currently allows direct commits to `main`. Avoid force pushes,
 
 This is a newly built portal foundation, **not a verified migration of the original EEPSI website**. It currently supports public pages, authenticated administration, news, courses and material links. Production deployment, full historical content migration, backups, advanced asset storage, accessibility auditing, and end-to-end tests require separate verification.
 
+
+- Assigning or removing course memberships must atomically bump the affected user's `sessionVersion` so existing JWTs cannot retain old assumptions about access scope.

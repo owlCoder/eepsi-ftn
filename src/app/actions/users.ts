@@ -48,6 +48,11 @@ export async function assignCourseMemberAction(data: FormData) {
       create: { userId: user.id, courseId: input.courseId, role: input.role },
       update: { role: input.role },
     });
+    // Re-authenticate after the scope of access changes.
+    await tx.user.update({
+      where: { id: user.id },
+      data: { sessionVersion: { increment: 1 } },
+    });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
   });
   revalidatePath("/predmeti");
@@ -67,6 +72,10 @@ export async function revokeCourseMemberAction(data: FormData) {
   await db.$transaction(async (tx) => {
     const removed = await tx.courseMembership.deleteMany({ where: { userId, courseId } });
     if (removed.count) {
+      await tx.user.updateMany({
+        where: { id: userId },
+        data: { sessionVersion: { increment: 1 } },
+      });
       await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.revoke", subjectType: "Course", subjectId: courseId } });
     }
   });
