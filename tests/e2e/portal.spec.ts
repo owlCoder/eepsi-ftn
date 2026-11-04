@@ -210,10 +210,10 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await page.getByLabel("Nova lozinka", { exact: true }).fill(updatedPassword);
       await page.getByLabel("Ponovite novu lozinku").fill(updatedPassword);
       await page.getByRole("button", { name: "Promeni lozinku" }).click();
-      await expect(page).toHaveURL(/\\/prijava(?:\\?|$)/, { timeout: 20_000 });
+      await expect(page).toHaveURL(/\/prijava(?:\?|$)/, { timeout: 20_000 });
 
       await otherSession.goto("/admin");
-      await expect(otherSession).toHaveURL(/\\/prijava(?:\\?|$)/);
+      await expect(otherSession).toHaveURL(/\/prijava(?:\?|$)/);
 
       await page.goto("/prijava");
       await page.getByLabel("Email adresa").fill(admin.email);
@@ -223,7 +223,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
       await page.getByLabel("Lozinka").fill(updatedPassword);
       await page.getByRole("button", { name: /Prijavi se/i }).click();
-      await expect(page).toHaveURL(/\\/admin(?:\\/|$|\\?)/);
+      await expect(page).toHaveURL(/\/admin(?:\/|$|\?)/);
     } finally {
       await previousContext.close();
     }
