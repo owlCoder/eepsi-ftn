@@ -86,6 +86,25 @@ npm run dev           # http://localhost:3000
 
 Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
 
+### MySQL preko Docker Compose-a
+
+Ako nemaš instaliran MySQL, nakon `npm install` i kopiranja `.env.example` u `.env` pokreni:
+
+```bash
+docker compose up -d mysql
+npm run db:deploy
+npm run db:seed
+npm run dev
+```
+
+`compose.yaml` koristi MySQL 8.4, port dostupan samo na `127.0.0.1` i imenovani volumen. `docker compose down` gasi bazu bez brisanja podataka. Kredencijali iz primera su **isključivo razvojni**. Za IPv4 Docker konekciju koristi `127.0.0.1` umesto `localhost`, koji na nekim sistemima pokazuje na `::1`.
+
+## Profil i opoziv sesija
+
+Na `/admin/profil` korisnik sa administratorskim/nastavničkim pristupom može da izmeni ime i promeni lozinku. Nakon promene lozinke povećava se `User.sessionVersion`, zbog čega prethodne JWT sesije više nisu prihvaćene. Promena uloge ili deaktivacija takođe opozivaju stare sesije. Promene se evidentiraju bez čuvanja lozinki u audit logu.
+
+Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo za predmet na kom ima angažovanje. To mogu i urednik i super administrator. U pitanju su javni HTTPS linkovi, ne privatni upload dokumenata.
+
 ## RBAC matrica
 
 | Dozvola | Super admin | Urednik | Nastavnik* | Saradnik* | Student |
@@ -94,7 +113,7 @@ Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
 | Kreiranje i objava novosti | ✓ | ✓ | — | — | — |
 | Kreiranje predmeta | ✓ | ✓ | — | — | — |
 | Izmena podataka o predmetu | ✓ | ✓ | ✓ | — | — |
-| Dodavanje/uklanjanje materijala | ✓ | ✓ | ✓ | ✓ | — |
+| Dodavanje/uređivanje/uklanjanje materijala | ✓ | ✓ | ✓ | ✓ | — |
 | Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
 | Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
 
@@ -144,26 +163,3 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
-
-## Lokalna MySQL baza preko Docker Compose-a
-
-Nakon `npm install` i `cp .env.example .env`, proveri da su lokalni MySQL parametri usklađeni i pokreni:
-
-```bash
-docker compose up -d mysql
-npm run db:deploy
-npm run db:seed
-npm run dev
-```
-
-`compose.yaml` koristi MySQL 8.4 i port dostupan samo na `127.0.0.1`. Podrazumevane vrednosti iz primera su **isključivo za razvoj**, nikada za javni server. `docker compose down` zaustavlja bazu bez brisanja imenovanog volumena.
-
-## Profil i opoziv sesija
-
-Na `/admin/profil` korisnik sa pravom pristupa administraciji može da izmeni svoje ime i promeni lozinku. Posle promene lozinke sistem povećava `User.sessionVersion`, odbacuje prethodne JWT sesije i traži ponovnu prijavu. Super administrator menjanjem uloge ili deaktivacijom naloga takođe opoziva stare sesije. Sve ove izmene ulaze u audit evidenciju.
-
-## Uređivanje materijala
-
-Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo ako je angažovan na predmetu. Isti postupci su dostupni uredniku i super administratoru. Prava se proveravaju na serveru prema predmetu pronađenom u bazi, a materijali ostaju javni HTTPS linkovi.
-
-**Napomena za Docker na Linux/macOS:** `.env.example` sada koristi `127.0.0.1` za povezivanje sa MySQL-om, jer `localhost` na pojedinim sistemima može da se razreši kao IPv6 (`::1`). Compose mapira MySQL samo na IPv4 loopback interfejs.

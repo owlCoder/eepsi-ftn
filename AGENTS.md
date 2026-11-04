@@ -63,6 +63,12 @@ Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obs
 - Minimize user data in public pages, logs and error responses.
 - Never broaden privileges to make tests pass.
 
+## Session and material safety
+
+- Session authorization must compare the JWT login revision with current `User.sessionVersion`. Password changes, deactivation and role updates invalidate existing revisions.
+- A material's parent course ID must come from the database on edit/delete, not from untrusted hidden fields. Keep audit writes atomic with mutations.
+- Local MySQL runs via `compose.yaml` bound only to loopback; never expose development credentials publicly.
+
 ## Performance, accessibility, UX
 
 - Use Server Components and small client-side islands.
@@ -100,8 +106,3 @@ The project owner currently allows direct commits to `main`. Avoid force pushes,
 
 This is a newly built portal foundation, **not a verified migration of the original EEPSI website**. It currently supports public pages, authenticated administration, news, courses and material links. Production deployment, full historical content migration, backups, advanced asset storage, accessibility auditing, and end-to-end tests require separate verification.
 
-## Profile, sessions and materials (additional invariants)
-
-- Session authorization must compare the JWT login revision with current `User.sessionVersion`. Password changes, deactivation and role updates invalidate existing revisions.
-- A material's parent course ID must come from the database on edit/delete, not from untrusted hidden fields. Keep audit writes atomic with mutations.
-- Local MySQL runs via `compose.yaml` bound only to loopback; never expose development credentials publicly.
