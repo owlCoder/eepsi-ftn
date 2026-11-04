@@ -219,7 +219,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await page.getByLabel("Email adresa").fill(admin.email);
       await page.getByLabel("Lozinka").fill(password);
       await page.getByRole("button", { name: /Prijavi se/i }).click();
-      await expect(page.getByRole("alert")).toContainText("Pogrešna");
+      await expect(page.locator('form [role="alert"]')).toContainText("Pogrešna");
 
       await page.getByLabel("Lozinka").fill(updatedPassword);
       await page.getByRole("button", { name: /Prijavi se/i }).click();
