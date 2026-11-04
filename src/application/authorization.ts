@@ -10,7 +10,7 @@ export const currentUser = cache(async () => {
   if (!process.env.NEXTAUTH_SECRET || !process.env.DATABASE_URL) return null;
   const session = await getServerSession(authOptions);
   const email = session?.user?.email;
-  const claimedVersion = (session?.user as (typeof session.user & { sessionVersion?: number }) | undefined)?.sessionVersion;
+  const claimedVersion = (session?.user as { sessionVersion?: number } | undefined)?.sessionVersion;
   if (!email || typeof claimedVersion !== "number") return null;
   const user = await db.user.findUnique({
     where: { email },
