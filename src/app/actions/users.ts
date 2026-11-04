@@ -8,27 +8,26 @@ import { requirePermission } from "@/application/authorization";
 import { db } from "@/infrastructure/db/prisma";
 
 export async function createUserAction(data: FormData) {
-  await requirePermission("users.manage");
+  const actor = await requirePermission("users.manage");
   const input = userInput.parse({
     name: String(data.get("name") ?? ""),
     email: String(data.get("email") ?? ""),
     password: String(data.get("password") ?? ""),
     role: String(data.get("role") ?? ""),
   });
-  await db.user.create({
-    data: {
-      name: input.name,
-      email: input.email,
-      passwordHash: await hash(input.password, 12),
-      role: input.role,
-    },
+  const passwordHash = await hash(input.password, 12);
+  await db.$transaction(async (tx) => {
+    const created = await tx.user.create({
+      data: { name: input.name, email: input.email, passwordHash, role: input.role },
+    });
+    await tx.auditLog.create({ data: { actorId: actor.id, action: "user.create", subjectType: "User", subjectId: created.id } });
   });
   revalidatePath("/admin/korisnici");
   redirect("/admin/korisnici?created=1");
 }
 
 export async function assignCourseMemberAction(data: FormData) {
-  await requirePermission("users.manage");
+  const actor = await requirePermission("users.manage");
   const input = membershipInput.parse({
     courseId: String(data.get("courseId") ?? ""),
     email: String(data.get("email") ?? ""),
@@ -41,31 +40,43 @@ export async function assignCourseMemberAction(data: FormData) {
   if (!user || !user.active || user.role !== input.role) {
     throw new Error("Nalog ne postoji, nije aktivan ili njegova globalna uloga nije odgovarajuća.");
   }
-  await db.courseMembership.upsert({
-    where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
-    create: { userId: user.id, courseId: input.courseId, role: input.role },
-    update: { role: input.role },
+  await db.$transaction(async (tx) => {
+    const current = await tx.user.findUnique({ where: { id: user.id }, select: { role: true, active: true } });
+    if (!current?.active || current.role !== input.role) throw new Error("Korisnička uloga je promenjena.");
+    await tx.courseMembership.upsert({
+      where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
+      create: { userId: user.id, courseId: input.courseId, role: input.role },
+      update: { role: input.role },
+    });
+    await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
   });
+  revalidatePath("/predmeti");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + input.courseId);
   redirect("/admin/korisnici?assigned=1");
 }
 
 export async function revokeCourseMemberAction(data: FormData) {
-  await requirePermission("users.manage");
+  const actor = await requirePermission("users.manage");
   const userId = String(data.get("userId") ?? "");
   const courseId = String(data.get("courseId") ?? "");
   if (!userId || userId.length > 40 || !courseId || courseId.length > 40) {
     throw new Error("Neispravan ID.");
   }
-  await db.courseMembership.deleteMany({ where: { userId, courseId } });
+  await db.$transaction(async (tx) => {
+    const removed = await tx.courseMembership.deleteMany({ where: { userId, courseId } });
+    if (removed.count) {
+      await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.revoke", subjectType: "Course", subjectId: courseId } });
+    }
+  });
+  revalidatePath("/predmeti");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
   redirect("/admin/korisnici?revoked=1");
 }
 
 export async function updateUserAccessAction(data: FormData) {
-  await requirePermission("users.manage");
+  const actor = await requirePermission("users.manage");
   const input = accessInput.parse({
     id: String(data.get("id") ?? ""),
     role: String(data.get("role") ?? ""),
@@ -89,8 +100,10 @@ export async function updateUserAccessAction(data: FormData) {
     if (target.role !== input.role || !active) {
       await tx.courseMembership.deleteMany({ where: { userId: input.id } });
     }
+    await tx.auditLog.create({ data: { actorId: actor.id, action: "user.access.update", subjectType: "User", subjectId: input.id } });
   });
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti");
+  revalidatePath("/predmeti");
   redirect("/admin/korisnici?updated=1");
 }

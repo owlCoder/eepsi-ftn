@@ -23,6 +23,11 @@ describe("RBAC", () => {
     expect(hasScopedPermission("STUDENT", "courses.edit", "PROFESSOR")).toBe(false);
     expect(hasScopedPermission("STUDENT", "materials.create", "ASSISTANT")).toBe(false);
   });
+  it("scoped material deletion follows the same course membership permissions", () => {
+    expect(hasScopedPermission("ASSISTANT", "materials.delete", "ASSISTANT")).toBe(true);
+    expect(hasScopedPermission("ASSISTANT", "materials.delete", null)).toBe(false);
+    expect(hasGlobalPermission("STUDENT", "materials.delete")).toBe(false);
+  });
   it("super admins can do everything", () => {
     expect(hasGlobalPermission("SUPER_ADMIN", "users.manage")).toBe(true);
     expect(hasScopedPermission("SUPER_ADMIN", "materials.create", null)).toBe(true);

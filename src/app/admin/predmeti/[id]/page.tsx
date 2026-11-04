@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, FilePlus2 } from "lucide-react";
 import { can } from "@/application/authorization";
-import { createMaterialAction, updateCourseAction } from "@/app/actions/courses";
+import { createMaterialAction, deleteMaterialAction, updateCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
 
 export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string }> }) {
@@ -30,7 +30,10 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
         <button className="btn btn-primary">Dodaj materijal</button>
       </form>
       <div className="mt-8 border-t border-slate-100 pt-6"><h3 className="font-bold">Objavljeni materijali</h3><div className="mt-4 space-y-3">{course.materials.length ? course.materials.map((item) =>
-        <a key={item.id} href={item.url} target="_blank" rel="noopener noreferrer" className="flex items-center justify-between rounded-lg border border-slate-200 p-3 text-sm font-semibold text-teal-700 hover:bg-teal-50">{item.title}<ArrowUpRight size={17}/></a>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
+        <div key={item.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-slate-200 p-3">
+          <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
+          <form action={deleteMaterialAction}><input type="hidden" name="materialId" value={item.id}/><button type="submit" className="text-xs font-bold text-rose-700 underline">Ukloni</button></form>
+        </div>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
     </div>}
     <div className="admin-panel"><h2>Nastavni tim</h2>{course.memberships.length ? <div className="space-y-3">{course.memberships.map((entry) =>
       <p key={entry.userId} className="text-sm"><strong>{entry.user.name}</strong> <span className="text-slate-500">— {entry.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</span></p>)}</div> : <p className="text-sm text-slate-500">Nije dodeljen nastavni tim. Administrator može da dodeli nastavnike i saradnike.</p>}</div>
