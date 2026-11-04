@@ -3,6 +3,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { PrismaMariaDb } from "@prisma/adapter-mariadb";
 import { PrismaClient } from "../../src/generated/prisma/client";
 import { isLoginBlocked, MAX_LOGIN_FAILURES } from "../../src/domain/security/login-policy";
+import { isSessionVersionCurrent } from "../../src/domain/security/session-policy";
 
 const db = new PrismaClient({ adapter: new PrismaMariaDb({
   host: process.env.DATABASE_HOST || "localhost",
@@ -41,6 +42,13 @@ describe("versioned MySQL schema integration", () => {
         where: { userId_courseId: { userId: user.id, courseId: course.id } },
       });
       expect(assigned?.role).toBe("ASSISTANT");
+      expect(isSessionVersionCurrent(0, user.sessionVersion)).toBe(true);
+      const revised = await db.user.update({
+        where: { id: user.id },
+        data: { sessionVersion: { increment: 1 } },
+        select: { sessionVersion: true },
+      });
+      expect(isSessionVersionCurrent(0, revised.sessionVersion)).toBe(false);
       expect(await db.auditLog.count({ where: { subjectId: material.id } })).toBe(1);
       await db.loginThrottle.upsert({
         where: { key },

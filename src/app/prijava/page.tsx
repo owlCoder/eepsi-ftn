@@ -4,7 +4,8 @@ import { LoginForm } from "@/components/login-form";
 
 export const metadata: Metadata = { title: "Prijava", robots: { index: false, follow: false } };
 
-export default function LoginPage() {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ changed?: string }> }) {
+  const { changed } = await searchParams;
   return (
     <div className="container-page flex min-h-[68vh] items-center justify-center py-20">
       <div className="card-surface w-full max-w-[460px] p-8 md:p-11">
@@ -12,6 +13,7 @@ export default function LoginPage() {
         <p className="eyebrow mb-3">EEPSI portal</p>
         <h1 className="text-3xl font-extrabold tracking-tight">Dobrodošli nazad.</h1>
         <p className="mb-8 mt-3 text-sm leading-7 text-slate-500">Prijavite se svojim nalogom kako biste pristupili administratorskom i nastavničkom delu portala.</p>
+        {changed && <p role="status" className="mb-5 rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-800">Lozinka je promenjena. Prijavite se ponovo.</p>}
         <LoginForm/>
         <p className="mt-7 text-center text-xs leading-6 text-slate-500">Nemate nalog? Obratite se administratoru katedre.</p>
       </div>

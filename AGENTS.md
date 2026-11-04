@@ -99,3 +99,9 @@ The project owner currently allows direct commits to `main`. Avoid force pushes,
 ## Known scope
 
 This is a newly built portal foundation, **not a verified migration of the original EEPSI website**. It currently supports public pages, authenticated administration, news, courses and material links. Production deployment, full historical content migration, backups, advanced asset storage, accessibility auditing, and end-to-end tests require separate verification.
+
+## Profile, sessions and materials (additional invariants)
+
+- Session authorization must compare the JWT login revision with current `User.sessionVersion`. Password changes, deactivation and role updates invalidate existing revisions.
+- A material's parent course ID must come from the database on edit/delete, not from untrusted hidden fields. Keep audit writes atomic with mutations.
+- Local MySQL runs via `compose.yaml` bound only to loopback; never expose development credentials publicly.

@@ -144,3 +144,24 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
+
+## Lokalna MySQL baza preko Docker Compose-a
+
+Nakon `npm install` i `cp .env.example .env`, proveri da su lokalni MySQL parametri usklađeni i pokreni:
+
+```bash
+docker compose up -d mysql
+npm run db:deploy
+npm run db:seed
+npm run dev
+```
+
+`compose.yaml` koristi MySQL 8.4 i port dostupan samo na `127.0.0.1`. Podrazumevane vrednosti iz primera su **isključivo za razvoj**, nikada za javni server. `docker compose down` zaustavlja bazu bez brisanja imenovanog volumena.
+
+## Profil i opoziv sesija
+
+Na `/admin/profil` korisnik sa pravom pristupa administraciji može da izmeni svoje ime i promeni lozinku. Posle promene lozinke sistem povećava `User.sessionVersion`, odbacuje prethodne JWT sesije i traži ponovnu prijavu. Super administrator menjanjem uloge ili deaktivacijom naloga takođe opoziva stare sesije. Sve ove izmene ulaze u audit evidenciju.
+
+## Uređivanje materijala
+
+Nastavnik ili saradnik može da doda, promeni naziv/link ili ukloni materijal samo ako je angažovan na predmetu. Isti postupci su dostupni uredniku i super administratoru. Prava se proveravaju na serveru prema predmetu pronađenom u bazi, a materijali ostaju javni HTTPS linkovi.

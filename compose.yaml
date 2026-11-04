@@ -1,0 +1,22 @@
+# Local development only: MySQL is reachable solely on loopback.
+services:
+  mysql:
+    image: mysql:8.4
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME:-eepsi}
+      MYSQL_USER: ${DATABASE_USER:-eepsi}
+      MYSQL_PASSWORD: ${DATABASE_PASSWORD:-change-me}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD:-local-development-root-only}
+    ports:
+      - "127.0.0.1:${DATABASE_PORT:-3306}:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -u $$MYSQL_USER -p$$MYSQL_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+
+volumes:
+  mysql_data:
