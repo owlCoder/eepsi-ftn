@@ -6,12 +6,12 @@ import { createCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
 import { readPage } from "@/lib/pagination";
 
-export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
+export default async function AdminCourses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; deleted?: string }> }) {
   const actor = await currentUser();
   if (!actor) return null;
   if (actor.role === "STUDENT") notFound();
   const canCreate = await can("courses.create");
-  const { q: rawQ, p } = await searchParams;
+  const { q: rawQ, p, deleted } = await searchParams;
   const q = (rawQ || "").trim().slice(0, 80);
   const page = readPage(p);
   const courses = await db.course.findMany({
@@ -26,6 +26,7 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
   });
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3">Akademski program</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
+    {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-800">Predmet je trajno uklonjen, zajedno sa materijalima i angažovanjima.</p>}
     {canCreate && <div className="admin-panel"><h2>Novi predmet</h2><form action={createCourseAction} className="space-y-5">
       <div className="form-grid"><div><label htmlFor="c-code" className="form-label">Šifra predmeta</label><input id="c-code" name="code" className="input-field" required minLength={2} maxLength={30} placeholder="EE-101"/></div><div><label htmlFor="c-title" className="form-label">Naziv predmeta</label><input id="c-title" name="title" className="input-field" required minLength={5} maxLength={180}/></div></div>
       <div className="form-grid"><div><label htmlFor="c-level" className="form-label">Nivo studija</label><select id="c-level" name="studyLevel" className="input-field"><option value="OAS">Osnovne akademske studije</option><option value="MAS">Master akademske studije</option><option value="DAS">Doktorske akademske studije</option></select></div><div><label htmlFor="c-sem" className="form-label">Semestar</label><select id="c-sem" name="semester" className="input-field">{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}. semestar</option>)}</select></div></div>

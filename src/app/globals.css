@@ -246,3 +246,9 @@ textarea.input-field { min-height: 120px; resize: vertical; }
 .dashboard-action:hover { background: #eff9f5; border-color: #b6ded5; color: #076d64; }
 .btn-danger { color: #fff; background: #ba3645; border: 1px solid #aa2c3b; }
 .btn-danger:hover { background: #9f2535; }
+
+/* More readable editorial forms and clear destructive actions. */
+form[role="search"] .btn { min-width: 110px; }
+summary::-webkit-details-marker { display: none; }
+summary::marker { content: ""; }
+#nova-novost { scroll-margin-top: 112px; }
