@@ -26,8 +26,8 @@ export function hasScopedPermission(
   courseMembershipRole: "PROFESSOR" | "ASSISTANT" | null,
 ): boolean {
   if (hasGlobalPermission(role, permission)) return true;
-  if (permission === "courses.edit") return courseMembershipRole === "PROFESSOR";
-  if (permission === "materials.create") return courseMembershipRole === "PROFESSOR" || courseMembershipRole === "ASSISTANT";
+  if (permission === "courses.edit") return role === "PROFESSOR" && courseMembershipRole === "PROFESSOR";
+  if (permission === "materials.create") return (role === "PROFESSOR" && courseMembershipRole === "PROFESSOR") || (role === "ASSISTANT" && courseMembershipRole === "ASSISTANT");
   return false;
 }
 

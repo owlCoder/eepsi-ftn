@@ -40,6 +40,8 @@ jobs:
         run: npm install --no-audit --no-fund
       - name: Validate schema
         run: npx prisma validate
+      - name: Apply versioned MySQL migrations
+        run: npx prisma migrate deploy
       - name: Type check
         run: npm run typecheck
       - name: Unit tests

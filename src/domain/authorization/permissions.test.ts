@@ -19,6 +19,10 @@ describe("RBAC", () => {
     expect(hasScopedPermission("ASSISTANT", "materials.create", "ASSISTANT")).toBe(true);
     expect(hasScopedPermission("ASSISTANT", "materials.create", null)).toBe(false);
   });
+  it("does not elevate a student even with an inconsistent membership", () => {
+    expect(hasScopedPermission("STUDENT", "courses.edit", "PROFESSOR")).toBe(false);
+    expect(hasScopedPermission("STUDENT", "materials.create", "ASSISTANT")).toBe(false);
+  });
   it("super admins can do everything", () => {
     expect(hasGlobalPermission("SUPER_ADMIN", "users.manage")).toBe(true);
     expect(hasScopedPermission("SUPER_ADMIN", "materials.create", null)).toBe(true);
