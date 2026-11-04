@@ -300,3 +300,8 @@ summary::marker { content: ""; }
   }
   .stacked-table .input-field { min-width: 0; }
 }
+
+/* Editorial layout helpers. */
+#spisak-novosti, #spisak-predmeta, #novi-predmet { scroll-margin-top: 108px; }
+.admin-panel form { min-width: 0; }
+.admin-panel form .input-field { min-width: 0; }

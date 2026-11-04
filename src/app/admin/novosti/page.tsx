@@ -29,17 +29,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
     <div className="space-y-7">
       <div><p className="eyebrow mb-3">Uredništvo</p><h1 className="text-4xl font-extrabold tracking-tight">Novosti</h1><p className="mt-3 text-sm text-slate-500">Kreirajte nacrt ili odmah objavite novu informaciju.</p></div>
       {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-800">Novost je trajno uklonjena.</p>}
-      <div className="admin-panel" id="nova-novost">
-        <h2>Nova novost</h2>
-        <p className="mb-5 text-sm leading-7 text-slate-500">Pripremite tekst kao nacrt, proverite sadržaj, pa ga objavite kada bude spreman.</p>
-        <form action={createNewsAction} className="space-y-5">
-          <div><label className="form-label" htmlFor="news-title">Naslov</label><input className="input-field" id="news-title" name="title" required minLength={5} maxLength={180}/></div>
-          <div><label className="form-label" htmlFor="news-summary">Kratak opis</label><textarea className="input-field" id="news-summary" name="summary" rows={3} required minLength={10} maxLength={300}/></div>
-          <div><label className="form-label" htmlFor="news-body">Tekst novosti</label><textarea className="input-field" id="news-body" name="body" rows={7} required minLength={20}/></div>
-          <div className="flex flex-wrap gap-3"><SubmitButton name="publish" value="false" className="btn btn-light" pendingText="Čuvanje…">Sačuvaj nacrt</SubmitButton><SubmitButton name="publish" value="true" pendingText="Objavljivanje…">Objavi novost</SubmitButton></div>
-        </form>
-      </div>
-      <div className="admin-panel">
+      <div className="admin-panel" id="spisak-novosti">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="!mb-0">Postojeće novosti <span className="text-sm font-semibold text-slate-500">· strana {page}</span></h2>
           <a href="#nova-novost" className="text-sm font-bold text-teal-700 hover:underline">+ Nova novost</a>
@@ -60,7 +50,17 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
           {news.length === 30 && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
         </nav>
+      </div>      <div className="admin-panel" id="nova-novost">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3"><h2 className="!mb-0">Nova novost</h2><a href="#spisak-novosti" className="text-sm font-bold text-teal-700 hover:underline">↑ Nazad na spisak</a></div>
+        <p className="mb-5 text-sm leading-7 text-slate-500">Pripremite tekst kao nacrt, proverite sadržaj, pa ga objavite kada bude spreman.</p>
+        <form action={createNewsAction} className="space-y-5">
+          <div><label className="form-label" htmlFor="news-title">Naslov</label><input className="input-field" id="news-title" name="title" required minLength={5} maxLength={180}/></div>
+          <div><label className="form-label" htmlFor="news-summary">Kratak opis</label><textarea className="input-field" id="news-summary" name="summary" rows={3} required minLength={10} maxLength={300}/></div>
+          <div><label className="form-label" htmlFor="news-body">Tekst novosti</label><textarea className="input-field" id="news-body" name="body" rows={9} required minLength={20} maxLength={30000} placeholder="Napišite obaveštenje u kratkim, preglednim pasusima…"/></div>
+          <div className="flex flex-wrap gap-3"><SubmitButton name="publish" value="false" className="btn btn-light" pendingText="Čuvanje…">Sačuvaj nacrt</SubmitButton><SubmitButton name="publish" value="true" pendingText="Objavljivanje…">Objavi novost</SubmitButton></div>
+        </form>
       </div>
+
     </div>
   );
 }

@@ -29,13 +29,11 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
     <div><p className="eyebrow mb-3">Akademski program</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Šifra predmeta već postoji. Unesite drugu šifru ili izmenite postojeći predmet.</p>}
     {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-800">Predmet je trajno uklonjen, zajedno sa materijalima i angažovanjima.</p>}
-    {canCreate && <div className="admin-panel"><h2>Novi predmet</h2><form action={createCourseAction} className="space-y-5">
-      <div className="form-grid"><div><label htmlFor="c-code" className="form-label">Šifra predmeta</label><input id="c-code" name="code" className="input-field" required minLength={2} maxLength={30} placeholder="EE-101"/></div><div><label htmlFor="c-title" className="form-label">Naziv predmeta</label><input id="c-title" name="title" className="input-field" required minLength={5} maxLength={180}/></div></div>
-      <div className="form-grid"><div><label htmlFor="c-level" className="form-label">Nivo studija</label><select id="c-level" name="studyLevel" className="input-field"><option value="OAS">Osnovne akademske studije</option><option value="MAS">Master akademske studije</option><option value="DAS">Doktorske akademske studije</option></select></div><div><label htmlFor="c-sem" className="form-label">Semestar</label><select id="c-sem" name="semester" className="input-field">{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}. semestar</option>)}</select></div></div>
-      <div><label htmlFor="c-desc" className="form-label">Opis predmeta</label><textarea id="c-desc" name="description" className="input-field" required rows={5} minLength={15}/></div>
-      <SubmitButton pendingText="Kreiranje…">Kreiraj predmet</SubmitButton>
-    </form></div>}
-    <div className="admin-panel"><h2>Predmeti — strana {page}</h2>
+    <div className="admin-panel" id="spisak-predmeta">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="!mb-0">Predmeti <span className="text-sm font-semibold text-slate-500">· strana {page}</span></h2>
+        {canCreate && <a href="#novi-predmet" className="text-sm font-bold text-teal-700 hover:underline">+ Novi predmet</a>}
+      </div>
       <form role="search" className="mb-5 flex flex-wrap gap-3">
         <input type="search" name="q" aria-label="Pretraga predmeta" defaultValue={q} placeholder="Naziv ili šifra predmeta" className="input-field flex-1"/>
         <button className="btn btn-primary">Pretraži</button>
@@ -48,5 +46,15 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
         {courses.length === 20 && <Link href={"/admin/predmeti?q=" + encodeURIComponent(q) + "&p=" + (page + 1)} className="btn btn-light">Sledeća →</Link>}
       </nav>
     </div>
+    {canCreate && <div className="admin-panel" id="novi-predmet">
+      <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="!mb-0">Novi predmet</h2>
+        <a href="#spisak-predmeta" className="text-sm font-bold text-teal-700 hover:underline">↑ Nazad na spisak</a>
+      </div><form action={createCourseAction} className="space-y-5">
+      <div className="form-grid"><div><label htmlFor="c-code" className="form-label">Šifra predmeta</label><input id="c-code" name="code" className="input-field" required minLength={2} maxLength={30} placeholder="EE-101"/></div><div><label htmlFor="c-title" className="form-label">Naziv predmeta</label><input id="c-title" name="title" className="input-field" required minLength={5} maxLength={180}/></div></div>
+      <div className="form-grid"><div><label htmlFor="c-level" className="form-label">Nivo studija</label><select id="c-level" name="studyLevel" className="input-field"><option value="OAS">Osnovne akademske studije</option><option value="MAS">Master akademske studije</option><option value="DAS">Doktorske akademske studije</option></select></div><div><label htmlFor="c-sem" className="form-label">Semestar</label><select id="c-sem" name="semester" className="input-field">{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}. semestar</option>)}</select></div></div>
+      <div><label htmlFor="c-desc" className="form-label">Opis predmeta</label><textarea id="c-desc" name="description" className="input-field" required rows={6} minLength={15} maxLength={5000} placeholder="Kratak opis predmeta, ishodi učenja i druge važne informacije…"/></div>
+      <SubmitButton pendingText="Kreiranje…">Kreiraj predmet</SubmitButton>
+    </form></div>}
   </div>;
 }
