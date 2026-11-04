@@ -195,4 +195,36 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await oldContext.close();
     }
   });
+
+  test("password rotation invalidates other sessions and old credentials", async ({ page, browser }) => {
+    const previousContext = await browser.newContext();
+    const updatedPassword = password + "-rotated";
+    try {
+      const otherSession = await previousContext.newPage();
+      await login(otherSession, admin.email);
+      await login(page, admin.email);
+
+      await page.goto("/admin/profil");
+      await expect(page.getByRole("heading", { name: "Moj profil" })).toBeVisible();
+      await page.getByLabel("Trenutna lozinka").fill(password);
+      await page.getByLabel("Nova lozinka", { exact: true }).fill(updatedPassword);
+      await page.getByLabel("Ponovite novu lozinku").fill(updatedPassword);
+      await page.getByRole("button", { name: "Promeni lozinku" }).click();
+      await expect(page).toHaveURL(/\\/prijava(?:\\?|$)/, { timeout: 20_000 });
+
+      await otherSession.goto("/admin");
+      await expect(otherSession).toHaveURL(/\\/prijava(?:\\?|$)/);
+
+      await page.goto("/prijava");
+      await page.getByLabel("Email adresa").fill(admin.email);
+      await page.getByLabel("Lozinka").fill(password);
+      await page.getByRole("button", { name: /Prijavi se/i }).click();
+      await expect(page.getByRole("alert")).toContainText("Pogrešna");
+
+      await page.getByLabel("Lozinka").fill(updatedPassword);
+      await page.getByRole("button", { name: /Prijavi se/i }).click();
+      await expect(page).toHaveURL(/\\/admin(?:\\/|$|\\?)/);
+    } finally {
+      await previousContext.close();
+    }
 });
