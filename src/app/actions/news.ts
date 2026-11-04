@@ -80,3 +80,23 @@ export async function togglePublishNewsAction(data: FormData) {
   revalidatePath("/novosti/" + news.slug);
   redirect("/admin/novosti");
 }
+
+export async function deleteNewsAction(data: FormData) {
+  const actor = await requirePermission("news.write");
+  const id = String(data.get("id") ?? "");
+  if (!id || id.length > 40) throw new Error("Neispravna novost.");
+  const news = await db.$transaction(async (tx) => {
+    const existing = await tx.news.findUnique({ where: { id }, select: { slug: true } });
+    if (!existing) throw new Error("Novost je već uklonjena.");
+    await tx.news.delete({ where: { id } });
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "news.delete", subjectType: "News", subjectId: id },
+    });
+    return existing;
+  });
+  revalidatePath("/");
+  revalidatePath("/novosti");
+  revalidatePath("/novosti/" + news.slug);
+  revalidatePath("/sitemap.xml");
+  redirect("/admin/novosti?deleted=1");
+}

@@ -1,8 +1,9 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowUpRight, FilePlus2, Users } from "lucide-react";
+import { ArrowLeft, ArrowUpRight, FilePlus2, Users, Trash2 } from "lucide-react";
+import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import { can } from "@/application/authorization";
-import { createMaterialAction, deleteMaterialAction, updateMaterialAction, updateCourseAction } from "@/app/actions/courses";
+import { createMaterialAction, deleteMaterialAction, deleteCourseAction, updateMaterialAction, updateCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
 import { materialKindLabels, materialKinds } from "@/domain/content/material-kinds";
 import { assignCourseMemberAction, revokeCourseMemberAction } from "@/app/actions/users";
@@ -56,7 +57,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <span className="pill pill-neutral">{materialKindLabels[item.kind]}</span>
               <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
             </div>
-            <form action={deleteMaterialAction}><input type="hidden" name="materialId" value={item.id}/><button type="submit" className="text-xs font-bold text-rose-700 underline">Ukloni</button></form>
+            <form action={deleteMaterialAction}><input type="hidden" name="materialId" value={item.id}/><ConfirmSubmitButton message={"Ukloniti materijal „" + item.title + "“?"} className="text-xs font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form>
           </div>
           <details className="mt-3">
             <summary className="text-xs font-bold text-slate-600 hover:text-teal-700">Uredi naziv ili link</summary>
@@ -111,5 +112,12 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
         </form>
       </div>}
     </section>
+    {canManageTeam && <section className="admin-panel border-rose-100 bg-rose-50/30">
+      <h2 className="!mb-2 text-rose-900">Obriši predmet</h2>
+      <p className="mb-5 text-sm leading-7 text-slate-600">Ova radnja trajno uklanja predmet, njegove nastavne materijale i angažovanja. Nastavnici će morati ponovo da se prijave. Akcija je dostupna samo super administratoru.</p>
+      <form action={deleteCourseAction}><input type="hidden" name="id" value={course.id}/>
+        <ConfirmSubmitButton message={"Trajno obrisati predmet „" + course.title + "“ i sve njegove materijale?"} className="btn btn-danger"><Trash2 size={16}/> Trajno obriši predmet</ConfirmSubmitButton>
+      </form>
+    </section>}
   </div>;
 }

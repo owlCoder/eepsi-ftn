@@ -187,3 +187,5 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
+
+**Upravljanje sadržajem:** urednik i super administrator mogu trajno obrisati novost uz potvrdu, dok samo super administrator može trajno obrisati predmet sa materijalima i angažovanjima. Svako brisanje ostavlja audit zapis, osvežava javni sadržaj i sitemap; brisanje predmeta opoziva sesije angažovanog osoblja. Privremeno skrivanje novosti radi se preko statusa nacrta, bez brisanja.

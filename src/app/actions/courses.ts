@@ -116,3 +116,36 @@ export async function updateMaterialAction(data: FormData) {
   revalidatePath("/predmeti/" + material.course.slug);
   redirect("/admin/predmeti/" + material.courseId + "?material=updated");
 }
+
+export async function deleteCourseAction(data: FormData) {
+  // Destructive course deletion is restricted to SUPER_ADMIN, not editors or faculty.
+  const actor = await requirePermission("users.manage");
+  const id = String(data.get("id") ?? "");
+  if (!id || id.length > 40) throw new Error("Neispravan predmet.");
+  const deleted = await db.$transaction(async (tx) => {
+    const existing = await tx.course.findUnique({
+      where: { id },
+      select: { slug: true, memberships: { select: { userId: true } } },
+    });
+    if (!existing) throw new Error("Predmet je već uklonjen.");
+    // Course memberships and materials cascade; revoke active faculty JWTs.
+    const userIds = existing.memberships.map((entry) => entry.userId);
+    if (userIds.length) {
+      await tx.user.updateMany({
+        where: { id: { in: userIds } },
+        data: { sessionVersion: { increment: 1 } },
+      });
+    }
+    await tx.course.delete({ where: { id } });
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "course.delete", subjectType: "Course", subjectId: id },
+    });
+    return existing;
+  });
+  revalidatePath("/");
+  revalidatePath("/predmeti");
+  revalidatePath("/predmeti/" + deleted.slug);
+  revalidatePath("/nastavnici");
+  revalidatePath("/sitemap.xml");
+  redirect("/admin/predmeti?deleted=1");
+}
