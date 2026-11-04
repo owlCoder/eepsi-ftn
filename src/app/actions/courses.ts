@@ -32,6 +32,7 @@ export async function createCourseAction(data: FormData) {
   });
   revalidatePath("/");
   revalidatePath("/predmeti");
+  revalidatePath("/sitemap.xml");
   redirect("/admin/predmeti/" + course.id);
 }
 

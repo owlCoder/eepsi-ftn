@@ -19,7 +19,7 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
       <div className="container-page py-14 md:py-20">
         <form className="card-surface mb-6 flex flex-wrap gap-3 p-4 sm:p-5" role="search">
           <label htmlFor="news-search" className="sr-only">Pretraga novosti</label>
-          <input id="news-search" name="q" className="input-field min-w-48 flex-1" type="search" placeholder="Pretraži novosti po naslovu ili sadržaju…" defaultValue={q}/>
+          <input id="news-search" name="q" className="input-field min-w-48 flex-1" type="search" placeholder="Pretraži novosti po naslovu ili opisu…" defaultValue={q}/>
           <button className="btn btn-primary">Pretraži</button>
         </form>
         {q && <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
