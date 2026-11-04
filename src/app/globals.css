@@ -305,3 +305,27 @@ summary::marker { content: ""; }
 #spisak-novosti, #spisak-predmeta, #novi-predmet { scroll-margin-top: 108px; }
 .admin-panel form { min-width: 0; }
 .admin-panel form .input-field { min-width: 0; }
+
+/* Expand/collapse affordance on editorial panels and mobile hero. */
+.admin-panel details > summary {
+  display: flex; align-items: center; gap: 8px;
+  min-height: 40px; padding: 6px 0;
+  cursor: pointer; list-style: none;
+}
+.admin-panel details > summary::after {
+  content: ""; width: 9px; height: 9px; flex: 0 0 9px;
+  margin-left: auto; margin-right: 3px;
+  border-right: 2px solid #748a99; border-bottom: 2px solid #748a99;
+  transform: translateY(-2px) rotate(45deg);
+  transition: transform .18s;
+}
+.admin-panel details[open] > summary::after { transform: translateY(2px) rotate(225deg); }
+@media (max-width: 640px) {
+  .hero { padding-block: 48px; }
+  .hero-title { font-size: clamp(39px, 10vw, 56px); line-height: 1.08; }
+  .hero-visual { min-height: 280px; }
+  .hero-visual .float-panel { font-size: 12px; }
+  .hero-visual .float-panel small { font-size: 9px; }
+  .hero-visual .float-panel strong { font-size: 12px; }
+  .hero-visual .float-panel:nth-child(4) { top: 22%; right: 3%; }
+}

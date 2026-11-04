@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowUpRight, BookOpen, GraduationCap, Users } from "lucide-react";
+import { ArrowUpRight, BookOpen, GraduationCap, Search, Users } from "lucide-react";
 import { publicTeachingStaff } from "@/infrastructure/repositories/content";
 
 export const metadata: Metadata = {
@@ -9,8 +9,22 @@ export const metadata: Metadata = {
 };
 export const revalidate = 300;
 
-export default async function TeachingStaffPage() {
-  const staff = await publicTeachingStaff();
+export default async function TeachingStaffPage({
+  searchParams,
+}: { searchParams: Promise<{ q?: string }> }) {
+  const { q: rawQ } = await searchParams;
+  const q = (rawQ ?? "").trim().slice(0, 80);
+  const people = await publicTeachingStaff();
+  const search = q.toLocaleLowerCase("sr-RS");
+  const staff = search
+    ? people.filter((person) =>
+      person.name.toLocaleLowerCase("sr-RS").includes(search) ||
+      person.memberships.some((membership) =>
+        membership.course.title.toLocaleLowerCase("sr-RS").includes(search) ||
+        membership.course.code.toLocaleLowerCase("sr-RS").includes(search),
+      ),
+    )
+    : people;
   const professors = staff.filter((person) => person.role === "PROFESSOR");
   const assistants = staff.filter((person) => person.role === "ASSISTANT");
 
@@ -20,7 +34,20 @@ export default async function TeachingStaffPage() {
       <h1 className="page-title">Nastavni tim</h1>
       <p className="section-copy mt-5 max-w-2xl">Pregled aktivnih nastavnika i saradnika sa predmetima na kojima su angažovani.</p>
     </div></div>
-    <div className="container-page space-y-14 py-14 md:py-20">
+    <div className="container-page space-y-10 py-12 md:py-16">
+      <form action="/nastavnici" role="search" className="card-surface flex flex-wrap items-end gap-3 p-4 sm:p-6">
+        <div className="min-w-48 flex-1">
+          <label className="form-label" htmlFor="teacher-search">Pronađite nastavnika ili predmet</label>
+          <div className="relative">
+            <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"/>
+            <input id="teacher-search" name="q" type="search" maxLength={80}
+              defaultValue={q} className="input-field !pl-11" placeholder="Ime, prezime, predmet ili šifra…"/>
+          </div>
+        </div>
+        <button className="btn btn-primary" type="submit">Pretraži</button>
+        {q && <Link href="/nastavnici" className="btn btn-light">Očisti</Link>}
+      </form>
+      {q && <p className="text-sm font-semibold text-slate-500">Pronađeno osoba: {staff.length}. Pretraga za „{q}“.</p>}
       {staff.length ? [
         { heading: "Nastavnici", entries: professors },
         { heading: "Saradnici", entries: assistants },
@@ -45,7 +72,11 @@ export default async function TeachingStaffPage() {
               </article>)}
           </div>
         </section>)
-        : <div className="empty-state"><Users size={28} className="mx-auto mb-3 text-teal-700"/> Nastavno osoblje će biti prikazano kada administrator dodeli angažovanja na predmetima.</div>}
+        : <div className="empty-state"><Users size={28} className="mx-auto mb-3 text-teal-700"/>
+          <p className="font-bold text-slate-700">{q ? "Nema rezultata za ovu pretragu." : "Nastavni tim još nije objavljen."}</p>
+          <p className="mt-2 text-sm">{q ? "Pokušajte sa drugim imenom ili nazivom predmeta." : "Nastavno osoblje će biti prikazano kada administrator dodeli angažovanja."}</p>
+          {q && <Link href="/nastavnici" className="btn btn-light mt-5">Prikaži kompletan tim</Link>}
+        </div>}
     </div>
   </>;
 }
