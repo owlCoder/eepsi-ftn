@@ -1,46 +1,133 @@
-# EEPSI FTN — moderni portal Katedre
+# EEPSI FTN — Academic Web Portal
 
-Moderni Next.js / MySQL portal za Katedru za elektroenergetiku i primenjeno softversko inženjerstvo (FTN Novi Sad). Novi projekat napravljen od početka jer je repozitorijum na `main` bio prazan prilikom pregleda.
+[![Quality gates](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml/badge.svg)](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml)
+![Next.js](https://img.shields.io/badge/Next.js-16-171717?logo=nextdotjs&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-6-3178C6?logo=typescript&logoColor=white)
+![MySQL](https://img.shields.io/badge/MySQL-8%2B-4479A1?logo=mysql&logoColor=white)
 
-## Tehnologije
+**Savremeni, responzivni portal Katedre za elektroenergetiku i primenjeno softversko inženjerstvo (EEPSI), Fakultet tehničkih nauka, Univerzitet u Novom Sadu.**
 
-- Next.js 16, React 19, TypeScript 6, Tailwind CSS 4
-- Prisma ORM 7 + MySQL 8, Prisma MariaDB adapter
-- Auth.js / NextAuth 4 (poslednja **stabilna** grana), bcrypt
-- Zod 4, Vitest 5, GitHub Actions
-- Clean Architecture: `domain` → `application` → `infrastructure` → `presentation (app/components)`
+Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architecture i automatizovane provere kvaliteta.
 
-## Pokretanje
+> **Status:** Funkcionalna razvojna osnova. Repozitorijum je prethodno bio prazan; ovaj projekat **nije automatski preuzeo sadržaj** sa starog EEPSI sajta i nije javno deployovan. Nisu sprovedeni produkcioni pentest, E2E i kompletan accessibility audit.
 
-1. Instaliraj Node.js **24.11+** (ili kompatibilni 22.18+) i MySQL 8.
-2. Kopiraj `.env.example` u `.env` i upiši MySQL konekciju i nasumičan `NEXTAUTH_SECRET` (min. 32 bajta).
-3. `npm install`
-4. `npm run db:deploy` (primeni već verzionisanu početnu migraciju)
-5. `npm run db:seed` — zahteva `BOOTSTRAP_ADMIN_EMAIL` i `BOOTSTRAP_ADMIN_PASSWORD` u `.env`, bez ugrađene podrazumevane lozinke.
-6. `npm run dev` i otvori http://localhost:3000.
+## Šta portal sadrži
 
-Komande: `npm run typecheck`, `npm test`, `npm run build`, `npm run db:studio`.
+- **Javni sajt:** početna, o katedri, katalog/pregled predmeta, detalji predmeta i materijala, pretraga i paginacija novosti.
+- **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, server-side provera aktivnog naloga.
+- **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, materijalima i korisnicima.
+- **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
+- **Baza:** tipizovan Prisma model, verzionisane migracije za MySQL, kontrolisan bootstrap administratora.
+- **Kvalitet:** Vitest, TypeScript strict, ESLint i GitHub Actions (instalacija, migracije, provere i produkcioni build).
 
-## RBAC model
+## Tehnološki stack
 
-| Uloga | Dozvole |
+| Oblast | Rešenje |
 | --- | --- |
-| SUPER_ADMIN | Sve, uključujući kreiranje, deaktivaciju i izmenu uloga naloga |
-| EDITOR | Kreiranje/objavljivanje novosti; kreiranje i uređivanje predmeta i materijala |
-| PROFESSOR | Izmena sadržaja i materijala **samo dodeljenih predmeta** |
-| ASSISTANT | Dodavanje materijala **samo dodeljenih predmeta** |
-| STUDENT | Javni sadržaj (bez administratorskih mutacija) |
+| UI / rendering | Next.js 16 (App Router), React 19, Server Components |
+| Jezik i stil | TypeScript 6 (strict), Tailwind CSS 4, Lucide |
+| Persistence | MySQL 8+, Prisma ORM 7, MariaDB driver adapter |
+| Auth | NextAuth 4 (stabilna grana), bcryptjs |
+| Validacija / testovi | Zod 4, Vitest 5 |
+| CI | GitHub Actions |
 
-Uloge iz sesije se **ne smatraju izvorom istine**: server svaku privilegovanu akciju autorizuje uz trenutne podatke iz baze. UI kontrole nisu sigurnosna granica. Za predmete se proverava članstvo preko `CourseMembership`. API nikada ne uzima ulogu iz forme kao dokaz ovlašćenja.
+**Verzije:** `package.json` je izvor istine. Prednost imaju najnovije *stabilne i međusobno kompatibilne* verzije. TypeScript 7 još nije kompatibilan sa `typescript-eslint` verzijom koju zahteva aktuelni Next ESLint stack, zato je trenutno TS 6.
 
-## Politika verzija
+## Arhitektura
 
-Koristimo **najnovije stabilne i međusobno kompatibilne** verzije, sa eksplicitno navedenim verzijama glavnih paketa. TypeScript je na 6.0.3 jer integrisani typescript-eslint trenutno ne podržava TypeScript 7; kvalitetne provere se ne zaobilaze. Prisma 8 RC i Auth.js 5 beta nisu uključeni.
+```text
+src/
+├── domain/          # Čiste poslovne politike, role, permission pravila, slug
+├── application/     # Validacija, use-case autorizacija
+├── infrastructure/  # MySQL/Prisma, auth, repositories
+├── app/             # App Router, javne/admin rute i Server Actions
+├── components/      # Komponente interfejsa
+└── lib/             # Pomoćne funkcije
+prisma/
+├── schema.prisma    # Model
+├── migrations/      # Verzionski kontrolisane SQL migracije
+└── seed.ts          # Bootstrap admin nalog
+```
 
-## Napomene za produkciju
+Zavisnosti treba da idu **prema unutra**: domen ne poznaje HTTP, ORM ili Next.js; autorizacija i business rules nisu sakriveni u komponentama. Za dogovorene standarde razvoja pogledaj [AGENTS.md](./AGENTS.md).
 
-- Promena globalne uloge ili deaktivacija automatski uklanja sva članstva na predmetima. SUPER_ADMIN nalozi su zaštićeni od izmene kroz administratorski formular.
-- Bez postojećeg koda u repozitorijumu ovo je nova osnova, a ne refaktor migriranog sajta; sadržaj starog Wix sajta nije automatski preuzet.
-- Dokumenta su za sada linkovi ka eksternim HTTPS resursima, ne privatno skladište datoteka.
-- Pre javne produkcije: obavezno podesi domen i `NEXTAUTH_URL`, HTTPS, rate limiting na loginu (gateway/WAF), audit logove, backup baze i strategiju migracije sadržaja.
-- Nisu upisani ključevi, lozinke, niti pristupni podaci u Git.
+## Lokalno pokretanje
+
+**Preduslovi:** Node.js 24 LTS (ili kompatibilni Node 22.18+), npm i MySQL 8+ instanca.
+
+```bash
+git clone https://github.com/owlCoder/eepsi-ftn.git
+cd eepsi-ftn
+npm install
+cp .env.example .env
+```
+
+U `.env` podesi:
+
+| Promenljiva | Značenje |
+| --- | --- |
+| `DATABASE_URL` | MySQL URL za Prisma migracije |
+| `DATABASE_HOST`, `DATABASE_PORT`, `DATABASE_USER`, `DATABASE_PASSWORD`, `DATABASE_NAME` | Parametri konekcije za runtime driver |
+| `NEXTAUTH_URL` | Potpuni URL aplikacije (`http://localhost:3000` lokalno) |
+| `NEXTAUTH_SECRET` | Nasumičan secret, najmanje 32 bajta |
+| `BOOTSTRAP_ADMIN_EMAIL`, `BOOTSTRAP_ADMIN_PASSWORD`, `BOOTSTRAP_ADMIN_NAME` | Inicijalni admin — *samo za seed* |
+
+Generiši secret naredbom `openssl rand -base64 48`. **Ne commituj `.env`.** Lozinka za bootstrap mora da ima najmanje 12 karaktera; u repou ne postoji podrazumevana administratorska lozinka.
+
+```bash
+npm run db:deploy     # Primeni postojeće migracije
+npm run db:seed       # Kreiraj prvog SUPER_ADMIN korisnika
+npm run dev           # http://localhost:3000
+```
+
+Nakon prijave idi na `/admin`. Prisma Studio se pokreće sa `npm run db:studio`.
+
+## RBAC matrica
+
+| Dozvola | Super admin | Urednik | Nastavnik* | Saradnik* | Student |
+| --- | :---: | :---: | :---: | :---: | :---: |
+| Čitanje javnog sadržaja | ✓ | ✓ | ✓ | ✓ | ✓ |
+| Kreiranje i objava novosti | ✓ | ✓ | — | — | — |
+| Kreiranje predmeta | ✓ | ✓ | — | — | — |
+| Izmena podataka o predmetu | ✓ | ✓ | ✓ | — | — |
+| Dodavanje materijala | ✓ | ✓ | ✓ | ✓ | — |
+| Kreiranje naloga, izmene uloga i deaktivacija | ✓ | — | — | — | — |
+| Dodela nastavnika i saradnika predmetima | ✓ | — | — | — | — |
+
+\* Nastavnik i saradnik imaju pravo izmene **samo na predmetima kojima su eksplicitno dodeljeni** (`CourseMembership`). Svaka privilegovana server akcija radi kontrolu u aktuelnoj bazi; prikazivanje dugmadi nije bezbednosna kontrola. Promena uloge/deaktivacija briše zastarela članstva. Super-admin nalog se ne uređuje kroz standardan formular.
+
+## Razvoj i kvalitet
+
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+```
+
+GitHub Actions za svaki push na `main` i PR proverava instalaciju, Prisma šemu, primenu migracija na izolovanom MySQL servisu, tipove, lint, testove i optimizovani produkcioni build. Prati [CI status](https://github.com/owlCoder/eepsi-ftn/actions/workflows/ci.yml).
+
+### Izmena šeme
+
+Ne menjati već primenjenu migraciju. Napravi novu:
+
+```bash
+npm run db:migrate -- --name opis_promene
+```
+
+Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju koristi `npm run db:deploy`.
+
+## Bezbednost i priprema za produkciju
+
+- Svi credentials i produkcione vrednosti konfigurišu se kroz environment variables/secrets — nikada kroz git.
+- Endpointi koji menjaju podatke moraju imati serversku validaciju, autentifikaciju i RBAC proveru.
+- Za javni deploy obezbedi HTTPS, pravilne `NEXTAUTH_URL` / `NEXTAUTH_SECRET`, zaštitu login endpointa na infrastrukturi, backup i restore procedure.
+- Proveri stvarnu politiku upravljanja korisnicima, retenciju podataka, dozvole za objavljivanje dokumenata i bezbednosni review pre produkcije.
+- Trenutni materijali su **HTTPS linkovi**, ne sistem privatnog upload-a ili upravljanja fajlovima; tekst novosti je običan tekst.
+- Trenutno ne postoji integracija sa starim CMS-om niti migracija stvarnih kurseva, zaposlenih i novosti.
+
+## Doprinosi i licenca
+
+Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
+
+**Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
