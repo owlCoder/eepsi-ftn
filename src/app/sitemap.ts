@@ -9,6 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   return [
     { url: new URL("/", origin).toString(), changeFrequency: "weekly", priority: 1 },
     { url: new URL("/o-katedri", origin).toString(), changeFrequency: "monthly", priority: 0.7 },
+    { url: new URL("/kontakt", origin).toString(), changeFrequency: "monthly", priority: 0.7 },
     { url: new URL("/predmeti", origin).toString(), changeFrequency: "weekly", priority: 0.9 },
     { url: new URL("/istrazivanje", origin).toString(), changeFrequency: "monthly", priority: 0.6 },
     { url: new URL("/saradnja", origin).toString(), changeFrequency: "monthly", priority: 0.6 },

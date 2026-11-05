@@ -1,6 +1,4 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EEPSI FTN">
-  <rect width="64" height="64" fill="#1a2c31"/>
-  <path d="M14 12V52M14 13H39M14 32H33M14 51H39" stroke="#f5f1e6" stroke-width="5" fill="none"/>
-  <path d="M39 13H51V32H33M39 51H51V32" stroke="#dd936f" stroke-width="3" fill="none"/>
-  <rect x="46" y="27" width="10" height="10" fill="#dd936f"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EEPSI">
+  <rect width="64" height="64" rx="9" fill="#173b63"/>
+  <path d="M18 14H46V21H26V28H43V35H26V43H46V50H18Z" fill="#ffffff"/>
 </svg>
