@@ -30,8 +30,8 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
         </div>}
         {items.length ? <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">{items.map((item) => <NewsCard key={item.id} item={item}/>)}</div>
           : <div className="empty-state">
-            <p className="mb-3 text-lg font-bold text-slate-700">Nema pronađenih novosti.</p>
-            <p className="text-sm">Pokušajte sa drugim izrazom ili pogledajte sva obaveštenja.</p>
+            <p className="mb-3 text-lg font-bold text-slate-700">{page > 1 ? "Nema novosti na ovoj stranici." : "Nema pronađenih novosti."}</p>
+            <p className="text-sm">{page > 1 ? "Vratite se na prethodnu stranicu da nastavite pregled." : "Pokušajte sa drugim izrazom ili pogledajte sva obaveštenja."}</p>
             {q && <Link href="/novosti" className="btn btn-light mt-5">Sve novosti</Link>}
           </div>}
         <nav className="mt-10 flex items-center justify-between" aria-label="Stranice">
