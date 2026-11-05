@@ -302,7 +302,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
     // Tapping outside should also dismiss it without changing the route.
     await menuToggle.click();
-    await page.locator("main").click({ position: { x: 8, y: 8 } });
+    await page.locator(".site-institution").click();
     await expect(mobileMenu).not.toHaveAttribute("open", "");
     await menuToggle.click();
     await expect(mobileMenu.getByRole("link", { name: "Predmeti" })).toBeVisible();
