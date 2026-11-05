@@ -25,8 +25,8 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
   if (!course) notFound();
   return (
     <>
-      <header className="page-banner"><div className="container-page">
-        <nav aria-label="Putanja" className="mb-5 text-xs text-[#556777]">
+      <header className="page-banner compact-banner"><div className="container-page">
+        <nav aria-label="Putanja" className="mb-3 text-xs text-[#556777]">
           <Link href="/" className="hover:underline">Početna</Link> / <Link href="/predmeti" className="hover:underline">Predmeti</Link> / {course.code}
         </nav>
         <p className="eyebrow mb-3">Predmet · {course.studyLevel} · {course.semester}. semestar</p>
@@ -37,15 +37,10 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
         </div>
       </div></header>
 
-      <div className="container-page grid items-start gap-9 py-10 md:py-14 lg:grid-cols-[minmax(0,1fr)_275px] lg:gap-12">
-        <div className="min-w-0 space-y-11">
-          <section aria-labelledby="course-overview" id="opis-predmeta">
-            <h2 id="course-overview" className="mb-4 text-xl font-bold">Opis predmeta</h2>
-            <p className="prose-copy">{course.description}</p>
-          </section>
-
+      <div className="container-page grid items-start gap-7 py-6 md:py-9 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
+        <div className="min-w-0 space-y-9">
           <section aria-labelledby="course-materials" id="materijali">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-3 border-t border-[#dce3e9] pt-8">
+            <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
               <h2 id="course-materials" className="text-xl font-bold">Nastavni materijali</h2>
               <span className="text-xs font-semibold text-[#556777]">{course.materials.length} materijala</span>
             </div>
@@ -53,6 +48,12 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
               ? <CourseMaterials materials={course.materials.map(({ id, title, url, kind }) => ({ id, title, url, kind }))}/>
               : <p className="mt-4 text-sm text-[#556777]">Za ovaj predmet trenutno nema dostupnih materijala.</p>}
           </section>
+
+          <section aria-labelledby="course-overview" id="opis-predmeta">
+            <h2 id="course-overview" className="mb-4 text-xl font-bold">Opis predmeta</h2>
+            <p className="prose-copy">{course.description}</p>
+          </section>
+
         </div>
 
         <aside className="space-y-6 lg:sticky lg:top-29">

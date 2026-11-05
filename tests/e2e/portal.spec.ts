@@ -125,6 +125,28 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page.getByText(newsTitle, { exact: true })).toHaveCount(0);
   });
 
+  test("a guest reaches news and course materials directly from student navigation", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.goto("/");
+    const studentNav = page.getByRole("navigation", { name: "Brzi pristup studentima" });
+    await expect(studentNav.getByRole("link", { name: "Predmeti" })).toBeVisible();
+    await expect(studentNav.getByRole("link", { name: "Obaveštenja" })).toBeVisible();
+
+    await studentNav.getByRole("link", { name: "Obaveštenja" }).click();
+    await expect(page).toHaveURL(/\/novosti$/);
+    await expect(page.getByRole("heading", { name: "Obaveštenja", exact: true })).toBeVisible();
+
+    await studentNav.getByRole("link", { name: "Predmeti" }).click();
+    await expect(page.getByRole("heading", { name: "Katalog predmeta" })).toBeVisible();
+    await page.getByLabel("Naziv ili šifra predmeta").fill(code);
+    await page.getByRole("button", { name: "Prikaži" }).click();
+    await expect(page.getByRole("link", { name: title, exact: true })).toBeVisible();
+    await page.getByRole("link", { name: /Materijali \(1\)/ }).click();
+    await expect(page).toHaveURL(new RegExp("/predmeti/" + course.slug + "#materijali"));
+    await expect(page.getByRole("heading", { name: "Nastavni materijali" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "E2E predavanje " + marker })).toBeVisible();
+  });
+
   test("student cannot access the protected administration", async ({ page }) => {
     await page.goto("/admin");
     await expect(page).toHaveURL(/\/prijava(?:\?|$)/);
