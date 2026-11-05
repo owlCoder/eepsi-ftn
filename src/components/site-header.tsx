@@ -52,7 +52,7 @@ export function SiteHeader() {
         <Link href="/admin" className="btn btn-dark">Moj portal <ArrowUpRight size={16}/></Link>
       </div>
       <details ref={mobileMenu} className="group relative lg:hidden">
-        <summary className="flex h-11 w-11 list-none items-center justify-center border border-[#abb7b2] bg-[#fffefa] text-[#1a2c31]" aria-label="Otvori navigaciju"><Menu size={22}/></summary>
+        <summary className="flex h-11 w-11 list-none items-center justify-center border border-[#abb7b2] bg-[#fffefa] text-[#1a2c31]" aria-label="Otvori meni"><Menu size={22}/></summary>
         <nav className="mobile-menu" aria-label="Mobilna navigacija">
           {[...links, ...aboutLinks].map(link => <Link key={link.href} href={link.href} onClick={closeMobile} aria-current={active(link.href) ? "page" : undefined} className={"mobile-menu-link " + (active(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
           <div className="mt-3 grid grid-cols-2 gap-2">
