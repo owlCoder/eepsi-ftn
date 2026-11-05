@@ -231,9 +231,10 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(staleEditor.getByRole("alert").filter({ hasText: "zastarela verzija nije sačuvana" })).toBeVisible();
     await staleEditor.close();
 
-    // An old "Publish" button must not unpublish a story already published in another tab.
+    // An old "Publish" button must not overwrite newer published content.
     await stalePublishTab.getByRole("button", { name: "Objavi sada" }).click();
-    await expect(stalePublishTab).toHaveURL(/unchanged=1/);
+    await expect(stalePublishTab).toHaveURL(/error=stale/);
+    await expect(stalePublishTab.getByRole("alert").filter({ hasText: "Novost je u međuvremenu izmenjena" })).toBeVisible();
     await stalePublishTab.close();
 
     await page.goto("/novosti?q=" + marker);
