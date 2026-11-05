@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FileText, Search } from "lucide-react";
-import { CourseCard } from "@/components/content-cards";
 import { listCourses } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 import { parseCourseFilters } from "@/domain/courses/filters";
@@ -84,9 +83,7 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
                 ))}</tbody>
               </table>
             </div>
-            <div className="academic-course-mobile-list">
-              {items.map(item => <CourseCard key={item.id} item={item}/>)}
-            </div>
+
           </>
         ) : <div className="empty-state">
           <p>{page > 1 ? "Na ovoj stranici nema predmeta." : filtered ? "Nema predmeta koji odgovaraju filterima." : "Katalog još nema objavljenih predmeta."}</p>
