@@ -1,4 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EEPSI">
-  <rect width="64" height="64" rx="9" fill="#173b63"/>
-  <path d="M18 14H46V21H26V28H43V35H26V43H46V50H18Z" fill="#ffffff"/>
+  <rect width="64" height="64" rx="16" fill="#192744"/>
+  <path d="M19 14H46V22H28V28H43V36H28V42H46V50H19Z" fill="#FFFFFF"/>
+  <rect x="46" y="45" width="8" height="8" rx="2" fill="#91A8FF"/>
 </svg>
