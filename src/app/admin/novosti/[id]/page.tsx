@@ -48,7 +48,7 @@ export default async function EditNews({ params, searchParams }: { params: Promi
     <div className="admin-panel border-rose-100 bg-rose-50/30">
       <h2 className="!mb-2 text-rose-900">Ukloni novost</h2>
       <p className="mb-5 text-sm leading-7 text-slate-600">Brisanje je trajno i uklanja novost i sa javnog sajta. Za privremeno sakrivanje koristite „Povuci objavu“.</p>
-      <form action={deleteNewsAction}><input type="hidden" name="id" value={item.id}/>
+      <form action={deleteNewsAction}><input type="hidden" name="id" value={item.id}/><input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/>
         <ConfirmSubmitButton message={"Trajno obrisati novost „" + item.title + "“?"} className="btn btn-danger"><Trash2 size={16}/> Trajno obriši</ConfirmSubmitButton>
       </form>
     </div>

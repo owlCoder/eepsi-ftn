@@ -110,15 +110,19 @@ export async function deleteNewsAction(data: FormData) {
   const actor = await requirePermission("news.write");
   const id = String(data.get("id") ?? "");
   if (!id || id.length > 40) throw new Error("Neispravna novost.");
+  const expectedUpdatedAt = new Date(String(data.get("updatedAt") ?? ""));
+  if (Number.isNaN(expectedUpdatedAt.getTime())) throw new Error("Neispravna verzija novosti. Osvežite stranicu.");
   const news = await db.$transaction(async (tx) => {
     const existing = await tx.news.findUnique({ where: { id }, select: { slug: true } });
-    if (!existing) throw new Error("Novost je već uklonjena.");
-    await tx.news.delete({ where: { id } });
+    if (!existing) return null;
+    const result = await tx.news.deleteMany({ where: { id, updatedAt: expectedUpdatedAt } });
+    if (result.count !== 1) return null;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "news.delete", subjectType: "News", subjectId: id },
     });
     return existing;
   });
+  if (!news) redirect("/admin/novosti?error=stale");
   revalidatePath("/");
   revalidatePath("/novosti");
   revalidatePath("/novosti/" + news.slug);
