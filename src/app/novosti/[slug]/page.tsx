@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft } from "lucide-react";
 import { ShareButton } from "@/components/share-button";
 import { newsBySlug } from "@/infrastructure/repositories/content";
 
@@ -11,7 +10,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const news = await newsBySlug(slug);
   return {
-    title: news?.title || "Novost",
+    title: news?.title || "Obaveštenje",
     description: news?.summary,
     ...(news ? { openGraph: { title: news.title, description: news.summary, type: "article" as const } } : {}),
   };
@@ -21,26 +20,30 @@ export default async function NewsDetails({ params }: { params: Promise<{ slug: 
   const { slug } = await params;
   const news = await newsBySlug(slug);
   if (!news) notFound();
-  return <>
-    <header className="page-banner"><div className="container-page">
-      <Link href="/novosti" className="mb-8 inline-flex items-center gap-2 text-sm font-bold text-[#8b371d]"><ArrowLeft size={16}/> Sve novosti</Link>
-      <p className="eyebrow mb-5">Novosti / Katedra EEPSI</p>
-      <h1 className="page-title max-w-5xl">{news.title}</h1>
-      <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-3 border-t border-[#abb7b2] pt-5">
-        {news.publishedAt && <time dateTime={new Date(news.publishedAt).toISOString()} className="meta-label">{new Date(news.publishedAt).toLocaleDateString("sr-RS")}</time>}
-        <span className="meta-label">{news.author.name}</span>
-        <ShareButton/>
-      </div>
-    </div></header>
-    <article className="container-page py-13 md:py-19">
-      <div className="mx-auto max-w-[820px]">
-        <p className="display-serif border-l-[3px] border-[#b34b2c] pl-6 text-[clamp(22px,2.6vw,30px)] leading-[1.45] text-[#344a4e]">{news.summary}</p>
-        <div className="prose-copy mt-12 border-t border-[#d3d6ce] pt-10">{news.body}</div>
-        <div className="mt-16 flex flex-wrap items-center justify-between gap-5 border-t border-[#abb7b2] pt-6">
-          <Link href="/novosti" className="inline-flex items-center gap-2 text-sm font-bold text-[#8b371d]"><ArrowLeft size={16}/> Sve novosti</Link>
+  return (
+    <>
+      <header className="page-banner"><div className="container-page">
+        <nav aria-label="Putanja" className="mb-5 text-xs text-[#556777]">
+          <Link href="/" className="hover:underline">Početna</Link> / <Link href="/novosti" className="hover:underline">Obaveštenja</Link> / Objava
+        </nav>
+        <p className="eyebrow mb-3">Obaveštenje katedre</p>
+        <h1 className="page-title max-w-4xl">{news.title}</h1>
+        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-[#556777]">
+          {news.publishedAt && <time dateTime={news.publishedAt.toISOString()}>{news.publishedAt.toLocaleDateString("sr-RS")}</time>}
+          <span>{news.author.name}</span>
           <ShareButton/>
         </div>
-      </div>
-    </article>
-  </>;
+      </div></header>
+      <article className="container-page py-11 md:py-15">
+        <div className="mx-auto max-w-[760px]">
+          <p className="mb-9 text-lg font-semibold leading-8 text-[#344b5e]">{news.summary}</p>
+          <div className="prose-copy border-t border-[#dce3e9] pt-8">{news.body}</div>
+          <div className="mt-11 flex flex-wrap items-center justify-between gap-4 border-t border-[#dce3e9] pt-5">
+            <Link href="/novosti" className="text-sm font-semibold text-[#173b63] underline">← Sva obaveštenja</Link>
+            <ShareButton/>
+          </div>
+        </div>
+      </article>
+    </>
+  );
 }
