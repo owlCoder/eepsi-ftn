@@ -72,7 +72,9 @@ export function SiteHeader() {
               {sections.map(link => <Link href={link.href} key={link.href} onClick={closeMenu}
                 aria-current={isActive(link.href) ? "page" : undefined}
                 className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
-              {mobileExtraSections.map(link => <Link key={link.href} href={link.href} onClick={closeMenu} className="mobile-menu-link">{link.label}</Link>)}
+              {mobileExtraSections.map(link => <Link key={link.href} href={link.href} onClick={closeMenu}
+                aria-current={isActive(link.href) ? "page" : undefined}
+                className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
               <div className="mt-3 border-t border-[#dce3ee] pt-3">
                 <Link href="/admin" className="btn btn-primary w-full" onClick={closeMenu}>Prijava na portal</Link>
               </div>
