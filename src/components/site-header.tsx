@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -26,6 +26,9 @@ export function SiteHeader() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
   const closeMenu = () => { if (menu.current) menu.current.open = false; };
 
+  // Browser back/forward navigation does not trigger a menu link click.
+  useEffect(() => { closeMenu(); }, [pathname]);
+
   return (
     <header className="site-header">
       <div className="site-institution">
@@ -48,7 +51,12 @@ export function SiteHeader() {
         <div className="hidden shrink-0 items-center gap-2 xl:flex">
           <Link href="/admin" className="btn btn-primary">Moj portal</Link>
         </div>
-        <details ref={menu} className="group relative ml-auto xl:hidden">
+        <details ref={menu} className="group relative ml-auto xl:hidden" onKeyDown={(event) => {
+          if (event.key === "Escape" && menu.current?.open) {
+            closeMenu();
+            menu.current?.querySelector("summary")?.focus();
+          }
+        }}>
           <summary className="flex h-11 w-11 list-none items-center justify-center rounded-md border border-[#b8c6d2] bg-white text-[#173b63]" aria-label="Otvori meni">
             <Menu size={22} className="group-open:hidden" aria-hidden="true"/>
             <X size={21} className="hidden group-open:block" aria-hidden="true"/>
