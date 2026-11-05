@@ -27,7 +27,7 @@ export async function createNewsAction(data: FormData) {
         ...input,
         slug: toSlug(input.title) + "-" + randomUUID().slice(0, 7),
         authorId: actor.id,
-        status: desiredStatus,
+        status: publish ? "PUBLISHED" : "DRAFT",
         publishedAt: publish ? new Date() : null,
       },
     });
