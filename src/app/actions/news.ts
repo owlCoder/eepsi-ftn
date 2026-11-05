@@ -83,7 +83,7 @@ export async function togglePublishNewsAction(data: FormData) {
   // A stale editor must not publish or withdraw content changed in another tab.
   if (news.updatedAt.getTime() !== expectedUpdatedAt.getTime()) redirect("/admin/novosti?error=stale");
   if (news.status === desiredStatus) redirect("/admin/novosti?unchanged=1");
-  await db.$transaction(async (tx) => {
+  const updated = await db.$transaction(async (tx) => {
     const result = await tx.news.updateMany({
       where: { id, status: news.status, updatedAt: expectedUpdatedAt },
       data: {
@@ -91,11 +91,14 @@ export async function togglePublishNewsAction(data: FormData) {
         publishedAt: publish ? new Date() : null,
       },
     });
-    if (result.count !== 1) throw new Error("Status novosti je u međuvremenu promenjen.");
+    if (result.count !== 1) return false;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: publish ? "news.publish" : "news.unpublish", subjectType: "News", subjectId: id },
     });
+    return true;
   });
+  // A concurrent edit after the initial read is also a stale form, not a server error.
+  if (!updated) redirect("/admin/novosti?error=stale");
   revalidatePath("/");
   revalidatePath("/novosti");
   revalidatePath("/novosti/" + news.slug);
