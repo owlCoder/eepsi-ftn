@@ -11,9 +11,13 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 
 > **Status:** Funkcionalna razvojna osnova. Repozitorijum je prethodno bio prazan; ovaj projekat **nije automatski preuzeo sadržaj** sa starog EEPSI sajta i nije javno deployovan. Nisu sprovedeni nezavisan produkcioni pentest i kompletan audit pristupačnosti.
 
+## Dizajn i organizacija
+
+Portal koristi akademski orijentisan UI: direktna pretraga predmeta na početnoj, jasna navigacija, pregledne liste i jedinstvenu tamnoplavu paletu. Informaciona arhitektura, raspored stranica, pravila tekstova i UX kriterijumi dokumentovani su u [docs/ACADEMIC_REDESIGN.md](docs/ACADEMIC_REDESIGN.md).
+
 ## Šta portal sadrži
 
-- **Javni sajt:** početna, o katedri, istraživanja, saradnja sa privredom, Smart Grid laboratorija, katalog predmeta sa filtrima za nivo studija i semestar, stranice predmeta sa grupisanim nastavnim materijalima, nastavni tim (`/nastavnici`) i pretražive novosti.
+- **Javni sajt:** početna, o katedri, istraživanja, saradnja sa privredom, Smart Grid laboratorija, katalog predmeta sa filtrima za nivo studija i semestar, stranice predmeta sa grupisanim nastavnim materijalima, nastavno osoblje (`/nastavnici`), pretraživa obaveštenja i zasebna kontakt-stranica (`/kontakt`).
 - **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga, opoziv starih JWT sesija preko `sessionVersion` i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
 - **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, kategorizacija/uređivanje materijala i upravljanje korisnicima; super administrator dodeljuje nastavni tim direktno sa stranice predmeta. Tu su i audit log i profil sa promenom lozinke.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.

@@ -42,7 +42,7 @@ export function LoginForm() {
         <div className="relative">
           <input id="password" name="password" type={passwordVisible ? "text" : "password"}
             required autoComplete="current-password" className="input-field !pr-14" placeholder="Unesite lozinku"/>
-          <button type="button" className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-teal-50 hover:text-teal-800"
+          <button type="button" className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-md text-[#556777] hover:bg-[#eaf1f8] hover:text-[#173b63]"
             aria-label={passwordVisible ? "Sakrij lozinku" : "Prikaži lozinku"}
             aria-pressed={passwordVisible}
             onClick={() => setPasswordVisible((value) => !value)}>

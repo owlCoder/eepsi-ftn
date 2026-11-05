@@ -1,13 +1,15 @@
 export default function Loading() {
   return (
-    <div className="container-page py-18" role="status" aria-label="Učitavanje stranice">
-      <div className="h-4 w-32 animate-pulse rounded-lg bg-teal-200"/>
-      <div className="mt-6 h-10 max-w-3xl animate-pulse rounded-lg bg-slate-200"/>
-      <div className="mt-4 h-5 max-w-xl animate-pulse rounded-lg bg-slate-100"/>
-      <div className="mt-10 grid gap-5 md:grid-cols-3">
-        {Array.from({ length: 3 }, (_, i) => <div key={i} className="card-surface h-54 animate-pulse bg-white"/>)}
+    <div className="container-page py-12 md:py-16" role="status" aria-label="Učitavanje stranice">
+      <p className="mb-5 text-sm font-semibold text-[#556777]">Učitavanje sadržaja…</p>
+      <div className="h-8 max-w-xl animate-pulse rounded-md bg-[#dce3e9]"/>
+      <div className="mt-4 h-4 max-w-2xl animate-pulse rounded bg-[#e6ebef]"/>
+      <div className="mt-8 overflow-hidden rounded-lg border border-[#dce3e9] bg-white">
+        {Array.from({ length: 4 }, (_, i) => <div key={i} className="flex gap-5 border-b border-[#dce3e9] p-5 last:border-b-0">
+          <div className="h-4 w-20 shrink-0 animate-pulse rounded bg-[#e6ebef]"/>
+          <div className="h-4 w-full max-w-lg animate-pulse rounded bg-[#e6ebef]"/>
+        </div>)}
       </div>
-      <span className="sr-only">Učitavanje…</span>
     </div>
   );
 }

@@ -1,16 +1,21 @@
 "use client";
 
 import { useEffect } from "react";
-import { AlertTriangle, RotateCcw } from "lucide-react";
+import Link from "next/link";
 
 export default function ErrorPage({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {
   useEffect(() => { console.error("EEPSI route error", error.digest ?? "unknown"); }, [error]);
   return (
-    <div className="container-page py-28 text-center">
-      <AlertTriangle className="mx-auto text-amber-600" size={40}/>
-      <h1 className="mt-5 text-3xl font-extrabold tracking-tight">Nije moguće učitati stranicu.</h1>
-      <p className="section-copy mx-auto mt-4 max-w-lg">Došlo je do privremenog problema. Pokušajte ponovo ili se vratite na početnu stranicu.</p>
-      <button className="btn btn-primary mt-8" onClick={() => reset()}><RotateCcw size={18}/> Pokušaj ponovo</button>
+    <div className="container-page py-16 md:py-24">
+      <div className="max-w-[650px]">
+        <p className="eyebrow mb-3">Greška pri učitavanju</p>
+        <h1 className="page-title">Stranica trenutno nije dostupna</h1>
+        <p className="section-copy mt-4">Došlo je do problema pri učitavanju. Pokušajte ponovo ili se vratite na početnu stranu.</p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <button className="btn btn-primary" type="button" onClick={reset}>Pokušaj ponovo</button>
+          <Link href="/" className="btn btn-light">Početna strana</Link>
+        </div>
+      </div>
     </div>
   );
 }

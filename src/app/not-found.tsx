@@ -1,6 +1,17 @@
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
 
 export default function NotFound() {
-  return <div className="container-page py-28 text-center"><p className="eyebrow">Greška 404</p><h1 className="mt-4 text-5xl font-extrabold tracking-tight">Stranica nije pronađena.</h1><p className="section-copy mt-5">Tražena stranica ne postoji ili više nije dostupna.</p><Link href="/" className="btn btn-primary mt-8"><ArrowLeft size={17}/> Povratak na početnu</Link></div>;
+  return (
+    <div className="container-page py-16 md:py-24">
+      <div className="max-w-[650px]">
+        <p className="eyebrow mb-3">Greška 404</p>
+        <h1 className="page-title">Stranica nije pronađena</h1>
+        <p className="section-copy mt-4">Adresa možda nije ispravna ili stranica više nije dostupna. Do informacija možete doći kroz katalog predmeta ili glavnu navigaciju.</p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <Link href="/" className="btn btn-primary">Početna strana</Link>
+          <Link href="/predmeti" className="btn btn-light">Katalog predmeta</Link>
+        </div>
+      </div>
+    </div>
+  );
 }
