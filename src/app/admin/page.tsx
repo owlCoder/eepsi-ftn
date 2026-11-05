@@ -1,8 +1,7 @@
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, BookOpen, Newspaper, UserRound, Users } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { currentUser } from "@/application/authorization";
 import { db } from "@/infrastructure/db/prisma";
-import { roleLabels } from "@/domain/authorization/permissions";
 
 export default async function AdminDashboard() {
   const actor = await currentUser();
@@ -11,7 +10,6 @@ export default async function AdminDashboard() {
   const isFaculty = actor.role === "PROFESSOR" || actor.role === "ASSISTANT";
   const canNews = actor.role === "SUPER_ADMIN" || actor.role === "EDITOR";
   const canManageUsers = actor.role === "SUPER_ADMIN";
-
   const [coursesCount, newsCount, usersCount, recentNews, ownCourses] = await Promise.all([
     db.course.count({ where: isFaculty ? { memberships: { some: { userId: actor.id } } } : {} }),
     db.news.count({ where: canNews ? {} : { status: "PUBLISHED" } }),
@@ -19,94 +17,60 @@ export default async function AdminDashboard() {
     db.news.findMany({
       where: { status: "PUBLISHED" },
       select: { id: true, title: true, slug: true, publishedAt: true },
-      orderBy: { publishedAt: "desc" },
-      take: 4,
+      orderBy: { publishedAt: "desc" }, take: 4,
     }),
     isFaculty ? db.course.findMany({
       where: { memberships: { some: { userId: actor.id } } },
       select: { id: true, title: true, code: true, _count: { select: { materials: true } } },
-      orderBy: { title: "asc" },
-      take: 6,
+      orderBy: { title: "asc" }, take: 6,
     }) : Promise.resolve([]),
   ]);
-
-  const metrics = [
-    { label: isFaculty ? "Moji predmeti" : "Predmeti", value: coursesCount, href: isStudent ? "/predmeti" : "/admin/predmeti" },
-    { label: canNews ? "Sve novosti" : "Objavljene novosti", value: newsCount, href: canNews ? "/admin/novosti" : "/novosti" },
-    ...(usersCount === null ? [] : [{ label: "Korisnički nalozi", value: usersCount, href: "/admin/korisnici" }]),
+  const quickActions = [
+    { href: isStudent ? "/predmeti" : "/admin/predmeti", title: isStudent ? "Katalog predmeta" : isFaculty ? "Moji predmeti" : "Upravljanje predmetima", description: isStudent ? "Pronađite predmete i materijale" : "Pregled predmeta i nastavnih materijala" },
+    ...(canNews ? [{ href: "/admin/novosti", title: "Uređivanje obaveštenja", description: "Kreirajte, ažurirajte i objavite obaveštenja" }] : []),
+    ...(canManageUsers ? [{ href: "/admin/korisnici", title: "Korisnički nalozi", description: "Uloge, pristup i angažovanja na predmetima" }] : []),
+    { href: "/admin/profil", title: "Moj profil", description: "Lični podaci i promena lozinke" },
   ];
-  const actions = [
-    ...(canNews ? [{ href: "/admin/novosti", label: "Napiši ili uredi novost", icon: Newspaper }] : []),
-    { href: isStudent ? "/predmeti" : "/admin/predmeti", label: isStudent ? "Pretraži katalog predmeta" : isFaculty ? "Uredi moje predmete" : "Upravljaj predmetima", icon: BookOpen },
-    ...(canManageUsers ? [{ href: "/admin/korisnici", label: "Upravljaj nalozima i pristupom", icon: Users }] : []),
-    { href: "/admin/profil", label: "Profil i lozinka", icon: UserRound },
-  ];
-  return <div className="space-y-10">
-    <header className="border-b border-[#abb7b2] pb-7">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <p className="eyebrow mb-4">{isStudent ? "Studentski prostor" : "EEPSI / Radni prostor"}</p>
-          <h1 className="display-serif text-4xl md:text-5xl">{isStudent ? "Moj portal" : "Pregled rada"}</h1>
-          <p className="mt-4 max-w-xl text-sm leading-7 text-[#5a6b6d]">
-            {isStudent ? "Pronađite predmete, materijale i obaveštenja katedre." :
-              isFaculty ? "Brz pristup predmetima na kojima ste angažovani i nastavnim materijalima." :
-                "Sadržaj portala, aktuelna obaveštenja i urednički zadaci."}
-          </p>
-        </div>
-        <div className="border-l-2 border-[#b34b2c] pl-4">
-          <span className="meta-label block">Prijavljen nalog</span>
-          <strong className="mt-1 block text-sm">{actor.name}</strong>
-          <span className="meta-label mt-1 block">{roleLabels[actor.role]}</span>
-        </div>
-      </div>
-    </header>
-
-    <section aria-labelledby="overview-counts">
-      <div className="section-index"><span>01 / Stanje portala</span><span>Brojevi iz baze</span></div>
-      <h2 id="overview-counts" className="sr-only">Pregled sadržaja</h2>
-      <div className="grid border-l border-t border-[#d3d6ce] sm:grid-cols-2 xl:grid-cols-3">
-        {metrics.map(item => <Link key={item.label} href={item.href} className="group flex min-h-32 flex-col justify-between gap-5 border-b border-r border-[#d3d6ce] bg-[#fffefa] p-5 hover:bg-[#f8eee1]">
-          <div className="flex items-center justify-between gap-3"><span className="meta-label">{item.label}</span><ArrowUpRight className="text-[#b34b2c]" size={16}/></div>
-          <strong className="font-mono text-4xl font-semibold tabular-nums tracking-tight">{item.value}</strong>
-        </Link>)}
-      </div>
-    </section>
-
-    <div className="grid items-start gap-10 xl:grid-cols-[1.08fr_.92fr]">
-      <section>
-        <div className="section-index"><span>02 / Brze akcije</span><span>Upravljanje</span></div>
-        <h2 className="display-serif mb-6 text-2xl">Šta želite da uradite?</h2>
-        <div className="divide-y divide-[#d3d6ce] border-t border-b border-[#d3d6ce]">
-          {actions.map(({ href, label, icon: Icon }, i) => <Link href={href} key={href} className="group flex items-center gap-4 py-5 text-sm font-semibold text-[#1a2c31] hover:text-[#8b371d]">
-            <span className="num-marker w-7 shrink-0">{String(i + 1).padStart(2, "0")}</span>
-            <Icon size={19} className="shrink-0 text-[#205d57]" aria-hidden="true"/>
-            <span className="flex-1">{label}</span>
-            <ArrowRight size={17} className="text-[#b34b2c]" aria-hidden="true"/>
+  return (
+    <div className="space-y-9">
+      <header>
+        <p className="eyebrow mb-2">{isStudent ? "Studentski pristup" : "Administracija portala"}</p>
+        <h1 className="page-title">Moj portal</h1>
+        <p className="section-copy mt-3 max-w-2xl">{isStudent ? "Brz pristup predmetima, materijalima i obaveštenjima." : isFaculty ? "Rad sa predmetima i materijalima na kojima ste angažovani." : "Pregled sadržaja i dostupnih zadataka za vašu korisničku ulogu."}</p>
+      </header>
+      <section aria-labelledby="quick-actions-title">
+        <h2 id="quick-actions-title" className="mb-4 text-xl font-bold">Brze radnje</h2>
+        <div className="grid gap-3 md:grid-cols-2">
+          {quickActions.map(item => <Link key={item.href} href={item.href} className="card-surface card-interactive flex min-h-[112px] items-start justify-between gap-5 p-5">
+            <span><strong className="block text-base text-[#173b63]">{item.title}</strong><span className="mt-2 block text-sm leading-6 text-[#556777]">{item.description}</span></span>
+            <ArrowRight size={18} className="mt-1 shrink-0 text-[#173b63]" aria-hidden="true"/>
           </Link>)}
         </div>
       </section>
-      <section>
-        <div className="section-index"><span>03 / Aktuelnosti</span><span>Poslednje objave</span></div>
-        <div className="mb-6 flex items-center justify-between gap-4">
-          <h2 className="display-serif text-2xl">Novosti</h2>
-          <Link href="/novosti" className="text-xs font-bold text-[#8b371d] underline">Sve novosti</Link>
-        </div>
-        {recentNews.length ? <div className="divide-y divide-[#d3d6ce] border-t border-[#d3d6ce]">{recentNews.map(item =>
-          <Link key={item.id} href={"/novosti/" + item.slug} className="group flex items-start justify-between gap-4 py-4 text-sm font-semibold hover:text-[#8b371d]">
-            <span>{item.title}<small className="meta-label mt-2 block">{item.publishedAt?.toLocaleDateString("sr-RS")}</small></span>
-            <ArrowUpRight size={16} className="mt-1 shrink-0 text-[#b34b2c]"/>
-          </Link>)}</div> :
-          <p className="border-t border-[#d3d6ce] pt-5 text-sm leading-7 text-[#5a6b6d]">Trenutno nema objavljenih novosti.</p>}
+      <section aria-labelledby="overview-title">
+        <h2 id="overview-title" className="mb-4 text-xl font-bold">Pregled sadržaja</h2>
+        <dl className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <div className="rounded-lg border border-[#dce3e9] bg-white p-5"><dt className="text-sm text-[#556777]">{isFaculty ? "Dodeljeni predmeti" : "Predmeti"}</dt><dd className="mt-2 text-2xl font-bold tabular-nums">{coursesCount}</dd></div>
+          <div className="rounded-lg border border-[#dce3e9] bg-white p-5"><dt className="text-sm text-[#556777]">{canNews ? "Ukupno obaveštenja" : "Objavljena obaveštenja"}</dt><dd className="mt-2 text-2xl font-bold tabular-nums">{newsCount}</dd></div>
+          {usersCount !== null && <div className="rounded-lg border border-[#dce3e9] bg-white p-5"><dt className="text-sm text-[#556777]">Korisnički nalozi</dt><dd className="mt-2 text-2xl font-bold tabular-nums">{usersCount}</dd></div>}
+        </dl>
+      </section>
+      {isFaculty && <section aria-labelledby="assigned-courses">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-4"><h2 id="assigned-courses" className="text-xl font-bold">Predmeti na kojima ste angažovani</h2><Link href="/admin/predmeti" className="text-sm font-semibold text-[#173b63] underline">Svi moji predmeti</Link></div>
+        {ownCourses.length ? <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">{ownCourses.map(course =>
+          <Link href={"/admin/predmeti/" + course.id} key={course.id} className="flex items-center justify-between gap-4 border-b border-[#dce3e9] px-5 py-4 last:border-b-0 hover:bg-[#f5f8fb]">
+            <span><strong className="block text-sm text-[#173b63]">{course.title}</strong><span className="mt-1 block text-xs text-[#556777]">{course.code} · {course._count.materials} materijala</span></span><ArrowRight size={17} className="shrink-0 text-[#173b63]"/>
+          </Link>)}</div> : <p className="empty-state">Trenutno nemate dodeljenih predmeta.</p>}
+      </section>}
+      <section aria-labelledby="portal-news">
+        <div className="mb-4 flex flex-wrap items-end justify-between gap-4"><h2 id="portal-news" className="text-xl font-bold">Poslednja obaveštenja</h2><Link href="/novosti" className="text-sm font-semibold text-[#173b63] underline">Sva obaveštenja</Link></div>
+        {recentNews.length ? <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">{recentNews.map(item =>
+          <Link key={item.id} href={"/novosti/" + item.slug} className="grid gap-2 border-b border-[#dce3e9] px-5 py-4 last:border-b-0 hover:bg-[#f5f8fb] sm:grid-cols-[106px_minmax(0,1fr)_20px] sm:gap-4">
+            <time className="text-xs text-[#556777]" dateTime={item.publishedAt?.toISOString()}>{item.publishedAt?.toLocaleDateString("sr-RS")}</time>
+            <span className="text-sm font-semibold text-[#173b63]">{item.title}</span>
+            <ArrowRight size={16} className="hidden text-[#173b63] sm:block"/>
+          </Link>)}</div> : <p className="empty-state">Trenutno nema objavljenih obaveštenja.</p>}
       </section>
     </div>
-
-    {isFaculty && <section>
-      <div className="section-index"><span>04 / Angažovanja</span><span>Moji predmeti</span></div>
-      <h2 className="display-serif mb-6 text-2xl">Predmeti na kojima ste angažovani</h2>
-      {ownCourses.length ? <div className="grid gap-2 sm:grid-cols-2">{ownCourses.map(course =>
-        <Link href={"/admin/predmeti/" + course.id} key={course.id} className="dashboard-action">
-          <span className="min-w-0"><strong className="block break-words">{course.title}</strong><small className="meta-label mt-1 block">{course.code} / {course._count.materials} materijala</small></span><ArrowRight size={17} className="shrink-0"/>
-        </Link>)}</div> : <p className="text-sm text-[#5a6b6d]">Još nemate dodeljene predmete. Administrator može da vam dodeli angažovanje.</p>}
-    </section>}
-  </div>;
+  );
 }

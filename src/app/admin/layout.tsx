@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { redirect } from "next/navigation";
-import { ShieldCheck } from "lucide-react";
 import { AdminNavigation } from "@/components/admin-navigation";
 import { currentUser } from "@/application/authorization";
 import { roleLabels } from "@/domain/authorization/permissions";
@@ -16,17 +16,20 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   const canUsers = actor.role === "SUPER_ADMIN";
   return (
     <div className="container-page admin-shell">
-      <aside className="admin-sidebar h-fit rounded-2xl border border-slate-200 bg-white p-4 lg:sticky lg:top-[102px]">
-        <div className="mb-5 border-b border-slate-100 px-3 pb-5">
-          <span className="eyebrow"><ShieldCheck size={14}/> EEPSI / Upravljački deo</span>
-          <h2 className="mt-3 text-xl font-extrabold tracking-tight">Radni prostor</h2>
-          <p className="mt-1 text-sm font-semibold text-slate-700">{actor.name}</p>
-          <p className="meta-label mt-2">{roleLabels[actor.role]}</p>
+      <aside className="admin-sidebar h-fit p-4 lg:sticky lg:top-[112px]">
+        <div className="border-b border-[#dce3e9] px-2 pb-5">
+          <p className="text-xs font-bold uppercase tracking-wide text-[#556777]">EEPSI / Portal</p>
+          <h2 className="mt-2 text-lg font-bold">Radni prostor</h2>
+          <p className="mt-4 break-words text-sm font-semibold">{actor.name}</p>
+          <p className="mt-1 text-xs text-[#556777]">{roleLabels[actor.role]}</p>
         </div>
-        <AdminNavigation canNews={canNews} canUsers={canUsers} isStudent={actor.role === "STUDENT"}/>
-        <div className="mt-5 border-t border-slate-100 pt-3"><SignOutButton/></div>
+        <div className="py-4"><AdminNavigation canNews={canNews} canUsers={canUsers} isStudent={actor.role === "STUDENT"}/></div>
+        <div className="border-t border-[#dce3e9] px-2 pt-4">
+          <Link href="/" className="mb-3 inline-block text-xs font-semibold text-[#173b63] underline">← Javni sajt</Link>
+          <SignOutButton/>
+        </div>
       </aside>
-      <section className="admin-pane">{children}</section>
+      <section className="admin-pane min-w-0">{children}</section>
     </div>
   );
 }
