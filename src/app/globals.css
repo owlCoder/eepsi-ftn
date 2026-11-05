@@ -610,3 +610,19 @@ body { background: var(--paper); color: var(--ink); font-size: 15px; }
   .academic-article-heading h1 { font-size: 30px; }
   .academic-article-summary { font-size: 16px; }
 }
+
+
+/* One semantic catalog table; rows adapt to a narrow viewport without duplicate links. */
+@media (max-width: 700px) {
+  .academic-course-table-wrap { display: block; overflow: visible; border: 0; border-radius: 0; background: transparent; }
+  .academic-course-table,.academic-course-table tbody { display: block; width: 100%; }
+  .academic-course-table thead { display: none; }
+  .academic-course-table tbody tr { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px 12px; padding: 15px; margin-bottom: 10px; border: 1px solid #dce3ee; border-radius: 7px; background: #fff; }
+  .academic-course-table tbody tr:last-child { margin-bottom: 0; border-bottom: 1px solid #dce3ee; }
+  .academic-course-table td { display: block; min-width: 0; padding: 0; border: 0; font-size: 13px; }
+  .academic-course-table td:first-child,.academic-course-table td:nth-child(2),.academic-course-table td:last-child { grid-column: 1 / -1; }
+  .academic-course-table td:nth-child(2) { font-size: 14px; }
+  .academic-course-table td:nth-child(3)::before { content: "Nivo: "; color: #66768d; }
+  .academic-course-table td:nth-child(4)::before { content: "Semestar: "; color: #66768d; }
+  .academic-course-table td:last-child { padding-top: 8px; border-top: 1px solid #e5ebf3; }
+}
