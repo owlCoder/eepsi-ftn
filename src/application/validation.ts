@@ -15,7 +15,7 @@ export const courseInput = z.object({
   studyLevel: z.enum(["OAS", "MAS", "DAS"]),
 });
 
-const secureMaterialUrl = z.url().max(1500).refine((value) => {
+const secureMaterialUrl = z.string().trim().pipe(z.url().max(1500)).refine((value) => {
   try {
     const url = new URL(value);
     return url.protocol === "https:" && !url.username && !url.password;
