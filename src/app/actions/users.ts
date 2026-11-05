@@ -223,5 +223,6 @@ export async function updateUserIdentityAction(data: FormData) {
   revalidatePath("/admin");
   revalidatePath("/nastavnici");
   revalidatePath("/predmeti/[slug]", "page");
+  revalidatePath("/novosti/[slug]", "page");
   redirect("/admin/korisnici?details=1");
 }
