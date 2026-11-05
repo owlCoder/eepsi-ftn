@@ -15,12 +15,17 @@ type Props = {
 /** Keyboard-accessible confirmation for destructive server actions. */
 export function ConfirmSubmitButton({ message, children, dialogTitle = "Potvrdite brisanje", confirmLabel = "Potvrdi brisanje", warning = "Ovu radnju nije moguće poništiti.", className = "btn btn-danger", disabled, ...props }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const cancelRef = useRef<HTMLButtonElement>(null);
   const titleId = useId();
   const messageId = useId();
   const { pending } = useFormStatus();
   return <>
     <button {...props} type="button" disabled={pending || disabled} className={className}
-      onClick={() => dialogRef.current?.showModal()}>{children}</button>
+      onClick={() => {
+        dialogRef.current?.showModal();
+        // For destructive changes, the safest choice should receive initial focus.
+        cancelRef.current?.focus();
+      }}>{children}</button>
     <dialog ref={dialogRef} aria-labelledby={titleId} aria-describedby={messageId}
       className="confirm-dialog" onClick={(event) => {
         if (event.target === dialogRef.current) dialogRef.current.close();
@@ -37,7 +42,7 @@ export function ConfirmSubmitButton({ message, children, dialogTitle = "Potvrdit
         <p id={messageId} className="text-sm leading-7 text-slate-600">{message}</p>
         <p className="mt-3 text-xs font-semibold text-rose-700">{warning}</p>
         <div className="mt-7 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-          <button type="button" className="btn btn-light" onClick={() => dialogRef.current?.close()}>Odustani</button>
+          <button ref={cancelRef} type="button" className="btn btn-light" onClick={() => dialogRef.current?.close()}>Odustani</button>
           <button type="submit" className="btn btn-danger" disabled={pending} aria-busy={pending}
             onClick={() => dialogRef.current?.close()}>
             {pending ? "Čuvanje…" : confirmLabel}

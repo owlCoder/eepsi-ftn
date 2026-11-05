@@ -219,9 +219,27 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
     // The same editor flow verifies the confirmation dialog and public removal.
     await page.goto(editUrl);
-    await page.getByRole("button", { name: "Trajno obriši", exact: true }).click();
-    await expect(page.getByRole("dialog", { name: "Potvrdite brisanje" })).toBeVisible();
-    await page.getByRole("button", { name: "Potvrdi brisanje" }).click();
+    const deleteTrigger = page.getByRole("button", { name: "Trajno obriši", exact: true });
+    const deleteDialog = page.getByRole("dialog", { name: "Potvrdite brisanje" });
+    await deleteTrigger.click();
+    await expect(deleteDialog).toBeVisible();
+    const cancelDelete = deleteDialog.getByRole("button", { name: "Odustani" });
+    await expect(cancelDelete).toBeFocused();
+
+    // Neither Escape nor the Cancel button may submit the destructive form.
+    await page.keyboard.press("Escape");
+    await expect(deleteDialog).toBeHidden();
+    await expect(deleteTrigger).toBeFocused();
+    await deleteTrigger.click();
+    await expect(cancelDelete).toBeFocused();
+    await cancelDelete.click();
+    await expect(deleteDialog).toBeHidden();
+
+    await page.goto("/novosti?q=" + marker);
+    await expect(page.getByRole("heading", { name: newsTitle })).toBeVisible();
+    await page.goto(editUrl);
+    await deleteTrigger.click();
+    await deleteDialog.getByRole("button", { name: "Potvrdi brisanje" }).click();
     await expect(page).toHaveURL(/\/admin\/novosti\?deleted=1/);
     await page.goto("/novosti?q=" + marker);
     await expect(page.getByRole("heading", { name: newsTitle })).toHaveCount(0);
@@ -262,6 +280,17 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
       await page.goto("/admin/profil");
       await expect(page.getByRole("heading", { name: "Moj profil" })).toBeVisible();
+      await expect(page.getByLabel("Nova lozinka", { exact: true })).toHaveAttribute("aria-describedby", "password-requirements");
+      await expect(page.getByLabel("Ponovite novu lozinku")).toHaveAttribute("aria-describedby", "password-requirements");
+      await expect(page.locator("#password-requirements")).toContainText("najmanje 12 karaktera");
+
+      await page.getByLabel("Trenutna lozinka").fill(password);
+      await page.getByLabel("Nova lozinka", { exact: true }).fill(updatedPassword);
+      await page.getByLabel("Ponovite novu lozinku").fill(updatedPassword + "-different");
+      await page.getByRole("button", { name: "Promeni lozinku" }).click();
+      await expect(page.getByRole("alert")).toContainText("Nove lozinke se ne poklapaju.");
+
+      // A rejected form must remain usable for a corrected, successful submission.
       await page.getByLabel("Trenutna lozinka").fill(password);
       await page.getByLabel("Nova lozinka", { exact: true }).fill(updatedPassword);
       await page.getByLabel("Ponovite novu lozinku").fill(updatedPassword);
