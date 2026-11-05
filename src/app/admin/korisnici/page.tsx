@@ -2,9 +2,10 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { readPage } from "@/lib/pagination";
 import { ShieldCheck, UserPlus, Users, KeyRound, Pencil } from "lucide-react";
+import { UserAccessForm } from "@/components/user-access-form";
 import { SubmitButton } from "@/components/submit-button";
 import { can } from "@/application/authorization";
-import { assignCourseMemberAction, createUserAction, revokeCourseMemberAction, updateUserAccessAction, resetUserPasswordAction, updateUserIdentityAction } from "@/app/actions/users";
+import { assignCourseMemberAction, createUserAction, revokeCourseMemberAction, resetUserPasswordAction, updateUserIdentityAction } from "@/app/actions/users";
 import { roleLabels, roles } from "@/domain/authorization/permissions";
 import { db } from "@/infrastructure/db/prisma";
 
@@ -96,20 +97,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
           <td data-label="Status"><span className={user.active ? "pill" : "pill pill-neutral"}>{user.active ? "Aktivan" : "Neaktivan"}</span></td>
           <td data-label="Upravljanje">{user.role === "SUPER_ADMIN" ? <span className="text-xs font-bold text-slate-500">Zaštićen nalog</span> :
             <div className="space-y-3">
-              <form action={updateUserAccessAction} className="flex flex-wrap items-center gap-2">
-                <input type="hidden" name="id" value={user.id}/>
-                <select name="role" defaultValue={user.role} className="input-field !w-auto min-w-32 flex-1" aria-label={"Uloga za "+user.name}>
-                  <option value="STUDENT">Student</option>
-                  <option value="ASSISTANT">Saradnik</option>
-                  <option value="PROFESSOR">Nastavnik</option>
-                  <option value="EDITOR">Urednik</option>
-                </select>
-                <select name="active" defaultValue={String(user.active)} className="input-field !w-auto min-w-28 flex-1" aria-label={"Status za "+user.name}>
-                  <option value="true">Aktivan</option>
-                  <option value="false">Neaktivan</option>
-                </select>
-                <SubmitButton className="btn btn-light whitespace-nowrap">Sačuvaj</SubmitButton>
-              </form>
+              <UserAccessForm id={user.id} name={user.name} initialRole={user.role} initialActive={user.active}/>
               <details className="max-w-md rounded-xl border border-slate-200 p-3">
                 <summary className="flex items-center gap-2 text-xs font-bold text-slate-600"><Pencil size={15}/> Uredi osnovne podatke</summary>
                 <form action={updateUserIdentityAction} className="mt-3 space-y-3">
