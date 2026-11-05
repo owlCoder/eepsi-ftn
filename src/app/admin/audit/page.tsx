@@ -99,8 +99,8 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
           <td data-label="Resurs" className="max-w-64 break-all text-xs text-slate-500">{entry.subjectType}: {entry.subjectId}</td>
         </tr>)}</tbody>
       </table></div> : <div className="py-8 text-center text-sm text-slate-500">
-        <p className="mb-3">Nema događaja za zadate kriterijume.</p>
-        {(q || type) && <Link href="/admin/audit" className="font-bold text-teal-700 underline">Prikaži sve događaje</Link>}
+        <p className="mb-3">{page > 1 ? "Na ovoj stranici nema audit događaja." : "Nema događaja za zadate kriterijume."}</p>
+        {page > 1 ? <Link href={href(page - 1)} className="font-bold text-teal-700 underline">Vrati se na prethodnu stranicu</Link> : (q || type) && <Link href="/admin/audit" className="font-bold text-teal-700 underline">Prikaži sve događaje</Link>}
       </div>}
     </div>
     <nav className="flex items-center justify-between" aria-label="Stranice audit loga">
