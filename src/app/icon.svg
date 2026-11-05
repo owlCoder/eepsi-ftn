@@ -1,11 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="EEPSI FTN">
-  <defs>
-    <linearGradient id="brand" x1="0" y1="0" x2="1" y2="1">
-      <stop stop-color="#0b9a87"/><stop offset="1" stop-color="#12465c"/>
-    </linearGradient>
-  </defs>
-  <rect width="64" height="64" rx="17" fill="url(#brand)"/>
-  <path d="M12 18c10-3 16 0 20 5 4-5 10-8 20-5v29c-8-2-15 0-20 5-5-5-12-7-20-5V18Z" fill="none" stroke="#e7fff5" stroke-linejoin="round" stroke-width="3.5"/>
-  <path d="M32 23v29M18 27c5-1 8 0 11 2M35 29c3-2 6-3 11-2" stroke="#d4fff0" stroke-linecap="round" stroke-width="2.5" fill="none"/>
-  <path d="m34 17-7 15h8l-4 13 12-19h-8l3-9" fill="#f3e68a" stroke="#e8d782" stroke-linejoin="round" stroke-width="1.3"/>
+  <rect width="64" height="64" fill="#1a2c31"/>
+  <path d="M14 12V52M14 13H39M14 32H33M14 51H39" stroke="#f5f1e6" stroke-width="5" fill="none"/>
+  <path d="M39 13H51V32H33M39 51H51V32" stroke="#dd936f" stroke-width="3" fill="none"/>
+  <rect x="46" y="27" width="10" height="10" fill="#dd936f"/>
 </svg>
