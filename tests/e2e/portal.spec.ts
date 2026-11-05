@@ -417,15 +417,30 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page.locator("main").getByRole("link", { name: "eespsi@uns.ac.rs" })).toBeVisible();
   });
 
-  test("public pages fit a 390px viewport without horizontal scrolling", async ({ page }) => {
-    await page.setViewportSize({ width: 390, height: 844 });
-    for (const route of ["/", "/predmeti", "/nastavnici", "/novosti", "/kontakt", "/prijava", "/o-katedri"]) {
-      await page.goto(route);
-      const dimensions = await page.evaluate(() => ({
-        content: document.documentElement.scrollWidth,
-        viewport: window.innerWidth,
-      }));
-      expect(dimensions.content, `Horizontal overflow on ${route}`).toBeLessThanOrEqual(dimensions.viewport);
+  test("public pages stay usable on small phones, tablets and desktop", async ({ page }) => {
+    for (const width of [320, 390, 768, 1440]) {
+      await page.setViewportSize({ width, height: 900 });
+      await page.goto("/");
+      await expect(page.getByLabel("Naziv ili šifra predmeta")).toBeVisible();
+      await expect(page.getByRole("button", { name: "Pretraži", exact: true })).toBeVisible();
+
+      if (width < 1280) {
+        await expect(page.getByRole("navigation", { name: "Brzi pristup studentima" })
+          .getByRole("link", { name: "Predmeti" })).toBeVisible();
+      } else {
+        await expect(page.getByRole("navigation", { name: "Glavna navigacija" })
+          .getByRole("link", { name: "Predmeti" })).toBeVisible();
+      }
+
+      for (const route of ["/", "/predmeti", "/nastavnici", "/novosti", "/kontakt", "/prijava", "/o-katedri"]) {
+        await page.goto(route);
+        const dimensions = await page.evaluate(() => ({
+          content: document.documentElement.scrollWidth,
+          viewport: window.innerWidth,
+        }));
+        expect(dimensions.content, `Horizontal overflow on ${route} at ${width}px`)
+          .toBeLessThanOrEqual(dimensions.viewport);
+      }
     }
   });
 });
