@@ -10,6 +10,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: new URL("/", origin).toString(), changeFrequency: "weekly", priority: 1 },
     { url: new URL("/o-katedri", origin).toString(), changeFrequency: "monthly", priority: 0.7 },
     { url: new URL("/predmeti", origin).toString(), changeFrequency: "weekly", priority: 0.9 },
+    { url: new URL("/istrazivanje", origin).toString(), changeFrequency: "monthly", priority: 0.6 },
+    { url: new URL("/saradnja", origin).toString(), changeFrequency: "monthly", priority: 0.6 },
+    { url: new URL("/laboratorija", origin).toString(), changeFrequency: "monthly", priority: 0.6 },
     { url: new URL("/nastavnici", origin).toString(), changeFrequency: "weekly", priority: 0.7 },
     { url: new URL("/novosti", origin).toString(), changeFrequency: "daily", priority: 0.8 },
     ...courses.map(({ slug }) => ({

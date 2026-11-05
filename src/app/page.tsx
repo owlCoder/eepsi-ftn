@@ -42,10 +42,17 @@ export default async function Home() {
         </div>
         <div className="grid gap-5 md:grid-cols-3">
           {[
-            { icon: BookOpen, title: "Nastava i učenje", desc: "Akademski predmeti, materijali i podrška studentima na jednom preglednom mestu." },
-            { icon: Lightbulb, title: "Istraživanje", desc: "Razvoj ideja iz oblasti elektroenergetike, digitalizacije i savremenih informacionih sistema." },
-            { icon: Activity, title: "Primena u praksi", desc: "Povezivanje istraživanja i privrede kroz konkretna inženjerska rešenja." },
-          ].map((item) => <div key={item.title} className="card-surface p-8"><div className="feature-icon"><item.icon size={26}/></div><h3 className="mt-7 text-xl font-extrabold tracking-tight">{item.title}</h3><p className="mt-3 text-sm leading-7 text-slate-600">{item.desc}</p></div>)}
+            { icon: BookOpen, href: "/predmeti", title: "Nastava i učenje", desc: "Akademski predmeti, materijali i podrška studentima na jednom preglednom mestu." },
+            { icon: Lightbulb, href: "/istrazivanje", title: "Istraživanje", desc: "Razvoj ideja iz oblasti elektroenergetike, digitalizacije i savremenih informacionih sistema." },
+            { icon: Activity, href: "/saradnja", title: "Primena u praksi", desc: "Povezivanje istraživanja i privrede kroz konkretna inženjerska rešenja." },
+          ].map((item) => <Link key={item.title} href={item.href} className="card-surface card-interactive group block p-8">
+              <div className="flex items-center justify-between gap-3">
+                <div className="feature-icon"><item.icon size={26}/></div>
+                <ArrowUpRight size={19} className="text-slate-400 group-hover:text-teal-700"/>
+              </div>
+              <h3 className="mt-7 text-xl font-extrabold tracking-tight">{item.title}</h3>
+              <p className="mt-3 text-sm leading-7 text-slate-600">{item.desc}</p>
+            </Link>)}
         </div>
       </section>
       <section className="bg-[#ecf4f4] py-20 md:py-24">

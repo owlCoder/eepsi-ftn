@@ -13,7 +13,7 @@ Next.js App Router, TypeScript, MySQL, Prisma, server-side RBAC, Clean Architect
 
 ## Šta portal sadrži
 
-- **Javni sajt:** početna, o katedri, katalog predmeta sa filtrima za nivo studija i semestar, stranice predmeta sa grupisanim nastavnim materijalima, nastavni tim (`/nastavnici`) i pretražive novosti.
+- **Javni sajt:** početna, o katedri, istraživanja, saradnja sa privredom, Smart Grid laboratorija, katalog predmeta sa filtrima za nivo studija i semestar, stranice predmeta sa grupisanim nastavnim materijalima, nastavni tim (`/nastavnici`) i pretražive novosti.
 - **Autentifikacija:** email + lozinka preko NextAuth Credentials, bcrypt, provera aktivnog naloga, opoziv starih JWT sesija preko `sessionVersion` i DB-backed ograničenje neuspešnih pokušaja (5 na 15 minuta za postojeće aktivne naloge).
 - **Admin panel:** urednički tok nacrt/objava, upravljanje predmetima, kategorizacija/uređivanje materijala i upravljanje korisnicima; super administrator dodeljuje nastavni tim direktno sa stranice predmeta. Tu su i audit log i profil sa promenom lozinke.
 - **RBAC:** pet globalnih uloga i predmetno ograničene privilegije nastavnika i saradnika; dozvole se proveravaju na serveru.
@@ -201,3 +201,7 @@ Zatim commituj `prisma/schema.prisma` i novu SQL migraciju. Za CI/produkciju kor
 Pogledaj [AGENTS.md](./AGENTS.md) pre izmene koda. Promene treba da budu fokusirane, testirane i bez osetljivih podataka.
 
 **Licenca:** Za sada nije dodat `LICENSE` fajl. Javno dostupan kod nije automatski open-source licenciran; prava upotrebe ostaju kod nosioca autorskih prava dok se licenca ne odredi.
+
+### Izvori informativnih stranica
+
+Stranice o naučnom radu, industrijskoj saradnji i Smart Grid laboratoriji sadrže sažet pregled na osnovu javnih informacija sa zvanične prezentacije Katedre: [istraživanje](https://www.eepsi.ftn.uns.ac.rs/nau%C4%8Dno-istra%C5%BEiva%C4%8Dki-rad), [saradnja](https://www.eepsi.ftn.uns.ac.rs/saradnja-sa-privredom), [laboratorija](https://www.eepsi.ftn.uns.ac.rs/smart-grid-lab). Istorijski navedeni partneri ne predstavljaju automatski potvrdu trenutno aktivnih ugovora. Nisu kopirane fotografije, privatna dokumenta ili kompletna arhiva.

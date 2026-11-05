@@ -16,13 +16,16 @@ export function SiteFooter() {
             <Link href="/nastavnici">Nastavni tim</Link>
             <Link href="/novosti">Novosti i obaveštenja</Link>
             <Link href="/o-katedri">O katedri</Link>
+            <Link href="/istrazivanje">Istraživanje</Link>
+            <Link href="/saradnja">Saradnja sa privredom</Link>
+            <Link href="/laboratorija">Smart Grid laboratorija</Link>
             <Link href="/prijava">Prijava</Link>
           </div>
         </div>
         <div>
           <h3 className="mb-5 text-sm font-bold uppercase tracking-widest text-white">Kontakt</h3>
           <div className="grid gap-4 text-sm">
-            <span className="flex gap-3"><MapPin size={17} className="shrink-0 text-teal-300"/> Fruškogorska 11, Novi Sad</span>
+            <span className="flex gap-3"><MapPin size={17} className="shrink-0 text-teal-300"/> Fruškogorska 11, NTP, 2. sprat, kanc. 223</span>
             <a href="mailto:eespsi@uns.ac.rs" className="flex gap-3"><Mail size={17} className="shrink-0 text-teal-300"/> eespsi@uns.ac.rs <ArrowUpRight size={13}/></a>
             <a href="tel:+381214854533" className="flex gap-3"><Phone size={17} className="shrink-0 text-teal-300"/> 021/485-4533</a>
           </div>
