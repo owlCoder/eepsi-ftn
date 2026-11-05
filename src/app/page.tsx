@@ -1,94 +1,82 @@
 import Link from "next/link";
-import { ArrowRight, Search } from "lucide-react";
+import { ArrowRight, ArrowUpRight, BookOpen, MapPin, Search, UsersRound } from "lucide-react";
+import { CourseCard } from "@/components/content-cards";
 import { latestNews, featuredCourses } from "@/infrastructure/repositories/content";
 
 export const revalidate = 300;
 
 export default async function Home() {
-  const [news, courses] = await Promise.all([latestNews(5), featuredCourses(6)]);
+  const [news, courses] = await Promise.all([latestNews(4), featuredCourses(6)]);
 
   return (
     <>
-      <section className="border-b border-[#dce3e9] bg-white">
-        <div className="container-page py-6 md:py-9">
-          <p className="mb-2 text-xs font-semibold text-[#556777]">EEPSI · Fakultet tehničkih nauka, Novi Sad</p>
-          <h1 className="text-[clamp(27px,3.2vw,38px)] font-bold leading-tight tracking-tight text-[#182b3c]">Predmeti i obaveštenja</h1>
-          <p className="mt-2 text-sm text-[#556777]">Informacije o nastavi dostupne su svima, bez prijave na portal.</p>
-          <form action="/predmeti" role="search" className="mt-5 max-w-3xl">
-            <label htmlFor="home-course-search" className="form-label">Naziv ili šifra predmeta</label>
-            <div className="flex flex-col gap-2 sm:flex-row">
-              <input id="home-course-search" name="q" type="search" maxLength={80}
-                className="input-field flex-1 !min-h-12 !text-base" placeholder="Pretražite predmet po nazivu ili šifri"/>
-              <button className="btn btn-primary !min-h-12 sm:shrink-0" type="submit">
-                <Search size={18} aria-hidden="true"/> Pretraži predmete
-              </button>
+      <section className="portal-hero" aria-labelledby="home-title">
+        <div className="container-page grid items-center gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(320px,.85fr)] lg:gap-14">
+          <div className="min-w-0">
+            <p className="hero-kicker">EEPSI / PORTAL KATEDRE</p>
+            <h1 id="home-title" className="hero-heading">Predmeti i materijali.<br/><span>Bez lutanja.</span></h1>
+            <p className="hero-description">Pronađi svoj predmet, otvori materijale i proveri obaveštenja. Sve najvažnije informacije su javno dostupne, bez prijave.</p>
+            <form action="/predmeti" role="search" className="mt-7">
+              <label htmlFor="home-course-search" className="mb-2 block text-xs font-bold text-[#d5def5]">Naziv ili šifra predmeta</label>
+              <div className="hero-search !mt-0">
+                <input id="home-course-search" name="q" type="search" maxLength={80} placeholder="Unesi naziv ili šifru predmeta"/>
+                <button type="submit"><Search size={19} aria-hidden="true"/> Pretraži</button>
+              </div>
+            </form>
+            <nav aria-label="Najvažnije informacije" className="hero-access">
+              <Link href="/predmeti">Svi predmeti <ArrowUpRight size={13} className="inline" aria-hidden="true"/></Link>
+              <Link href="/novosti">Sva obaveštenja <ArrowUpRight size={13} className="inline" aria-hidden="true"/></Link>
+              <Link href="/nastavnici">Nastavno osoblje</Link>
+            </nav>
+          </div>
+          <section className="hero-news" aria-labelledby="home-news-heading">
+            <div className="hero-news-header">
+              <div><p className="section-kicker !mb-1">AKTUELNO</p><h2 id="home-news-heading">Najnovija obaveštenja</h2></div>
+              <Link href="/novosti" className="whitespace-nowrap">Sva <ArrowRight size={14} className="inline" aria-hidden="true"/></Link>
             </div>
-          </form>
-          <nav aria-label="Najvažnije informacije" className="mt-4 flex flex-wrap gap-x-6 gap-y-2 text-sm font-semibold">
-            <Link href="/predmeti" className="text-[#173b63] underline">Svi predmeti</Link>
-            <Link href="/novosti" className="text-[#173b63] underline">Sva obaveštenja</Link>
-            <Link href="/nastavnici" className="text-[#173b63] underline">Nastavno osoblje</Link>
-          </nav>
+            {news.length ? <div>
+              {news.map(item => <Link key={item.id} href={"/novosti/" + item.slug} className="hero-news-item">
+                <time dateTime={item.publishedAt?.toISOString()}>{item.publishedAt?.toLocaleDateString("sr-RS") ?? "Obaveštenje"}</time>
+                <strong>{item.title}</strong>
+              </Link>)}
+            </div> : <p className="px-5 py-8 text-sm text-[#68768d]">Trenutno nema objavljenih obaveštenja.</p>}
+          </section>
         </div>
       </section>
 
-      <div className="container-page grid gap-7 py-7 md:py-9 lg:grid-cols-2 lg:gap-9">
-        <section aria-labelledby="home-news-heading" className="min-w-0">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <h2 id="home-news-heading" className="text-xl font-bold">Najnovija obaveštenja</h2>
-            <Link href="/novosti" className="inline-flex items-center gap-1 text-sm font-semibold text-[#173b63] underline">Cela lista <ArrowRight size={15} aria-hidden="true"/></Link>
-          </div>
-          {news.length ? (
-            <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">
-              <ul className="divide-y divide-[#dce3e9]">
-                {news.map((item) => (
-                  <li key={item.id}>
-                    <Link href={"/novosti/" + item.slug} className="group block px-4 py-3.5 hover:bg-[#f1f5f9] focus-visible:bg-[#f1f5f9]">
-                      <time dateTime={item.publishedAt?.toISOString()} className="text-xs font-medium text-[#556777]">{item.publishedAt?.toLocaleDateString("sr-RS") ?? "Obaveštenje"}</time>
-                      <span className="mt-1 block font-semibold leading-snug text-[#173b63] group-hover:underline">{item.title}</span>
-                      <span className="mt-1 block line-clamp-1 text-sm text-[#556777]">{item.summary}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : <p className="empty-state !text-left">Trenutno nema objavljenih obaveštenja.</p>}
-        </section>
-
-        <section aria-labelledby="home-courses-heading" className="min-w-0">
-          <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-            <h2 id="home-courses-heading" className="text-xl font-bold">Predmeti</h2>
-            <Link href="/predmeti" className="inline-flex items-center gap-1 text-sm font-semibold text-[#173b63] underline">Ceo katalog <ArrowRight size={15} aria-hidden="true"/></Link>
-          </div>
-          {courses.length ? (
-            <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">
-              <ul className="divide-y divide-[#dce3e9]">
-                {courses.map((item) => (
-                  <li key={item.id} className="flex items-center gap-3 px-4 py-3.5 hover:bg-[#f1f5f9]">
-                    <div className="min-w-0 flex-1">
-                      <span className="block text-xs text-[#556777]">{item.code} · {item.studyLevel} · {item.semester}. semestar</span>
-                      <Link href={"/predmeti/" + item.slug} className="mt-1 inline-block font-semibold leading-snug text-[#173b63] underline-offset-4 hover:underline">{item.title}</Link>
-                    </div>
-                    <Link href={"/predmeti/" + item.slug + "#materijali"} className="shrink-0 text-xs font-semibold text-[#173b63] underline">Materijali</Link>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ) : <p className="empty-state !text-left">Predmeti će biti prikazani kada budu uneti u katalog.</p>}
-        </section>
-      </div>
-
-      <section className="border-t border-[#dce3e9] bg-white">
-        <div className="container-page grid gap-6 py-7 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:py-9">
+      <section className="home-section container-page" aria-labelledby="home-courses-heading">
+        <div className="mb-7 flex flex-wrap items-end justify-between gap-5">
           <div>
-            <h2 className="text-lg font-bold">Katedra za elektroenergetiku i primenjeno softversko inženjerstvo</h2>
-            <p className="mt-2 text-sm leading-6 text-[#556777]">Informacije o nastavnom osoblju, istraživanju i radu katedre na Fakultetu tehničkih nauka.</p>
+            <p className="section-kicker">NASTAVA / PREDMETI</p>
+            <h2 id="home-courses-heading" className="home-section-title">Pronađi svoj predmet.</h2>
+            <p className="mt-2 text-sm text-[#65728a]">Otvori stranicu predmeta ili idi pravo na materijale.</p>
           </div>
-          <nav aria-label="Ostale informacije" className="grid gap-2 text-sm font-semibold sm:grid-cols-2">
-            <Link href="/nastavnici" className="text-[#173b63] underline">Nastavno osoblje</Link>
-            <Link href="/kontakt" className="text-[#173b63] underline">Kontakt</Link>
-            <Link href="/istrazivanje" className="text-[#173b63] underline">Istraživanje</Link>
-            <Link href="/o-katedri" className="text-[#173b63] underline">O katedri</Link>
+          <Link href="/predmeti" className="section-action">Kompletan katalog <ArrowRight size={18} aria-hidden="true"/></Link>
+        </div>
+        {courses.length
+          ? <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{courses.map(item => <CourseCard key={item.id} item={item}/>)}</div>
+          : <p className="empty-state">Predmeti će se pojaviti kada budu dodati u katalog.</p>}
+      </section>
+
+      <section className="border-t border-[#e4e8f0] bg-white">
+        <div className="container-page py-11 md:py-14">
+          <div className="mb-6">
+            <p className="section-kicker">JOŠ INFORMACIJA</p>
+            <h2 className="home-section-title !text-[clamp(24px,2.7vw,33px)]">Sve ostalo, na dva klika.</h2>
+          </div>
+          <nav aria-label="Dodatne informacije" className="grid gap-3 md:grid-cols-3">
+            <Link href="/nastavnici" className="home-shortcut">
+              <span><strong>Nastavno osoblje</strong><small>Ko drži nastavu i na kom predmetu</small></span>
+              <UsersRound size={23} aria-hidden="true"/>
+            </Link>
+            <Link href="/kontakt" className="home-shortcut">
+              <span><strong>Kontakt</strong><small>Adresa, telefon i email katedre</small></span>
+              <MapPin size={23} aria-hidden="true"/>
+            </Link>
+            <Link href="/o-katedri" className="home-shortcut">
+              <span><strong>O katedri</strong><small>Nastava, istraživanje i saradnja</small></span>
+              <BookOpen size={23} aria-hidden="true"/>
+            </Link>
           </nav>
         </div>
       </section>
