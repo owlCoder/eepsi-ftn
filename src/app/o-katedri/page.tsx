@@ -21,21 +21,21 @@ export default function About() {
           <section aria-labelledby="about-activity">
             <h2 id="about-activity" className="section-heading">Oblasti rada</h2>
             <p className="section-copy mt-4">Delatnosti katedre obuhvataju nastavu i istraživanje na preseku elektroenergetike, informacionih tehnologija i softverskog inženjerstva. Portal objedinjuje informacije o predmetima, nastavnom osoblju i aktuelnim obaveštenjima.</p>
-            <div className="mt-7 grid gap-4 sm:grid-cols-2">
-              <div className="card-surface p-6"><h3 className="font-bold">Nastava</h3><p className="mt-1 text-sm leading-7 text-[#556777]">Predmeti, nastavni tim i materijali dostupni studentima.</p><Link href="/predmeti" className="mt-2 inline-block text-sm font-semibold text-[#284cdb] underline">Katalog predmeta</Link></div>
-              <div className="card-surface p-6"><h3 className="font-bold">Istraživanje</h3><p className="mt-1 text-sm leading-7 text-[#556777]">Istraživačke oblasti vezane za energetske sisteme, digitalizaciju i softver.</p><Link href="/istrazivanje" className="mt-2 inline-block text-sm font-semibold text-[#284cdb] underline">Istraživačke oblasti</Link></div>
-              <div className="card-surface p-6"><h3 className="font-bold">Laboratorijski rad</h3><p className="mt-1 text-sm leading-7 text-[#556777]">Simulacija i ispitivanje elektroenergetskih sistema u laboratorijskim uslovima.</p><Link href="/laboratorija" className="mt-2 inline-block text-sm font-semibold text-[#284cdb] underline">Smart Grid laboratorija</Link></div>
-              <div className="card-surface p-6"><h3 className="font-bold">Saradnja sa privredom</h3><p className="mt-1 text-sm leading-7 text-[#556777]">Povezivanje akademskih znanja sa stručnom i industrijskom praksom.</p><Link href="/saradnja" className="mt-2 inline-block text-sm font-semibold text-[#284cdb] underline">Informacije o saradnji</Link></div>
+            <div className="mt-7 academic-info-list">
+              <div className="academic-info-item"><h3 className="font-bold">Nastava</h3><p className="mt-1 text-sm leading-7 text-[#586983]">Predmeti, nastavni tim i materijali dostupni studentima.</p><Link href="/predmeti" className="mt-2 inline-block text-sm font-semibold text-[#12396c] underline">Katalog predmeta</Link></div>
+              <div className="academic-info-item"><h3 className="font-bold">Istraživanje</h3><p className="mt-1 text-sm leading-7 text-[#586983]">Istraživačke oblasti vezane za energetske sisteme, digitalizaciju i softver.</p><Link href="/istrazivanje" className="mt-2 inline-block text-sm font-semibold text-[#12396c] underline">Istraživačke oblasti</Link></div>
+              <div className="academic-info-item"><h3 className="font-bold">Laboratorijski rad</h3><p className="mt-1 text-sm leading-7 text-[#586983]">Simulacija i ispitivanje elektroenergetskih sistema u laboratorijskim uslovima.</p><Link href="/laboratorija" className="mt-2 inline-block text-sm font-semibold text-[#12396c] underline">Smart Grid laboratorija</Link></div>
+              <div className="academic-info-item"><h3 className="font-bold">Saradnja sa privredom</h3><p className="mt-1 text-sm leading-7 text-[#586983]">Povezivanje akademskih znanja sa stručnom i industrijskom praksom.</p><Link href="/saradnja" className="mt-2 inline-block text-sm font-semibold text-[#12396c] underline">Informacije o saradnji</Link></div>
             </div>
           </section>
         </div>
         <aside className="h-fit detail-aside">
           <h2 className="mb-4 text-lg font-bold">Osnovne informacije</h2>
           <dl className="space-y-4 text-sm">
-            <div><dt className="text-xs text-[#556777]">Univerzitet</dt><dd className="mt-1 font-semibold">Univerzitet u Novom Sadu</dd></div>
-            <div className="border-t border-[#dce3e9] pt-4"><dt className="text-xs text-[#556777]">Fakultet</dt><dd className="mt-1 font-semibold">Fakultet tehničkih nauka</dd></div>
-            <div className="border-t border-[#dce3e9] pt-4"><dt className="text-xs text-[#556777]">Katedra</dt><dd className="mt-1 font-semibold">Elektroenergetika i primenjeno softversko inženjerstvo</dd></div>
-            <div className="border-t border-[#dce3e9] pt-4"><dt className="text-xs text-[#556777]">Lokacija</dt><dd className="mt-1 font-semibold">Novi Sad</dd></div>
+            <div><dt className="text-xs text-[#586983]">Univerzitet</dt><dd className="mt-1 font-semibold">Univerzitet u Novom Sadu</dd></div>
+            <div className="border-t border-[#dce3ee] pt-4"><dt className="text-xs text-[#586983]">Fakultet</dt><dd className="mt-1 font-semibold">Fakultet tehničkih nauka</dd></div>
+            <div className="border-t border-[#dce3ee] pt-4"><dt className="text-xs text-[#586983]">Katedra</dt><dd className="mt-1 font-semibold">Elektroenergetika i primenjeno softversko inženjerstvo</dd></div>
+            <div className="border-t border-[#dce3ee] pt-4"><dt className="text-xs text-[#586983]">Lokacija</dt><dd className="mt-1 font-semibold">Novi Sad</dd></div>
           </dl>
           <Link href="/kontakt" className="btn btn-light mt-6 w-full">Kontakt katedre <ArrowRight size={16}/></Link>
         </aside>

@@ -19,10 +19,10 @@ export default function CollaborationPage() {
       <div className="container-page grid gap-10 py-11 md:py-15 lg:grid-cols-[minmax(0,1fr)_300px]">
         <section aria-labelledby="collaboration-areas">
           <h2 id="collaboration-areas" className="section-heading">Oblasti saradnje</h2>
-          <div className="mt-6 grid gap-4 sm:grid-cols-2">
-            <div className="card-surface p-6"><h3 className="font-bold">Industrijski projekti</h3><p className="mt-2 text-sm leading-7 text-[#556777]">Primena inženjerskih metoda na konkretnim izazovima iz oblasti energetike i softverskih sistema.</p></div>
-            <div className="card-surface p-6"><h3 className="font-bold">Stručno usavršavanje</h3><p className="mt-2 text-sm leading-7 text-[#556777]">Povezivanje akademskog obrazovanja, studentske prakse i profesionalnog razvoja.</p></div>
-            <div className="card-surface p-6"><h3 className="font-bold">Razmena znanja</h3><p className="mt-2 text-sm leading-7 text-[#556777]">Prenos znanja i iskustava između naučnog i industrijskog rada.</p></div>
+          <div className="mt-6 academic-info-list">
+            <div className="academic-info-item"><h3 className="font-bold">Industrijski projekti</h3><p className="mt-2 text-sm leading-7 text-[#586983]">Primena inženjerskih metoda na konkretnim izazovima iz oblasti energetike i softverskih sistema.</p></div>
+            <div className="academic-info-item"><h3 className="font-bold">Stručno usavršavanje</h3><p className="mt-2 text-sm leading-7 text-[#586983]">Povezivanje akademskog obrazovanja, studentske prakse i profesionalnog razvoja.</p></div>
+            <div className="academic-info-item"><h3 className="font-bold">Razmena znanja</h3><p className="mt-2 text-sm leading-7 text-[#586983]">Prenos znanja i iskustava između naučnog i industrijskog rada.</p></div>
           </div>
           <div className="mt-8">
             <h2 className="text-xl font-bold">Pregled dosadašnje saradnje</h2>
@@ -32,9 +32,9 @@ export default function CollaborationPage() {
         </section>
         <aside className="h-fit detail-aside">
           <h2 className="text-lg font-bold">Predlog za saradnju?</h2>
-          <p className="mt-3 text-sm leading-7 text-[#556777]">Za pitanja i predloge vezane za stručnu i istraživačku saradnju kontaktirajte katedru.</p>
+          <p className="mt-3 text-sm leading-7 text-[#586983]">Za pitanja i predloge vezane za stručnu i istraživačku saradnju kontaktirajte katedru.</p>
           <a href="mailto:eespsi@uns.ac.rs?subject=Saradnja%20sa%20Katedrom%20EEPSI" className="btn btn-primary mt-5 w-full">Pošaljite email</a>
-          <Link href="/kontakt" className="mt-5 flex items-center justify-between gap-2 text-sm font-semibold text-[#284cdb]">Kontakt-podaci <ArrowRight size={16}/></Link>
+          <Link href="/kontakt" className="mt-5 flex items-center justify-between gap-2 text-sm font-semibold text-[#12396c]">Kontakt-podaci <ArrowRight size={16}/></Link>
         </aside>
       </div>
     </>
