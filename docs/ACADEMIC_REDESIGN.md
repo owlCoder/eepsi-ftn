@@ -1,4 +1,4 @@
-# EEPSI — javni portal, vizuelni sistem v3 (novembar 2026)
+# EEPSI — odobreni akademski portal, vizuelni sistem v4 (novembar 2026)
 
 ## Prioritet
 
@@ -6,10 +6,10 @@ Primarni korisnik je **student koji nije prijavljen**. Početna mora odmah da om
 
 ## Novi vizuelni jezik
 
-- **Paleta:** midnight `#152341` za glavni početni ekran i podnožje; cobalt `#284cdb` za primarne akcije i aktivne linkove; `#f5f6fa` za podlogu; bele kartice; `#e4e8f0` za granice; duboki slate tonovi za tipografiju.
-- **Tipografija:** sistemski sans-serif bez spoljnog font zahteva. Izraženi naslovi, kratki pasusi, konkretne oznake; dobra čitljivost na telefonu. Bez reklamnog jezika, nasumičnih gradijenata i stock fotografija.
-- **Komponente:** navigacija sa istaknutim predmetima i obaveštenjima, jedna velika pretraga na početnoj, kartice predmeta sa direktnim materijalima, hronološki feed obaveštenja i jednako stilizovane detaljne stranice.
-- **Razmaci:** dovoljno prostora između grupa, ali ne visok prazni blok pre prvog zadatka. Kartice imaju jednostavne ivice i zaobljenje; admin obrasci i tabele ostaju namenski interfejs za rad.
+- **Paleta:** institucionalna teget `#10294e`, akcije `#12396c`, podloga `#f6f8fc`, bele površine i diskretne linije `#dce3ee`. Bez jarke kobalt-plave dekoracije.
+- **Tipografija:** sistemski sans-serif za sav tekst; klasični serif samo za veliki naslov akademskog portala u uvodnoj zoni. Umerena težina, jasna hijerarhija i institucionalni ton.
+- **Komponente:** FTN identitet i dvoredna navigacija; jedna velika pretraga u fotografskom uvodu; pet malih prečica; hronološka obaveštenja, izdvojeni predmeti u kompaktnim redovima i proverljive korisne informacije. Katalog je jedna semantička tabela koja se prilagođava telefonu.
+- **Fotografija:** originalna fotografija Fakulteta tehničkih nauka (autor Nikolina Šepić, Wikimedia Commons, CC BY-SA 4.0) prikazana je kadrirano, sa atribucijom i licencom u podnožju. Nije dozvoljeno izmišljati izgled zgrade ili dodavati fotografije nepoznatog porekla.
 - **Kontrast:** tamni tekst na svetlim površinama, beli tekst na tamnom herou, jasno vidljivi focus-visible obrubi i statusi čitljivi bez oslanjanja na boju.
 
 ## Informaciona arhitektura i putanje
@@ -30,20 +30,20 @@ Sekundarne informativne stranice su `/o-katedri`, `/istrazivanje`, `/laboratorij
 ## Raspored
 
 ### Početna
-1. Tanki institucionalni red i kompaktna, prepoznatljiva navigacija.
-2. Tamni uvodni ekran sa konkretnim naslovom, velikom pretragom po šifri ili nazivu predmeta i direktnim linkovima ka katalogu, obaveštenjima i nastavnom osoblju.
-3. Vidljive najnovije objave u istoj prvoj zoni ekrana na desktopu; bez izmišljenih objava u praznom stanju.
-4. Kartice realnih predmeta sa vidljivom šifrom, semestrom i direktnim linkom na `#materijali`.
-5. Kratke veze ka osoblju, kontaktu i katedri.
+1. Institucionalni FTN red sa tačnim nazivom katedre, zatim jasno raspoređena sekundarna navigacija.
+2. Jedan kompaktan fotografski uvod sa naslovom „EEPSI — Studentski portal“, velikom pretragom naziva ili šifre predmeta i stvarnom fotografijom FTN-a.
+3. Pet kratkih prečica ka postojećim javnim rutama.
+4. Neposredno ispod: tri kolone — najnovija stvarna obaveštenja, izdvojeni stvarni predmeti sa materijalima i korisni linkovi.
+5. Na telefonu: uvod bez dominantne fotografije, dvokolonske prečice i vertikalno složene liste, bez horizontalnog skrola.
 
 ### Katalozi
-- Predmeti: jasan naslov → kompaktan filter → mreža kartica → paginacija. Svaka kartica ima dva smisleno različita linka, za detalj i materijale. Materijali prikazuju stvaran broj.
+- Predmeti: jasan naslov → kompaktan filter → jedinstvena semantička tabela sa kolonama šifra, naziv, nivo, semestar, materijali → paginacija. Na telefonu isti DOM redovi postaju vertikalne kartice bez dupliranja elemenata. Svaka stavka ima direktan link do materijala sa stvarnim brojem.
 - Obaveštenja: naslov → pretraga → čitljiv feed sa datumom, naslovom i sažetkom, najnovije prvo.
 - Osoblje: imena i uloge u karticama, angažovani predmeti kao linkovi. **Nikada ne izlagati prijavne e-mail adrese.**
 
 ### Detalji
 - Predmet: informacija o predmetu → **nastavni materijali pre opisa** → nastavno osoblje u bočnoj koloni ili ispod na telefonu. Kategorije i pretraga materijala ostaju funkcionalni.
-- Obaveštenje: velika naslovna zona, datum i autor, uska čitalačka kolona bez HTML injekcije, povratak na listu.
+- Obaveštenje: urednički naslov, datum i autor, uska čitalačka kolona bez HTML injekcije i jasna veza nazad ka listi.
 
 ## Mobilni, tastatura i pristupačnost
 
