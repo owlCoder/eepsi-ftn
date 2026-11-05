@@ -138,9 +138,10 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
     await studentNav.getByRole("link", { name: "Predmeti" }).click();
     await expect(page.getByRole("heading", { name: "Katalog predmeta" })).toBeVisible();
-    await page.getByLabel("Naziv ili šifra predmeta").fill(code);
+    await page.locator("#course-search").fill(code);
     await page.getByRole("button", { name: "Prikaži" }).click();
     await expect(page.getByRole("link", { name: title, exact: true })).toBeVisible();
+    await expect(page.locator(".academic-course-mobile-list")).toHaveCount(0);
     await page.getByRole("link", { name: /Materijali \(1\)/ }).click();
     await expect(page).toHaveURL(new RegExp("/predmeti/" + course.slug + "#materijali"));
     await expect(page.getByRole("heading", { name: "Nastavni materijali" })).toBeVisible();
@@ -418,11 +419,16 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
   });
 
   test("public pages stay usable on small phones, tablets and desktop", async ({ page }) => {
-    for (const width of [320, 390, 768, 1440]) {
+    for (const width of [320, 390, 430, 768, 1024, 1440]) {
       await page.setViewportSize({ width, height: 900 });
       await page.goto("/");
       await expect(page.getByLabel("Naziv ili šifra predmeta")).toBeVisible();
       await expect(page.getByRole("button", { name: "Pretraži", exact: true })).toBeVisible();
+      if (width <= 700) {
+        await expect(page.locator(".institution-brand-mobile")).toBeVisible();
+      } else {
+        await expect(page.locator(".institution-brand-mobile")).toBeHidden();
+      }
 
       if (width < 1280) {
         await expect(page.getByRole("navigation", { name: "Brzi pristup studentima" })
