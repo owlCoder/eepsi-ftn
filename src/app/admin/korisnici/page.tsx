@@ -53,22 +53,23 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
   return <div className="space-y-7">
     <div>
       <p className="eyebrow mb-3"><ShieldCheck size={15}/> Upravljanje pristupom</p>
-      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Korisnici i RBAC</h1>
+      <h1 className="text-3xl font-extrabold tracking-tight sm:text-4xl">Korisnički nalozi</h1>
       <p className="mt-3 text-sm leading-7 text-slate-500">Pronađite korisnika, promenite ulogu ili status i upravljajte angažovanjima.</p>
       <div className="mt-5 flex flex-wrap gap-3">
+        <a href="#spisak-naloga" className="btn btn-light">Pregled naloga</a>
         <a href="#novi-nalog" className="btn btn-primary"><UserPlus size={16}/> Dodaj nalog</a>
         <a href="#angazovanja" className="btn btn-light">Angažovanja na predmetima</a>
       </div>
     </div>
-    {(query.created || query.assigned || query.revoked || query.updated || query.reset || query.details) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmena je sačuvana.</p>}
+    {(query.created || query.assigned || query.revoked || query.updated || query.reset || query.details) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Izmena je sačuvana.</p>}
     {query.unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Nema izmena — podaci ili angažovanje su već bili sačuvani.</p>}
     {query.error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nalog sa tom email adresom već postoji. Koristite pretragu da biste ga pronašli.</p>}
     {query.error === "course" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Predmet sa unetom šifrom nije pronađen. Proverite šifru u katalogu predmeta.</p>}
     {query.error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Angažovanje nije sačuvano. Proverite email, aktivnost naloga i da li je njegova globalna uloga odgovarajuća.</p>}
     <div className="admin-panel" id="spisak-naloga">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-        <h2 className="!mb-0 flex items-center gap-3"><Users className="text-teal-700"/> Nalozi <span className="text-sm font-semibold text-slate-500">· strana {page}</span></h2>
-        <a href="#novi-nalog" className="text-sm font-bold text-teal-700 hover:underline">+ Novi nalog</a>
+        <h2 className="!mb-0 flex items-center gap-3"><Users className="text-[#173b63]"/> Nalozi <span className="text-sm font-semibold text-slate-500">· strana {page}</span></h2>
+        <a href="#novi-nalog" className="text-sm font-bold text-[#173b63] hover:underline">+ Novi nalog</a>
       </div>
       <form className="mb-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-[minmax(0,1fr)_155px_140px_auto]" role="search">
         <label htmlFor="accounts-search" className="sr-only">Pretraga naloga</label>
@@ -88,7 +89,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       </form>
       {(q || role || active !== undefined) && <div className="mb-5 flex flex-wrap items-center justify-between gap-2">
         <p className="text-xs text-slate-500">Prikazani su filtrirani nalozi.</p>
-        <Link href="/admin/korisnici" className="text-sm font-bold text-teal-700 hover:underline">Očisti filtere</Link>
+        <Link href="/admin/korisnici" className="text-sm font-bold text-[#173b63] hover:underline">Očisti filtere</Link>
       </div>}
       <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Ime</th><th>Email</th><th>Uloga</th><th>Status</th><th>Upravljanje</th></tr></thead><tbody>{pageUsers.map((user)=>
         <tr key={user.id}>
@@ -135,7 +136,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         {hasNextUsers && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
       </nav>
     </div>
-    <div className="admin-panel" id="novi-nalog"><h2 className="flex items-center gap-3"><UserPlus className="text-teal-700"/> Dodaj nalog</h2>
+    <div className="admin-panel" id="novi-nalog"><h2 className="flex items-center gap-3"><UserPlus className="text-[#173b63]"/> Dodaj nalog</h2>
       <form action={createUserAction} className="space-y-5">
         <div className="form-grid"><div><label htmlFor="name" className="form-label">Ime i prezime</label><input id="name" name="name" className="input-field" required minLength={3}/></div><div><label htmlFor="email" className="form-label">Email</label><input id="email" name="email" type="email" className="input-field" required/></div></div>
         <div className="form-grid"><div><label htmlFor="role" className="form-label">Uloga</label><select id="role" name="role" className="input-field"><option value="STUDENT">Student</option><option value="ASSISTANT">Saradnik</option><option value="PROFESSOR">Nastavnik</option><option value="EDITOR">Urednik</option></select></div><div><label htmlFor="password" className="form-label">Inicijalna lozinka (min. 12 znakova)</label><input id="password" name="password" type="password" autoComplete="new-password" className="input-field" minLength={12} required/></div></div>
@@ -145,7 +146,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
     <div className="admin-panel" id="angazovanja"><h2>Angažovanje na predmetu</h2><p className="mb-5 text-sm leading-7 text-slate-500">Nalog mora prvo imati odgovarajuću globalnu ulogu PROFESSOR ili ASSISTANT.</p>
       <form action={assignCourseMemberAction} className="space-y-4">
         <div><label htmlFor="user-email" className="form-label">Email nastavnika / saradnika</label><input id="user-email" name="email" type="email" required className="input-field"/></div>
-        <div className="form-grid"><div><label htmlFor="course" className="form-label">Šifra predmeta</label><input id="course" name="courseCode" className="input-field" required minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" placeholder="Unesite tačnu šifru predmeta" aria-describedby="course-code-help"/><p id="course-code-help" className="mt-2 text-xs text-slate-500">Šifru možete pronaći u <Link href="/predmeti" className="font-bold text-teal-700 underline">katalogu predmeta</Link>. Dostupni su svi predmeti, bez ograničenja liste.</p></div><div><label htmlFor="member-role" className="form-label">Uloga na predmetu</label><select id="member-role" name="role" className="input-field"><option value="PROFESSOR">Nastavnik</option><option value="ASSISTANT">Saradnik</option></select></div></div>
+        <div className="form-grid"><div><label htmlFor="course" className="form-label">Šifra predmeta</label><input id="course" name="courseCode" className="input-field" required minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" placeholder="Unesite tačnu šifru predmeta" aria-describedby="course-code-help"/><p id="course-code-help" className="mt-2 text-xs text-slate-500">Šifru možete pronaći u <Link href="/predmeti" className="font-bold text-[#173b63] underline">katalogu predmeta</Link>. Dostupni su svi predmeti, bez ograničenja liste.</p></div><div><label htmlFor="member-role" className="form-label">Uloga na predmetu</label><select id="member-role" name="role" className="input-field"><option value="PROFESSOR">Nastavnik</option><option value="ASSISTANT">Saradnik</option></select></div></div>
         <SubmitButton pendingText="Dodeljivanje…">Dodeli predmet</SubmitButton>
       </form>
       <h3 className="mt-8 border-t border-slate-100 pt-6 font-extrabold">Dodeljena članstva — strana {memberPage}</h3>

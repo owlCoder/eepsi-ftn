@@ -61,18 +61,18 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     mp: String(page),
   }).toString() + "#materijali-predmeta";
   return <div className="space-y-7">
-    <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
-    <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
+    <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-[#173b63]"><ArrowLeft size={17}/> Moji predmeti</Link>
+    <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#173b63]">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
     {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">Podaci o predmetu su u međuvremenu izmenjeni ili obrisani. Vaša zastarela verzija nije sačuvana. Proverite najnovije podatke pre ponovnog uređivanja.</p>}
     {error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nastavnik nije dodeljen. Nalog mora postojati, biti aktivan i imati odgovarajuću globalnu ulogu.</p>}
-    {(saved || (material && material !== "conflict") || (team && team !== "unchanged")) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
+    {(saved || (material && material !== "conflict") || (team && team !== "unchanged")) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Izmene su uspešno sačuvane.</p>}
     {material === "conflict" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">Materijal je u međuvremenu izmenjen ili uklonjen. Zastarela verzija nije sačuvana. Proverite najnovije podatke pre ponovne izmene.</p>}
     {team === "unchanged" && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Ova osoba je već angažovana na predmetu. Nisu potrebne dodatne izmene.</p>}
     <nav className="flex flex-wrap items-center gap-2" aria-label="Sekcije predmeta">
-      {mayEdit && <a href="#podaci-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Podaci o predmetu</a>}
-      {mayUpload && <a href="#materijali-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Materijali ({course._count.materials})</a>}
-      <a href="#nastavni-tim" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Nastavni tim ({course.memberships.length})</a>
+      {mayEdit && <a href="#podaci-predmeta" className="btn btn-light !min-h-10 !px-3 !text-xs">Podaci o predmetu</a>}
+      {mayUpload && <a href="#materijali-predmeta" className="btn btn-light !min-h-10 !px-3 !text-xs">Materijali ({course._count.materials})</a>}
+      <a href="#nastavni-tim" className="btn btn-light !min-h-10 !px-3 !text-xs">Nastavni tim ({course.memberships.length})</a>
     </nav>
     {mayEdit && <div className="admin-panel" id="podaci-predmeta"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>
@@ -86,7 +86,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} maxLength={5000} defaultValue={course.description}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
     </form></div>}
-    {mayUpload && <div className="admin-panel" id="materijali-predmeta"><h2 className="flex items-center gap-3"><FilePlus2 className="text-teal-700"/> Dodaj materijal</h2>
+    {mayUpload && <div className="admin-panel" id="materijali-predmeta"><h2 className="flex items-center gap-3"><FilePlus2 className="text-[#173b63]"/> Dodaj materijal</h2>
       <form action={createMaterialAction} className="space-y-5"><input name="courseId" type="hidden" value={course.id}/>
         <div><label htmlFor="material-title" className="form-label">Naziv materijala</label><input id="material-title" name="title" required minLength={3} maxLength={180} className="input-field" placeholder="Vežba 1 — prezentacija"/></div>
         <div><label htmlFor="material-url" className="form-label">HTTPS adresa dokumenta</label><input id="material-url" name="url" type="url" pattern="https://.*" maxLength={1500} required className="input-field" placeholder="https://..."/></div>
@@ -114,14 +114,14 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
         </form>
         {(materialSearch || materialKind) && <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-slate-500">Filtrirani materijali · strana {materialPage}</p>
-          <Link href={"/admin/predmeti/" + course.id + "#materijali-predmeta"} className="text-xs font-bold text-teal-700 hover:underline">Očisti filtere</Link>
+          <Link href={"/admin/predmeti/" + course.id + "#materijali-predmeta"} className="text-xs font-bold text-[#173b63] hover:underline">Očisti filtere</Link>
         </div>}
         <div className="space-y-3">{visibleMaterials.length ? visibleMaterials.map((item) =>
         <div key={item.id} className="rounded-xl border border-slate-200 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-3">
               <span className="pill pill-neutral">{materialKindLabels[item.kind]}</span>
-              <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
+              <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-[#173b63] hover:underline">{item.title}<ArrowUpRight size={17}/></a>
             </div>
             <form action={deleteMaterialAction}>
               <input type="hidden" name="materialId" value={item.id}/>
@@ -130,7 +130,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <input type="hidden" name="returnMp" value={materialPage}/><ConfirmSubmitButton message={"Ukloniti materijal „" + item.title + "“?"} className="text-xs font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form>
           </div>
           <details className="mt-3">
-            <summary className="text-xs font-bold text-slate-600 hover:text-teal-700">Uredi naziv ili link</summary>
+            <summary className="text-xs font-bold text-slate-600 hover:text-[#173b63]">Uredi naziv ili link</summary>
             <form action={updateMaterialAction} className="mt-4 grid gap-4">
               <input type="hidden" name="materialId" value={item.id}/>
               <input type="hidden" name="returnMq" value={materialSearch}/>
@@ -157,7 +157,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       </div>
     </div>}
     <section className="admin-panel" id="nastavni-tim">
-      <h2 className="flex items-center gap-3"><Users className="text-teal-700" size={23}/> Nastavni tim</h2>
+      <h2 className="flex items-center gap-3"><Users className="text-[#173b63]" size={23}/> Nastavni tim</h2>
       {course.memberships.length
         ? <div className="divide-y divide-slate-100">{course.memberships.map((entry) =>
           <div key={entry.userId} className="flex flex-wrap items-center justify-between gap-3 py-4">

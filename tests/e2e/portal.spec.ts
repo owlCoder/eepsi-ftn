@@ -302,5 +302,18 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page).toHaveURL(/level=OAS/);
     await expect(page).toHaveURL(/semester=2/);
     await expect(page.getByText(title, { exact: true })).toBeVisible();
+
+    // Direct course lookup from the homepage and one-tap access to contact.
+    await page.goto("/");
+    await page.getByLabel("Naziv ili šifra predmeta").fill(title);
+    await page.getByRole("button", { name: "Pretraži" }).click();
+    await expect(page).toHaveURL(/\/predmeti\?q=/);
+    await expect(page.getByText(title, { exact: true })).toBeVisible();
+
+    await page.goto("/");
+    await mobileMenu.locator('summary[aria-label="Otvori meni"]').click();
+    await mobileMenu.getByRole("link", { name: "Kontakt" }).click();
+    await expect(page.getByRole("heading", { name: "Kontakt" })).toBeVisible();
+    await expect(page.locator("main").getByRole("link", { name: "eespsi@uns.ac.rs" })).toBeVisible();
   });
 });

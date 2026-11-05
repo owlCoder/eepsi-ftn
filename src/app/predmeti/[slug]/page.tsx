@@ -37,7 +37,7 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
       </div></header>
 
       <div className="container-page grid items-start gap-9 py-10 md:py-14 lg:grid-cols-[minmax(0,1fr)_275px] lg:gap-12">
-        <main className="min-w-0 space-y-11">
+        <div className="min-w-0 space-y-11">
           <section aria-labelledby="course-overview" id="opis-predmeta">
             <h2 id="course-overview" className="mb-4 text-xl font-bold">Opis predmeta</h2>
             <p className="prose-copy">{course.description}</p>
@@ -52,7 +52,7 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
               ? <CourseMaterials materials={course.materials.map(({ id, title, url, kind }) => ({ id, title, url, kind }))}/>
               : <p className="mt-4 text-sm text-[#556777]">Za ovaj predmet trenutno nema dostupnih materijala.</p>}
           </section>
-        </main>
+        </div>
 
         <aside className="space-y-6 lg:sticky lg:top-29">
           <section className="rounded-lg border border-[#dce3e9] bg-white p-5">

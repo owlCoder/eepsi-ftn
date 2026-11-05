@@ -13,11 +13,11 @@ export default async function EditNews({ params, searchParams }: { params: Promi
   const item = await db.news.findUnique({ where: { id } });
   if (!item) notFound();
   const { saved, error } = await searchParams;
-  return <div className="space-y-7"><Link href="/admin/novosti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Sve novosti</Link>
+  return <div className="space-y-7"><Link href="/admin/novosti" className="inline-flex items-center gap-2 text-sm font-bold text-[#173b63]"><ArrowLeft size={17}/> Sve novosti</Link>
     <div><p className="eyebrow mb-2">Uređivanje</p><h1 className="text-3xl font-extrabold tracking-tight">{item.title}</h1>
-      {item.status === "PUBLISHED" && <Link className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700" href={"/novosti/" + item.slug} target="_blank">Pogledaj objavu <ExternalLink size={16}/></Link>}
+      {item.status === "PUBLISHED" && <Link className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#173b63]" href={"/novosti/" + item.slug} target="_blank">Pogledaj objavu <ExternalLink size={16}/></Link>}
     </div>
-    {saved && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su sačuvane.</p>}
+    {saved && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Izmene su sačuvane.</p>}
     {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
       Novost je u međuvremenu izmenjena ili uklonjena. Vaša zastarela verzija nije sačuvana. Proverite trenutno prikazani tekst pre ponovnog uređivanja.
     </p>}
@@ -31,7 +31,7 @@ export default async function EditNews({ params, searchParams }: { params: Promi
     </form></div>
     <div className="admin-panel">
       <details>
-        <summary className="flex items-center gap-2 font-extrabold text-teal-800 hover:text-teal-600">Pregled sačuvanog teksta novosti</summary>
+        <summary className="flex items-center gap-2 font-extrabold text-[#173b63] hover:text-[#0c2c4e]">Pregled sačuvanog teksta novosti</summary>
         <article className="mt-6 border-t border-slate-100 pt-6">
           <p className="eyebrow mb-3">Pregled objave</p>
           <h2 className="!mb-4 text-2xl font-extrabold">{item.title}</h2>

@@ -79,16 +79,17 @@ Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obs
 - Support keyboard navigation, semantic headings, accessible labels, and mobile layouts.
 - User-facing UI text is Serbian (Latin script); documentation may be in Serbian/English.
 
-## EEPSI visual language (keep future UI changes consistent)
+## EEPSI academic UI standard (November 2026)
 
-The public portal and authenticated workspace use a **technical editorial** identity, not a generic SaaS/AI landing-page template.
+The interface is a modern academic information portal. The design and sitemap are documented in docs/ACADEMIC_REDESIGN.md.
 
-- Design tokens are in src/app/globals.css: paper #f4f2ec, ink #1a2c31, copper #b34b2c, restrained forest-green for secondary links and successful states. Avoid introducing gratuitous new colors or gradient backgrounds.
-- Main editorial headings use a restrained Georgia serif; operational UI uses a readable system sans; codes, section numbers, dates and metadata use monospace. Maintain proper heading levels and contrast.
-- Structure information with **numbered sections, fine dividers and meaningful labels**. Prefer scannable rows and tables to repeated rounded white cards, decorative icon bubbles, blurred shadows or fake metrics.
-- The homepage's EEPSI network schematic is a static visual identity element, not a technical claim or measured data. Avoid stock illustrations, floating abstract glass panels, manufactured accomplishments and unverified marketing slogans.
-- All forms, notices, dialog controls and data tables must remain readable on mobile and keyboard accessible. Preserve existing browser flows and functional wording tested by Playwright; don't sacrifice usability for aesthetics.
-- Keep CSS rules consolidated instead of appending layers of conflicting overrides. Reuse section-index, meta-label, page-banner, btn, input-field and other existing primitives for coherent hierarchy.
+- Use one sober academic accent (#173b63 navy) with white, #f5f7fa backgrounds and gray text/lines. Use green and red only for semantic success, errors, or destructive actions.
+- Prefer readable sans-serif UI and headings. Do not introduce multicolor layouts, copper accents, serif slogans, technical network illustrations, gradients, floating panels or decorative icon bubbles.
+- Prioritize **Predmeti, Nastavno osoblje, Obaveštenja, Kontakt**. Keep the search for courses prominent on the homepage and preserve the direct-contact route.
+- Build for scanning: short labels, descriptive links, direct routes, lists/tables with visible metadata, coherent breadcrumbs and usable filters. Do not invent institutional information or metrics.
+- Public content remains readable without login; personal and administrative actions remain behind current RBAC. Public staff pages never expose login email addresses.
+- Maintain mobile and keyboard access, labels, focus states, accessible menus and confirmation dialogs. Keep existing user flows and Playwright tests working.
+- Centralize CSS rules in src/app/globals.css, reuse site primitives (page-banner, card-surface, input-field, btn, admin-panel) and avoid accumulating conflicting overrides.
 
 ## Quality bar
 

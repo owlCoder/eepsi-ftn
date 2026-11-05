@@ -50,14 +50,14 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
         <h3 className="mb-1 text-lg font-extrabold tracking-tight">{group.label}</h3>
         <div className="divide-y divide-slate-100">{group.items.map((material) =>
           <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer"
-            className="group flex min-h-14 items-center justify-between gap-4 py-4 text-sm font-semibold text-[#164f58] hover:text-teal-700">
+            className="group flex min-h-14 items-center justify-between gap-4 py-4 text-sm font-semibold text-[#173b63] hover:text-[#173b63]">
             <span className="min-w-0 break-words">{material.title}</span>
             <ArrowUpRight size={18} aria-hidden="true" className="shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"/>
           </a>)}</div>
       </section>)}</div>
       : <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
         <p className="font-semibold text-slate-700">Nema materijala za izabrane kriterijume.</p>
-        <button type="button" onClick={reset} className="mt-3 min-h-10 text-sm font-bold text-teal-700 underline">
+        <button type="button" onClick={reset} className="mt-3 min-h-10 text-sm font-bold text-[#173b63] underline">
           Prikaži sve materijale
         </button>
       </div>}

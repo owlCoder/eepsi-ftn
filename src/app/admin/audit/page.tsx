@@ -62,8 +62,8 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     p: String(nextPage),
   }).toString();
   return <div className="space-y-7">
-    <div><p className="eyebrow mb-3"><ShieldCheck size={14}/> Evidencija izmena</p><h1 className="text-4xl font-extrabold tracking-tight">Audit log</h1>
-      <p className="mt-3 text-sm leading-7 text-slate-500">Poslednje privilegovane izmene sadržaja i prava pristupa. Nema lozinki niti kompletnog sadržaja u zapisima.</p></div>
+    <div><p className="eyebrow mb-3"><ShieldCheck size={14}/> Evidencija izmena</p><h1 className="text-4xl font-extrabold tracking-tight">Evidencija izmena</h1>
+      <p className="mt-3 text-sm leading-7 text-slate-500">Pregled administrativnih izmena sadržaja i prava pristupa. Lozinke i puni tekstovi nisu uključeni u zapise.</p></div>
     <div className="admin-panel">
       <form className="mb-6 grid gap-3 sm:grid-cols-[minmax(0,1fr)_170px_auto]" role="search">
         <div>
@@ -88,7 +88,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
       </form>
       {(q || type) && <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
         <p className="text-xs font-semibold text-slate-500">Filtrirani audit događaji</p>
-        <Link href="/admin/audit" className="text-sm font-bold text-teal-700 hover:underline">Očisti filtere</Link>
+        <Link href="/admin/audit" className="text-sm font-bold text-[#173b63] hover:underline">Očisti filtere</Link>
       </div>}
       {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table">
         <thead><tr><th>Vreme</th><th>Korisnik</th><th>Događaj</th><th>Resurs</th></tr></thead>
@@ -100,7 +100,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
         </tr>)}</tbody>
       </table></div> : <div className="py-8 text-center text-sm text-slate-500">
         <p className="mb-3">{page > 1 ? "Na ovoj stranici nema audit događaja." : "Nema događaja za zadate kriterijume."}</p>
-        {page > 1 ? <Link href={href(page - 1)} className="font-bold text-teal-700 underline">Vrati se na prethodnu stranicu</Link> : (q || type) && <Link href="/admin/audit" className="font-bold text-teal-700 underline">Prikaži sve događaje</Link>}
+        {page > 1 ? <Link href={href(page - 1)} className="font-bold text-[#173b63] underline">Vrati se na prethodnu stranicu</Link> : (q || type) && <Link href="/admin/audit" className="font-bold text-[#173b63] underline">Prikaži sve događaje</Link>}
       </div>}
     </div>
     <nav className="flex items-center justify-between" aria-label="Stranice audit loga">

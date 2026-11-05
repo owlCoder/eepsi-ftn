@@ -21,10 +21,10 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <h1 className="text-4xl font-extrabold tracking-tight">Moj profil</h1>
         <p className="mt-3 text-sm leading-7 text-slate-500">Uredite prikazano ime i zaštitite svoj nalog promenom lozinke.</p>
       </div>
-      {updated && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-800">Profil je uspešno ažuriran.</p>}
+      {updated && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Profil je uspešno ažuriran.</p>}
       {unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">Ime je već sačuvano. Nisu potrebne dodatne izmene.</p>}
       <section className="admin-panel">
-        <h2 className="flex items-center gap-3"><UserRound className="text-teal-700"/> Osnovni podaci</h2>
+        <h2 className="flex items-center gap-3"><UserRound className="text-[#173b63]"/> Osnovni podaci</h2>
         <form action={updateProfileAction} className="space-y-5">
           <div><label className="form-label" htmlFor="profile-name">Ime i prezime</label><input className="input-field" id="profile-name" name="name" defaultValue={actor.name} minLength={3} maxLength={120} required/></div>
           <div><label className="form-label" htmlFor="profile-email">Email adresa</label><input className="input-field bg-slate-50" id="profile-email" value={actor.email} readOnly aria-describedby="email-note"/><p className="mt-2 text-xs text-slate-500" id="email-note">Za promenu email adrese obratite se administratoru.</p></div>
@@ -33,7 +33,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         </form>
       </section>
       <section className="admin-panel">
-        <h2 className="flex items-center gap-3"><LockKeyhole className="text-teal-700"/> Bezbednost naloga</h2>
+        <h2 className="flex items-center gap-3"><LockKeyhole className="text-[#173b63]"/> Bezbednost naloga</h2>
         <PasswordChangeForm/>
       </section>
     </div>
