@@ -116,12 +116,19 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <span className="pill pill-neutral">{materialKindLabels[item.kind]}</span>
               <a href={item.url} target="_blank" rel="noopener noreferrer" className="flex min-w-0 items-center gap-2 break-all text-sm font-semibold text-teal-700 hover:underline">{item.title}<ArrowUpRight size={17}/></a>
             </div>
-            <form action={deleteMaterialAction}><input type="hidden" name="materialId" value={item.id}/><ConfirmSubmitButton message={"Ukloniti materijal „" + item.title + "“?"} className="text-xs font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form>
+            <form action={deleteMaterialAction}>
+              <input type="hidden" name="materialId" value={item.id}/>
+              <input type="hidden" name="returnMq" value={materialSearch}/>
+              <input type="hidden" name="returnMk" value={materialKind ?? ""}/>
+              <input type="hidden" name="returnMp" value={materialPage}/><ConfirmSubmitButton message={"Ukloniti materijal „" + item.title + "“?"} className="text-xs font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form>
           </div>
           <details className="mt-3">
             <summary className="text-xs font-bold text-slate-600 hover:text-teal-700">Uredi naziv ili link</summary>
             <form action={updateMaterialAction} className="mt-4 grid gap-4">
               <input type="hidden" name="materialId" value={item.id}/>
+              <input type="hidden" name="returnMq" value={materialSearch}/>
+              <input type="hidden" name="returnMk" value={materialKind ?? ""}/>
+              <input type="hidden" name="returnMp" value={materialPage}/>
               <div><label htmlFor={"material-name-" + item.id} className="form-label">Naziv</label><input id={"material-name-" + item.id} name="title" className="input-field" defaultValue={item.title} minLength={3} maxLength={180} required/></div>
               <div><label htmlFor={"material-link-" + item.id} className="form-label">HTTPS link</label><input id={"material-link-" + item.id} name="url" className="input-field" type="url" pattern="https://.*" maxLength={1500} defaultValue={item.url} required/></div>
               <div><label htmlFor={"material-kind-" + item.id} className="form-label">Kategorija</label>

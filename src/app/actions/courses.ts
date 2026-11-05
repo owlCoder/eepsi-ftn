@@ -7,6 +7,21 @@ import { courseInput, materialInput, materialEditInput } from "@/application/val
 import { requirePermission } from "@/application/authorization";
 import { toSlug } from "@/domain/content/slug";
 import { db } from "@/infrastructure/db/prisma";
+import { materialKinds } from "@/domain/content/material-kinds";
+import { readPage } from "@/lib/pagination";
+
+function materialReturnUrl(courseId: string, data: FormData, status: string) {
+  const q = String(data.get("returnMq") ?? "").trim().slice(0, 80);
+  const kind = materialKinds.find((value) => value === data.get("returnMk"));
+  const page = readPage(String(data.get("returnMp") ?? ""));
+  const params = new URLSearchParams({
+    material: status,
+    ...(q ? { mq: q } : {}),
+    ...(kind ? { mk: kind } : {}),
+    mp: String(page),
+  });
+  return "/admin/predmeti/" + courseId + "?" + params + "#materijali-predmeta";
+}
 
 function courseFields(data: FormData) {
   return {
@@ -91,7 +106,7 @@ export async function deleteMaterialAction(data: FormData) {
     await tx.auditLog.create({ data: { actorId: actor.id, action: "material.delete", subjectType: "Material", subjectId: material.id } });
   });
   revalidatePath("/predmeti/" + material.course.slug);
-  redirect("/admin/predmeti/" + material.courseId + "?material=deleted");
+  redirect(materialReturnUrl(material.courseId, data, "deleted"));
 }
 
 export async function updateMaterialAction(data: FormData) {
@@ -119,7 +134,7 @@ export async function updateMaterialAction(data: FormData) {
     });
   });
   revalidatePath("/predmeti/" + material.course.slug);
-  redirect("/admin/predmeti/" + material.courseId + "?material=updated");
+  redirect(materialReturnUrl(material.courseId, data, "updated"));
 }
 
 export async function deleteCourseAction(data: FormData) {
