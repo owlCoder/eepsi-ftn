@@ -119,11 +119,29 @@ export async function deleteMaterialAction(data: FormData) {
   });
   if (!material) throw new Error("Materijal nije pronađen.");
   const actor = await requirePermission("materials.delete", material.courseId);
-  await db.$transaction(async (tx) => {
-    const result = await tx.material.deleteMany({ where: { id: material.id, courseId: material.courseId } });
-    if (result.count !== 1) throw new Error("Materijal je već uklonjen.");
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "material.delete", subjectType: "Material", subjectId: material.id } });
+  // Do not delete a material that another editor changed after this form loaded.
+  const original = materialEditInput.safeParse({
+    materialId,
+    title: String(data.get("originalTitle") ?? ""),
+    url: String(data.get("originalUrl") ?? ""),
+    kind: String(data.get("originalKind") ?? ""),
   });
+  if (!original.success) throw new Error("Neispravna verzija materijala. Osvežite stranicu.");
+  const deleted = await db.$transaction(async (tx) => {
+    const result = await tx.material.deleteMany({
+      where: {
+        id: material.id,
+        courseId: material.courseId,
+        title: original.data.title,
+        url: original.data.url,
+        kind: original.data.kind,
+      },
+    });
+    if (result.count !== 1) return false;
+    await tx.auditLog.create({ data: { actorId: actor.id, action: "material.delete", subjectType: "Material", subjectId: material.id } });
+    return true;
+  });
+  if (!deleted) redirect(materialReturnUrl(material.courseId, data, "conflict"));
   revalidatePath("/predmeti/" + material.course.slug);
   redirect(materialReturnUrl(material.courseId, data, "deleted"));
 }

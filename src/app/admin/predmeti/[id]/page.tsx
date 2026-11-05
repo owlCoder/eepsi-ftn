@@ -125,6 +125,9 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             </div>
             <form action={deleteMaterialAction}>
               <input type="hidden" name="materialId" value={item.id}/>
+              <input type="hidden" name="originalTitle" value={item.title}/>
+              <input type="hidden" name="originalUrl" value={item.url}/>
+              <input type="hidden" name="originalKind" value={item.kind}/>
               <input type="hidden" name="returnMq" value={materialSearch}/>
               <input type="hidden" name="returnMk" value={materialKind ?? ""}/>
               <input type="hidden" name="returnMp" value={materialPage}/><ConfirmSubmitButton message={"Ukloniti materijal „" + item.title + "“?"} className="text-xs font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form>
