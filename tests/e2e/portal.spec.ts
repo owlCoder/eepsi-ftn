@@ -313,7 +313,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.goto("/");
     await mobileMenu.locator('summary[aria-label="Otvori meni"]').click();
     await mobileMenu.getByRole("link", { name: "Kontakt" }).click();
-    await expect(page.getByRole("heading", { name: "Kontakt" })).toBeVisible();
+    await expect(page.locator("main").getByRole("heading", { name: "Kontakt", exact: true })).toBeVisible();
     await expect(page.locator("main").getByRole("link", { name: "eespsi@uns.ac.rs" })).toBeVisible();
   });
 });
