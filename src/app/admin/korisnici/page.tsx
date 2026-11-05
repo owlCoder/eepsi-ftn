@@ -24,7 +24,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         ...(active !== undefined ? { active } : {}),
       },
       select: { id: true, name: true, email: true, role: true, active: true },
-      orderBy: { name: "asc" },
+      orderBy: [{ name: "asc" }, { id: "asc" }],
       skip: (page - 1) * 30,
       take: 31,
     }),
@@ -33,7 +33,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       include: { user: { select: { name: true } }, course: { select: { title: true } } },
       skip: (memberPage - 1) * 30,
       take: 31,
-      orderBy: { courseId: "asc" },
+      orderBy: [{ courseId: "asc" }, { userId: "asc" }],
     }),
   ]);
   const hasNextUsers = users.length > 30;

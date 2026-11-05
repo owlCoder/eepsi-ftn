@@ -50,7 +50,7 @@ export default async function AuditPage({ searchParams }: { searchParams: Promis
     where: filters,
     select: { id: true, action: true, subjectType: true, subjectId: true, occurredAt: true,
       actor: { select: { name: true } } },
-    orderBy: { occurredAt: "desc" },
+    orderBy: [{ occurredAt: "desc" }, { id: "desc" }],
     skip: (page - 1) * 50,
     take: 51,
   });

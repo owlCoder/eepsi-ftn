@@ -21,7 +21,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
     select: { id: true, title: true, status: true, updatedAt: true },
     skip: (page - 1) * 30,
     take: 31,
-    orderBy: { updatedAt: "desc" },
+    orderBy: [{ updatedAt: "desc" }, { id: "desc" }],
   });
   const hasNext = news.length > 30;
   const pageItems = news.slice(0, 30);

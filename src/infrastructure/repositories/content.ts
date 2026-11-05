@@ -40,7 +40,7 @@ export async function featuredCourses(limit = 3) {
   if (!process.env.DATABASE_URL) return [];
   return db.course.findMany({
     select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true },
-    orderBy: [{ semester: "asc" }, { title: "asc" }],
+    orderBy: [{ semester: "asc" }, { title: "asc" }, { id: "asc" }],
     take: Math.max(1, Math.min(limit, 6)),
   });
 }
@@ -59,7 +59,7 @@ export async function latestNews(limit = 4) {
   return db.news.findMany({
     where: { status: "PUBLISHED" },
     select: { id: true, title: true, slug: true, summary: true, publishedAt: true },
-    orderBy: { publishedAt: "desc" },
+    orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
     take: Math.min(limit, 20),
   });
 }
@@ -69,7 +69,7 @@ export async function listNews(q: string, page: number) {
   return db.news.findMany({
     where: { status: "PUBLISHED", ...(q ? { OR: [{ title: { contains: q } }, { summary: { contains: q } }] } : {}) },
     select: { id: true, slug: true, title: true, summary: true, publishedAt: true },
-    orderBy: { publishedAt: "desc" },
+    orderBy: [{ publishedAt: "desc" }, { id: "desc" }],
     skip: (page - 1) * 12,
     take: 13,
   });
@@ -84,7 +84,7 @@ export async function listCourses(q = "", page = 1, filters?: CourseFilters) {
       ...(filters?.semester ? { semester: filters.semester } : {}),
     },
     select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true },
-    orderBy: [{ semester: "asc" }, { title: "asc" }],
+    orderBy: [{ semester: "asc" }, { title: "asc" }, { id: "asc" }],
     skip: (page - 1) * 18,
     take: 19,
   });

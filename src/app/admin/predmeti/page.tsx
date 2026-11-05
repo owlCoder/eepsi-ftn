@@ -21,7 +21,7 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
       ...(q ? { OR: [{ title: { contains: q } }, { code: { contains: q } }] } : {}),
     },
     select: { id: true, title: true, code: true, semester: true, studyLevel: true, _count: { select: { materials: true } } },
-    orderBy: [{ semester: "asc" }, { title: "asc" }],
+    orderBy: [{ semester: "asc" }, { title: "asc" }, { id: "asc" }],
     skip: (page - 1) * 20,
     take: 21,
   });
