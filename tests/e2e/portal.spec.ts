@@ -321,7 +321,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await page.getByLabel("Nova lozinka", { exact: true }).fill(updatedPassword);
       await page.getByLabel("Ponovite novu lozinku").fill(updatedPassword + "-different");
       await page.getByRole("button", { name: "Promeni lozinku" }).click();
-      await expect(page.getByRole("alert")).toContainText("Nove lozinke se ne poklapaju.");
+      await expect(page.locator('form [role="alert"]')).toContainText("Nove lozinke se ne poklapaju.");
 
       // A rejected form must remain usable for a corrected, successful submission.
       await page.getByLabel("Trenutna lozinka").fill(password);
