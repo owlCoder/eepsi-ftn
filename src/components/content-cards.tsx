@@ -20,10 +20,10 @@ export function NewsCard({ item }: { item: NewsPreview }) {
             <span>{date.toLocaleDateString("sr-RS", { month: "short" })}</span>
           </> : <span>Novost</span>}
         </time>
-        <span className="academic-news-copy">
-          <span className="academic-news-title">{item.title}</span>
-          <span className="academic-news-summary">{item.summary}</span>
-        </span>
+        <div className="academic-news-copy">
+          <h3 className="academic-news-title">{item.title}</h3>
+          <p className="academic-news-summary">{item.summary}</p>
+        </div>
         <ArrowRight size={17} aria-hidden="true" className="academic-list-arrow"/>
       </Link>
     </article>
