@@ -14,6 +14,7 @@ export async function updateProfileAction(data: FormData) {
   const actor = await currentUser();
   if (!actor) redirect("/prijava");
   const { name } = profileInput.parse({ name: String(data.get("name") ?? "") });
+  if (name === actor.name) redirect("/admin/profil?unchanged=1");
   await db.$transaction(async (tx) => {
     const result = await tx.user.updateMany({
       where: { id: actor.id, active: true, sessionVersion: actor.sessionVersion },

@@ -9,10 +9,10 @@ import { roleLabels } from "@/domain/authorization/permissions";
 
 export const metadata: Metadata = { title: "Moj profil", robots: { index: false, follow: false } };
 
-export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ updated?: string }> }) {
+export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ updated?: string; unchanged?: string }> }) {
   const actor = await currentUser();
   if (!actor) redirect("/prijava");
-  const { updated } = await searchParams;
+  const { updated, unchanged } = await searchParams;
 
   return (
     <div className="space-y-7">
@@ -22,6 +22,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <p className="mt-3 text-sm leading-7 text-slate-500">Uredite prikazano ime i zaštitite svoj nalog promenom lozinke.</p>
       </div>
       {updated && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-800">Profil je uspešno ažuriran.</p>}
+      {unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">Ime je već sačuvano. Nisu potrebne dodatne izmene.</p>}
       <section className="admin-panel">
         <h2 className="flex items-center gap-3"><UserRound className="text-teal-700"/> Osnovni podaci</h2>
         <form action={updateProfileAction} className="space-y-5">

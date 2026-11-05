@@ -3,7 +3,7 @@ import { cache } from "react";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/infrastructure/auth/options";
 import { db } from "@/infrastructure/db/prisma";
-import { hasScopedPermission, type Permission } from "@/domain/authorization/permissions";
+import { hasGlobalPermission, hasScopedPermission, type Permission } from "@/domain/authorization/permissions";
 import { isSessionVersionCurrent } from "@/domain/security/session-policy";
 
 export const currentUser = cache(async () => {
@@ -22,15 +22,14 @@ export const currentUser = cache(async () => {
 export async function can(permission: Permission, courseId?: string): Promise<boolean> {
   const user = await currentUser();
   if (!user) return false;
-  let membershipRole: "PROFESSOR" | "ASSISTANT" | null = null;
-  if (courseId) {
-    const membership = await db.courseMembership.findUnique({
-      where: { userId_courseId: { userId: user.id, courseId } },
-      select: { role: true },
-    });
-    membershipRole = membership?.role ?? null;
-  }
-  return hasScopedPermission(user.role, permission, membershipRole);
+  // Global grants never require a course-membership database lookup.
+  if (hasGlobalPermission(user.role, permission)) return true;
+  if (!courseId || (user.role !== "PROFESSOR" && user.role !== "ASSISTANT")) return false;
+  const membership = await db.courseMembership.findUnique({
+    where: { userId_courseId: { userId: user.id, courseId } },
+    select: { role: true },
+  });
+  return hasScopedPermission(user.role, permission, membership?.role ?? null);
 }
 
 export async function requirePermission(permission: Permission, courseId?: string) {
