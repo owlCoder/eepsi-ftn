@@ -10,29 +10,54 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   return (
     <>
-      <header className="page-banner"><div className="container-page">
-        <nav aria-label="Putanja" className="mb-5 text-xs text-[#556777]"><Link href="/" className="hover:underline">Početna</Link> / Kontakt</nav>
-        <h1 className="page-title">Kontakt</h1>
-        <p className="section-copy mt-3 max-w-2xl">Informacije o lokaciji i načinu kontaktiranja Katedre za elektroenergetiku i primenjeno softversko inženjerstvo.</p>
-      </div></header>
-      <div className="container-page grid gap-10 py-12 md:grid-cols-[minmax(0,1fr)_minmax(280px,.7fr)] md:py-16">
+      <header className="portal-page-hero">
+        <div className="container-page">
+          <nav aria-label="Putanja" className="breadcrumbs"><Link href="/">Početna</Link><span aria-hidden="true">/</span><span>Kontakt</span></nav>
+          <p className="section-kicker !mb-2">KATEDRA / KONTAKT</p>
+          <h1>Tu smo za vas.</h1>
+          <p>Lokacija i podaci za kontakt Katedre za elektroenergetiku i primenjeno softversko inženjerstvo.</p>
+        </div>
+      </header>
+      <div className="container-page py-9 md:py-14">
         <section aria-labelledby="contact-details">
-          <h2 id="contact-details" className="section-heading mb-6">Podaci za kontakt</h2>
-          <dl className="divide-y divide-[#dce3e9] overflow-hidden rounded-lg border border-[#dce3e9] bg-white">
-            <div className="grid gap-3 p-5 sm:grid-cols-[145px_1fr] sm:gap-6"><dt className="flex items-center gap-2 text-sm font-semibold text-[#556777]"><MapPin size={16} aria-hidden="true"/> Adresa</dt><dd className="text-sm leading-7">Fakultet tehničkih nauka<br/>Fruškogorska 11, 21000 Novi Sad<br/>Naučno-tehnološki park, 2. sprat, kancelarija 223</dd></div>
-            <div className="grid gap-3 p-5 sm:grid-cols-[145px_1fr] sm:gap-6"><dt className="flex items-center gap-2 text-sm font-semibold text-[#556777]"><Mail size={16} aria-hidden="true"/> Email</dt><dd><a href="mailto:eespsi@uns.ac.rs" className="font-semibold text-[#173b63] underline">eespsi@uns.ac.rs</a></dd></div>
-            <div className="grid gap-3 p-5 sm:grid-cols-[145px_1fr] sm:gap-6"><dt className="flex items-center gap-2 text-sm font-semibold text-[#556777]"><Phone size={16} aria-hidden="true"/> Telefon</dt><dd><a href="tel:+381214854533" className="font-semibold text-[#173b63] underline">021/485-4533</a></dd></div>
-          </dl>
+          <h2 id="contact-details" className="home-section-title !text-[clamp(25px,3vw,36px)]">Kontakt-informacije</h2>
+          <div className="mt-6 grid gap-4 md:grid-cols-3">
+            <article className="card-surface p-6">
+              <span className="feature-icon mb-5"><MapPin size={22} aria-hidden="true"/></span>
+              <h3 className="text-lg font-extrabold">Adresa</h3>
+              <address className="mt-3 not-italic text-sm leading-7 text-[#52627b]">
+                Fakultet tehničkih nauka<br/>Fruškogorska 11, 21000 Novi Sad<br/>Naučno-tehnološki park<br/>2. sprat, kancelarija 223
+              </address>
+            </article>
+            <article className="card-surface p-6">
+              <span className="feature-icon mb-5"><Mail size={22} aria-hidden="true"/></span>
+              <h3 className="text-lg font-extrabold">Email</h3>
+              <p className="mt-3 break-words text-sm leading-7"><a href="mailto:eespsi@uns.ac.rs" className="font-bold text-[#284cdb] underline">eespsi@uns.ac.rs</a></p>
+            </article>
+            <article className="card-surface p-6">
+              <span className="feature-icon mb-5"><Phone size={22} aria-hidden="true"/></span>
+              <h3 className="text-lg font-extrabold">Telefon</h3>
+              <p className="mt-3 text-sm leading-7"><a href="tel:+381214854533" className="font-bold text-[#284cdb] underline">021/485-4533</a></p>
+            </article>
+          </div>
         </section>
-        <aside className="h-fit rounded-lg border border-[#dce3e9] bg-white p-6">
-          <h2 className="text-lg font-bold">Tražite konkretnu informaciju?</h2>
-          <p className="mt-2 text-sm leading-7 text-[#556777]">Informacije o predmetima, nastavnom osoblju i obaveštenjima dostupne su direktno na portalu.</p>
-          <nav aria-label="Korisne stranice" className="mt-4 divide-y divide-[#dce3e9] border-y border-[#dce3e9]">
-            <Link href="/predmeti" className="flex items-center justify-between gap-3 py-3 text-sm font-semibold text-[#173b63]">Predmeti <ArrowRight size={16}/></Link>
-            <Link href="/nastavnici" className="flex items-center justify-between gap-3 py-3 text-sm font-semibold text-[#173b63]">Nastavno osoblje <ArrowRight size={16}/></Link>
-            <Link href="/novosti" className="flex items-center justify-between gap-3 py-3 text-sm font-semibold text-[#173b63]">Obaveštenja <ArrowRight size={16}/></Link>
+
+        <section aria-labelledby="other-content" className="mt-12 rounded-[20px] bg-[#172642] p-6 text-white md:p-9">
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div>
+              <p className="text-[11px] font-extrabold uppercase tracking-widest text-[#9cb0ff]">INFORMACIJE ZA STUDENTE</p>
+              <h2 id="other-content" className="mt-3 text-2xl font-extrabold tracking-tight">Tražite nešto konkretno?</h2>
+              <p className="mt-2 text-sm leading-6 text-[#c7d3e8]">Nastavni materijali, obaveštenja i podaci o nastavnom osoblju dostupni su direktno na portalu.</p>
+            </div>
+          </div>
+          <nav aria-label="Korisne stranice" className="mt-6 grid gap-3 sm:grid-cols-3">
+            {[{ href: "/predmeti", text: "Predmeti" }, { href: "/novosti", text: "Obaveštenja" }, { href: "/nastavnici", text: "Nastavno osoblje" }].map(item =>
+              <Link key={item.href} href={item.href} className="flex min-h-12 items-center justify-between gap-3 rounded-xl bg-white/10 px-4 py-3 text-sm font-bold text-white hover:bg-white/20">
+                {item.text}<ArrowRight size={17} aria-hidden="true"/>
+              </Link>
+            )}
           </nav>
-        </aside>
+        </section>
       </div>
     </>
   );
