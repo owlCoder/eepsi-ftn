@@ -120,7 +120,7 @@ Urednici prvo vide pregled i pretragu postojećih novosti i predmeta, a obrazac 
 
 ## Kategorije materijala i nastavni tim
 
-Svaki materijal ima jednu od pet kategorija: **predavanja**, **vežbe**, **laboratorijske vežbe**, **ispitni materijali** ili **ostalo**. Predmeti prikazuju materijale po kategorijama sa linkovima za brzu navigaciju. Ove kategorije su definisane u `src/domain/content/material-kinds.ts`, Zod validaciji i Prisma modelu.
+Svaki materijal ima jednu od pet kategorija: **predavanja**, **vežbe**, **laboratorijske vežbe**, **ispitni materijali** ili **ostalo**. Predmeti prikazuju materijale po kategorijama sa trenutnom pretragom i filterima. Administracija materijala učitava samo 20 stavki po stranici, sa serverskom pretragom i filterom kategorije. Ove kategorije su definisane u `src/domain/content/material-kinds.ts`, Zod validaciji i Prisma modelu.
 
 Migracija `20261104235500_material_categories` zadržava sve postojeće materijale i postavlja im kategoriju `OTHER` (Ostalo). Novi materijali biraju kategoriju pri kreiranju; nastavnici/saradnici dodeljeni predmetu, urednici i super administratori mogu da je promene.
 

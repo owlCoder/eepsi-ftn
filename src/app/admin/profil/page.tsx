@@ -4,6 +4,7 @@ import { LockKeyhole, UserRound } from "lucide-react";
 import { currentUser } from "@/application/authorization";
 import { updateProfileAction } from "@/app/actions/profile";
 import { PasswordChangeForm } from "@/components/password-change-form";
+import { SubmitButton } from "@/components/submit-button";
 import { roleLabels } from "@/domain/authorization/permissions";
 
 export const metadata: Metadata = { title: "Moj profil", robots: { index: false, follow: false } };
@@ -27,7 +28,7 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
           <div><label className="form-label" htmlFor="profile-name">Ime i prezime</label><input className="input-field" id="profile-name" name="name" defaultValue={actor.name} minLength={3} maxLength={120} required/></div>
           <div><label className="form-label" htmlFor="profile-email">Email adresa</label><input className="input-field bg-slate-50" id="profile-email" value={actor.email} readOnly aria-describedby="email-note"/><p className="mt-2 text-xs text-slate-500" id="email-note">Za promenu email adrese obratite se administratoru.</p></div>
           <div><span className="form-label">Uloga</span><p className="pill">{roleLabels[actor.role]}</p></div>
-          <button type="submit" className="btn btn-primary">Sačuvaj profil</button>
+          <SubmitButton pendingText="Čuvanje profila…">Sačuvaj profil</SubmitButton>
         </form>
       </section>
       <section className="admin-panel">

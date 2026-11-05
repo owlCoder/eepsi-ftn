@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
 import { ShieldCheck } from "lucide-react";
+import { redirect } from "next/navigation";
+import { currentUser } from "@/application/authorization";
 import { LoginForm } from "@/components/login-form";
 
 export const metadata: Metadata = { title: "Prijava", robots: { index: false, follow: false } };
 
 export default async function LoginPage({ searchParams }: { searchParams: Promise<{ changed?: string }> }) {
+  if (await currentUser()) redirect("/admin");
   const { changed } = await searchParams;
   return (
     <div className="container-page flex min-h-[68vh] items-center justify-center py-20">
