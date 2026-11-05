@@ -10,7 +10,7 @@ import { clearLoginFailures, isLoginThrottled, recordLoginFailure } from "@/infr
 const DUMMY_HASH = hashSync("eepsi-invalid-account", 12);
 
 const credentialsSchema = z.object({
-  email: z.email().max(191).transform((v) => v.toLowerCase().trim()),
+  email: z.string().trim().toLowerCase().pipe(z.email().max(191)),
   password: z.string().min(1).max(200),
 });
 

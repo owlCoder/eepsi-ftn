@@ -37,14 +37,14 @@ export const materialEditInput = materialInput.omit({ courseId: true }).extend({
 
 export const userInput = z.object({
   name: z.string().trim().min(3).max(120),
-  email: z.email().max(191).transform((email) => email.trim().toLowerCase()),
+  email: z.string().trim().toLowerCase().pipe(z.email().max(191)),
   password: z.string().min(12).max(200),
   role: z.enum(["EDITOR", "PROFESSOR", "ASSISTANT", "STUDENT"]),
 });
 
 export const membershipInput = z.object({
   courseId: z.string().min(5).max(40),
-  email: z.email().transform((email) => email.trim().toLowerCase()),
+  email: z.string().trim().toLowerCase().pipe(z.email()),
   role: z.enum(["PROFESSOR", "ASSISTANT"]),
 });
 
