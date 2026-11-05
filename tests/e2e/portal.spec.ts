@@ -169,6 +169,8 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.goto(editUrl);
     const staleEditor = await page.context().newPage();
     await staleEditor.goto(editUrl);
+    const stalePublishTab = await page.context().newPage();
+    await stalePublishTab.goto(editUrl);
     await page.getByRole("button", { name: "Objavi sada" }).click();
     await expect(page).toHaveURL(/\/admin\/novosti(?:\?|$)/);
 
@@ -178,6 +180,11 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(staleEditor).toHaveURL(/error=stale/);
     await expect(staleEditor.getByRole("alert").filter({ hasText: "zastarela verzija nije sačuvana" })).toBeVisible();
     await staleEditor.close();
+
+    // An old "Publish" button must not unpublish a story already published in another tab.
+    await stalePublishTab.getByRole("button", { name: "Objavi sada" }).click();
+    await expect(stalePublishTab).toHaveURL(/unchanged=1/);
+    await stalePublishTab.close();
 
     await page.goto("/novosti?q=" + marker);
     await expect(page.getByRole("heading", { name: newsTitle })).toBeVisible();

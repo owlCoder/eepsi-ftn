@@ -7,9 +7,9 @@ import { db } from "@/infrastructure/db/prisma";
 import { readPage } from "@/lib/pagination";
 import { SubmitButton } from "@/components/submit-button";
 
-export default async function AdminNews({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; status?: string; deleted?: string }> }) {
+export default async function AdminNews({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; status?: string; deleted?: string; unchanged?: string }> }) {
   if (!(await can("news.write"))) notFound();
-  const { q: rawQ, p, status: rawStatus, deleted } = await searchParams;
+  const { q: rawQ, p, status: rawStatus, deleted, unchanged } = await searchParams;
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const status = rawStatus === "DRAFT" || rawStatus === "PUBLISHED" ? rawStatus : "";
@@ -31,6 +31,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
     <div className="space-y-7">
       <div><p className="eyebrow mb-3">Uredništvo</p><h1 className="text-4xl font-extrabold tracking-tight">Novosti</h1><p className="mt-3 text-sm text-slate-500">Kreirajte nacrt ili odmah objavite novu informaciju.</p></div>
       {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-teal-800">Novost je trajno uklonjena.</p>}
+      {unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">Status novosti je već ažuriran. Nisu potrebne dodatne izmene.</p>}
       <div className="admin-panel" id="spisak-novosti">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="!mb-0">Postojeće novosti <span className="text-sm font-semibold text-slate-500">· strana {page}</span></h2>
@@ -46,7 +47,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           <button className="btn btn-primary">Prikaži</button>
         </form>
         {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Naslov</th><th>Status</th><th>Izmena</th><th>Akcija</th></tr></thead><tbody>
-          {pageItems.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-teal-700">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija"><form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><button className="text-sm font-bold text-teal-700 underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form></td></tr>)}
+          {pageItems.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-teal-700">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija"><form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><input type="hidden" name="publish" value={item.status !== "PUBLISHED" ? "true" : "false"}/><button className="text-sm font-bold text-teal-700 underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form></td></tr>)}
         </tbody></table></div> : <p className="text-sm text-slate-500">Nema novosti za zadatu pretragu. Promenite filter ili dodajte novu objavu.</p>}
         <nav aria-label="Stranice novosti" className="mt-6 flex justify-between gap-3">
           {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}

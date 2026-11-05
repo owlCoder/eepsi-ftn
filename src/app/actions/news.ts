@@ -27,7 +27,7 @@ export async function createNewsAction(data: FormData) {
         ...input,
         slug: toSlug(input.title) + "-" + randomUUID().slice(0, 7),
         authorId: actor.id,
-        status: publish ? "PUBLISHED" : "DRAFT",
+        status: desiredStatus,
         publishedAt: publish ? new Date() : null,
       },
     });
@@ -72,9 +72,14 @@ export async function togglePublishNewsAction(data: FormData) {
   const actor = await requirePermission("news.publish");
   const id = String(data.get("id") ?? "");
   if (!id || id.length > 40) throw new Error("Neispravan ID novosti.");
+  const intent = data.get("publish");
+  if (intent !== "true" && intent !== "false") throw new Error("Neispravna akcija za objavljivanje.");
+  const publish = intent === "true";
+  const desiredStatus = publish ? "PUBLISHED" : "DRAFT";
   const news = await db.news.findUnique({ where: { id }, select: { status: true, slug: true } });
   if (!news) throw new Error("Novost nije pronađena.");
-  const publish = news.status !== "PUBLISHED";
+  // Never invert a newer status just because the editor is using an old tab.
+  if (news.status === desiredStatus) redirect("/admin/novosti?unchanged=1");
   await db.$transaction(async (tx) => {
     const result = await tx.news.updateMany({
       where: { id, status: news.status },
