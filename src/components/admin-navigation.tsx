@@ -12,8 +12,8 @@ export function AdminNavigation({ canNews, canUsers, isStudent }: { canNews: boo
     { href: isStudent ? "/predmeti" : "/admin/predmeti", label: isStudent ? "Katalog predmeta" : "Predmeti", icon: BookOpen },
     { href: "/admin/profil", label: "Moj profil", icon: UserRound },
     ...(canUsers ? [
-      { href: "/admin/korisnici", label: "Korisnici / RBAC", icon: Users },
-      { href: "/admin/audit", label: "Audit log", icon: ScrollText },
+      { href: "/admin/korisnici", label: "Nalozi i dozvole", icon: Users },
+      { href: "/admin/audit", label: "Evidencija izmena", icon: ScrollText },
     ] : []),
   ];
   return <nav className="admin-nav" aria-label="Administracija">

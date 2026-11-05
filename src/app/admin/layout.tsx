@@ -18,10 +18,10 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     <div className="container-page admin-shell">
       <aside className="admin-sidebar h-fit rounded-2xl border border-slate-200 bg-white p-4 lg:sticky lg:top-[102px]">
         <div className="mb-5 border-b border-slate-100 px-3 pb-5">
-          <span className="eyebrow"><ShieldCheck size={14}/> Sigurna zona</span>
-          <h2 className="mt-2 text-xl font-extrabold tracking-tight">Moj portal</h2>
+          <span className="eyebrow"><ShieldCheck size={14}/> EEPSI / Upravljački deo</span>
+          <h2 className="mt-3 text-xl font-extrabold tracking-tight">Radni prostor</h2>
           <p className="mt-1 text-sm font-semibold text-slate-700">{actor.name}</p>
-          <p className="mt-1 text-xs text-slate-500">{roleLabels[actor.role]}</p>
+          <p className="meta-label mt-2">{roleLabels[actor.role]}</p>
         </div>
         <AdminNavigation canNews={canNews} canUsers={canUsers} isStudent={actor.role === "STUDENT"}/>
         <div className="mt-5 border-t border-slate-100 pt-3"><SignOutButton/></div>
