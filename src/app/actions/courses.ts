@@ -196,12 +196,23 @@ export async function deleteCourseAction(data: FormData) {
   const actor = await requirePermission("users.manage");
   const id = String(data.get("id") ?? "");
   if (!id || id.length > 40) throw new Error("Neispravan predmet.");
+  // Reject deletion from a form opened before another teacher edited the course.
+  const original = courseInput.safeParse({
+    title: String(data.get("originalTitle") ?? ""),
+    code: String(data.get("originalCode") ?? ""),
+    description: Buffer.from(String(data.get("originalDescriptionBase64") ?? ""), "base64").toString("utf8"),
+    semester: String(data.get("originalSemester") ?? ""),
+    studyLevel: String(data.get("originalStudyLevel") ?? ""),
+  });
+  if (!original.success) throw new Error("Neispravna verzija predmeta. Osvežite stranicu.");
   const deleted = await db.$transaction(async (tx) => {
     const existing = await tx.course.findUnique({
       where: { id },
       select: { slug: true, memberships: { select: { userId: true } } },
     });
-    if (!existing) throw new Error("Predmet je već uklonjen.");
+    if (!existing) return null;
+    const result = await tx.course.deleteMany({ where: { id, ...original.data } });
+    if (result.count !== 1) return null;
     // Course memberships and materials cascade; revoke active faculty JWTs.
     const userIds = existing.memberships.map((entry) => entry.userId);
     if (userIds.length) {
@@ -210,12 +221,12 @@ export async function deleteCourseAction(data: FormData) {
         data: { sessionVersion: { increment: 1 } },
       });
     }
-    await tx.course.delete({ where: { id } });
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "course.delete", subjectType: "Course", subjectId: id },
     });
     return existing;
   });
+  if (!deleted) redirect("/admin/predmeti/" + id + "?error=stale");
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + deleted.slug);

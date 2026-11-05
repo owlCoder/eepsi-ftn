@@ -207,6 +207,11 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       <h2 className="!mb-2 text-rose-900">Obriši predmet</h2>
       <p className="mb-5 text-sm leading-7 text-slate-600">Ova radnja trajno uklanja predmet, njegove nastavne materijale i angažovanja. Nastavnici će morati ponovo da se prijave. Akcija je dostupna samo super administratoru.</p>
       <form action={deleteCourseAction}><input type="hidden" name="id" value={course.id}/>
+        <input type="hidden" name="originalCode" value={course.code}/>
+        <input type="hidden" name="originalTitle" value={course.title}/>
+        <input type="hidden" name="originalDescriptionBase64" value={Buffer.from(course.description, "utf8").toString("base64")}/>
+        <input type="hidden" name="originalSemester" value={course.semester}/>
+        <input type="hidden" name="originalStudyLevel" value={course.studyLevel}/>
         <ConfirmSubmitButton message={"Trajno obrisati predmet „" + course.title + "“ i sve njegove materijale?"} className="btn btn-danger"><Trash2 size={16}/> Trajno obriši predmet</ConfirmSubmitButton>
       </form>
     </section>}
