@@ -9,10 +9,10 @@ import { roleLabels } from "@/domain/authorization/permissions";
 
 export const metadata: Metadata = { title: "Moj profil", robots: { index: false, follow: false } };
 
-export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ updated?: string; unchanged?: string }> }) {
+export default async function ProfilePage({ searchParams }: { searchParams: Promise<{ updated?: string; unchanged?: string; stale?: string }> }) {
   const actor = await currentUser();
   if (!actor) redirect("/prijava");
-  const { updated, unchanged } = await searchParams;
+  const { updated, unchanged, stale } = await searchParams;
 
   return (
     <div className="space-y-7">
@@ -22,10 +22,12 @@ export default async function ProfilePage({ searchParams }: { searchParams: Prom
         <p className="mt-3 text-sm leading-7 text-slate-500">Uredite prikazano ime i zaštitite svoj nalog promenom lozinke.</p>
       </div>
       {updated && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Profil je uspešno ažuriran.</p>}
+      {stale && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Profil je u međuvremenu promenjen. Proverite trenutno ime i pokušajte ponovo.</p>}
       {unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-700">Ime je već sačuvano. Nisu potrebne dodatne izmene.</p>}
       <section className="admin-panel">
         <h2 className="flex items-center gap-3"><UserRound className="text-[#173b63]"/> Osnovni podaci</h2>
         <form action={updateProfileAction} className="space-y-5">
+          <input type="hidden" name="originalName" value={actor.name}/>
           <div><label className="form-label" htmlFor="profile-name">Ime i prezime</label><input className="input-field" id="profile-name" name="name" defaultValue={actor.name} minLength={3} maxLength={120} required/></div>
           <div><label className="form-label" htmlFor="profile-email">Email adresa</label><input className="input-field bg-slate-50" id="profile-email" value={actor.email} readOnly aria-describedby="email-note"/><p className="mt-2 text-xs text-slate-500" id="email-note">Za promenu email adrese obratite se administratoru.</p></div>
           <div><span className="form-label">Uloga</span><p className="pill">{roleLabels[actor.role]}</p></div>

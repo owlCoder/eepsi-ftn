@@ -14,17 +14,21 @@ export async function updateProfileAction(data: FormData) {
   const actor = await currentUser();
   if (!actor) redirect("/prijava");
   const { name } = profileInput.parse({ name: String(data.get("name") ?? "") });
-  if (name === actor.name) redirect("/admin/profil?unchanged=1");
-  await db.$transaction(async (tx) => {
+  const originalName = String(data.get("originalName") ?? "");
+  if (!originalName || originalName.length > 120) throw new Error("Neispravna verzija profila. Osvežite stranicu.");
+  if (name === originalName) redirect("/admin/profil?unchanged=1");
+  const updated = await db.$transaction(async (tx) => {
     const result = await tx.user.updateMany({
-      where: { id: actor.id, active: true, sessionVersion: actor.sessionVersion },
+      where: { id: actor.id, active: true, sessionVersion: actor.sessionVersion, name: originalName },
       data: { name },
     });
-    if (result.count !== 1) throw new Error("Sesija je promenjena. Prijavite se ponovo.");
+    if (result.count !== 1) return false;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "user.profile.update", subjectType: "User", subjectId: actor.id },
     });
+    return true;
   });
+  if (!updated) redirect("/admin/profil?stale=1");
   revalidatePath("/admin");
   revalidatePath("/admin/profil");
   revalidatePath("/nastavnici");
