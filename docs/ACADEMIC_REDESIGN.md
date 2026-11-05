@@ -1,66 +1,58 @@
-# EEPSI — akademski UI/UX plan (verzija 2)
+# EEPSI — javni portal, vizuelni sistem v3 (novembar 2026)
 
-## Cilj
+## Prioritet
 
-Portal mora da odgovori na tri pitanja bez objašnjavanja: **gde sam, šta tražim i kako dolazim do informacije?** Primarna publika su studenti, nastavnici/saradnici, uredništvo katedre i posetioci iz industrije. Nema reklamnih slogana, generičkih ilustracija, izmišljenih metrika ni dekorativnih kartica.
+Primarni korisnik je **student koji nije prijavljen**. Početna mora odmah da omogući pretragu predmeta, otvaranje materijala i čitanje najnovijih obaveštenja. Urednički i administratorski tokovi postoje odvojeno iza RBAC-a. Ovaj sajt nije potvrđena migracija starog EEPSI CMS-a; ne dodavati izmišljene zaposlene, predmete, obaveštenja ili metrike.
 
-## Informaciona arhitektura
+## Novi vizuelni jezik
 
-| Navigacija | Ruta | Korisnikov zadatak | Glavna radnja |
-| --- | --- | --- | --- |
-| Početna | `/` | Orijentacija i najnovije informacije | Pretraži predmet |
-| Predmeti | `/predmeti` | Pronađi predmet, program, semestar i materijale | Filteri i katalog |
-| Nastavno osoblje | `/nastavnici` | Pronađi nastavnika i njegove predmete | Pretraga imena ili predmeta |
-| Obaveštenja | `/novosti` | Pročitaj aktuelne objave | Pretraga i hronološka lista |
-| Istraživanje | `/istrazivanje` | Pogledaj naučne oblasti i publikacije | Zvanični pregled radova |
-| O katedri | `/o-katedri` | Razumevanje delatnosti i povezanih oblasti | Laboratorija / saradnja |
-| Kontakt | `/kontakt` | Nađi adresu, telefon i e-mail | Kontaktiraj katedru |
-| Moj portal | `/admin` | Pristup u skladu sa korisničkom ulogom | Prijava ili radni prostor |
+- **Paleta:** midnight `#152341` za glavni početni ekran i podnožje; cobalt `#284cdb` za primarne akcije i aktivne linkove; `#f5f6fa` za podlogu; bele kartice; `#e4e8f0` za granice; duboki slate tonovi za tipografiju.
+- **Tipografija:** sistemski sans-serif bez spoljnog font zahteva. Izraženi naslovi, kratki pasusi, konkretne oznake; dobra čitljivost na telefonu. Bez reklamnog jezika, nasumičnih gradijenata i stock fotografija.
+- **Komponente:** navigacija sa istaknutim predmetima i obaveštenjima, jedna velika pretraga na početnoj, kartice predmeta sa direktnim materijalima, hronološki feed obaveštenja i jednako stilizovane detaljne stranice.
+- **Razmaci:** dovoljno prostora između grupa, ali ne visok prazni blok pre prvog zadatka. Kartice imaju jednostavne ivice i zaobljenje; admin obrasci i tabele ostaju namenski interfejs za rad.
+- **Kontrast:** tamni tekst na svetlim površinama, beli tekst na tamnom herou, jasno vidljivi focus-visible obrubi i statusi čitljivi bez oslanjanja na boju.
 
-Sekundarne stranice: `/laboratorija` i `/saradnja` dostupne iz istraživanja/o katedri i podnožja. Svi postojeći URL-ovi ostaju važeći. Nema promene modela podataka, RBAC-a ili autorizacije.
+## Informaciona arhitektura i putanje
 
-## Rasporedi
+| Ruta | Korisnički zadatak | Primarna akcija |
+| --- | --- | --- |
+| `/` | Pronađi predmet ili proveri šta je novo | Pretraži; otvori najnovije obaveštenje |
+| `/predmeti` | Pronađi predmet prema nazivu, šifri, nivou i semestru | Otvori predmet ili direktno materijale |
+| `/predmeti/[slug]` | Pristupi nastavnim materijalima | Pregled, filtriranje i otvaranje materijala |
+| `/novosti` | Pregledaj objave od najnovijih | Pretraži i otvori objavu |
+| `/novosti/[slug]` | Pročitaj obaveštenje | Čitaj, podeli ili nazad na listu |
+| `/nastavnici` | Pronađi aktivno angažovano osoblje | Pretraga i prelazak na predmet |
+| `/kontakt` | Nađi adresu, email i telefon | Kontaktiraj katedru |
+| `/admin` | Pristup korisničkom radnom prostoru | Prijava / rad u okviru uloge |
+
+Sekundarne informativne stranice su `/o-katedri`, `/istrazivanje`, `/laboratorija` i `/saradnja`. Sve postojeće rute i RBAC ostaju stabilni.
+
+## Raspored
 
 ### Početna
-1. Institucionalni zaglavlje: Univerzitet, Fakultet, puni naziv katedre. Bez hero ilustracije i generičkog slogana.
-2. Kratko objašnjenje portala uz **pretragu predmeta iz prve zone ekrana**.
-3. „Najčešće traženo“: Predmeti i materijali; Nastavno osoblje; Obaveštenja; Kontakt.
-4. „Najnovija obaveštenja“: hronološki redovi sa datumom, naslovom i kratkim tekstom. Vidljiva veza do svih obaveštenja.
-5. „Predmeti“: ograničeni pregled iz baze; vidljiv link do kompletnog kataloga.
-6. „O katedri“: precizan institucionalni uvod, veze ka istraživanju, laboratoriji i saradnji.
-7. Kontakt-podaci u podnožju.
+1. Tanki institucionalni red i kompaktna, prepoznatljiva navigacija.
+2. Tamni uvodni ekran sa konkretnim naslovom, velikom pretragom po šifri ili nazivu predmeta i direktnim linkovima ka katalogu, obaveštenjima i nastavnom osoblju.
+3. Vidljive najnovije objave u istoj prvoj zoni ekrana na desktopu; bez izmišljenih objava u praznom stanju.
+4. Kartice realnih predmeta sa vidljivom šifrom, semestrom i direktnim linkom na `#materijali`.
+5. Kratke veze ka osoblju, kontaktu i katedri.
 
-### Listing / detalji
-- Katalog: naslov → kontekst → filteri → rezultati kao čitljiva lista (šifra, naziv, nivo, semestar), konzistentna paginacija.
-- Predmet: povratak na katalog → naziv i šifra → opis → materijali sa pretragom i kategorijama → nastavni tim. Nema praznog dekorativnog panela.
-- Nastavno osoblje: pretraga → grupisanje nastavnici/saradnici → imena i angažovanja. Bez javnih e-mail adresa.
-- Obaveštenja: vremenski poređani naslovi, opis i datum; tekst pojedinačne vesti u uskoj čitalačkoj koloni.
-- Informativne stranice: naslov, sažetak, potpune informacije, povezane stranice, proverljivi izvori; izbegavati tvrđenja o konkretnim projektima bez potvrde.
-- Admin: uloga i identitet u zaglavlju, leve radne sekcije, jasne tabele i obrasci; ne menjati postojeće tokove čuvanja i potvrda.
+### Katalozi
+- Predmeti: jasan naslov → kompaktan filter → mreža kartica → paginacija. Svaka kartica ima dva smisleno različita linka, za detalj i materijale. Materijali prikazuju stvaran broj.
+- Obaveštenja: naslov → pretraga → čitljiv feed sa datumom, naslovom i sažetkom, najnovije prvo.
+- Osoblje: imena i uloge u karticama, angažovani predmeti kao linkovi. **Nikada ne izlagati prijavne e-mail adrese.**
 
-## Dizajn sistem
+### Detalji
+- Predmet: informacija o predmetu → **nastavni materijali pre opisa** → nastavno osoblje u bočnoj koloni ili ispod na telefonu. Kategorije i pretraga materijala ostaju funkcionalni.
+- Obaveštenje: velika naslovna zona, datum i autor, uska čitalačka kolona bez HTML injekcije, povratak na listu.
 
-- Primarna: `#173b63` (akademska tamnoplava). Tekst: `#182b3c`. Površina: `#fff`. Pozadina: `#f5f7fa`. Linije: `#dce3e9`. Sekundarni tekst: `#556777`.
-- **Jedna akcentna boja** plus neutralni tonovi. Crveno samo za destruktivne radnje; zeleno samo za uspeh.
-- System sans-serif tipografija bez eksternog font zahteva; jasni naslovni nivoi, normalna veličina teksta, 1.5–1.7 prored.
-- Maksimalna širina stranice 1180 px, čitalačka kolona 720–780 px. Raspored 12 kolona, ograničen broj prelamanja, jednostavne bordure i mali radijusi (6–8 px).
-- Bez gradijenata, serifnih reklamnih naslova, ukrasnih piktograma, geometrijskih šema i „glass“ efekata. Ikonice samo kada objašnjavaju radnju.
-- Fokus okvir, skip link, stvarne oznake polja, vidljiv aktivni meni, cilj dodira najmanje 44 px. Mobile first. Navigacija nije skrivena iza desktop-only elemenata.
-- Statusi moraju biti tekstualni. Kartice/pločice nisu podrazumevani raspored — koristimo liste, sekcije i tabele.
+## Mobilni, tastatura i pristupačnost
 
-## Urednička pravila (copy)
+- Na manjim ekranima uvek su vidljive prečice „Predmeti“ i „Obaveštenja“; ostale rute su dostupne kroz meni. Otvoreni meni se zatvara klikom van i tasterom Escape, uz povratak fokusa.
+- Na širini od 320 px ne sme biti horizontalnog skrolovanja cele stranice. Ciljevi dodira su najmanje 44 px kada su primarne akcije.
+- Stvarna oznaka polja, `role="search"` tamo gde je potrebno, relevantne `aria` veze, semantički naslovi i vizuelno istaknuti fokus.
+- Testirati kao neprijavljen gost: početna → pretraga → predmet → materijali, kao i početna → obaveštenja → detaljna objava.
+- Nakon promena proveriti TypeScript, ESLint, unit/integration, produkcioni build, Chromium Playwright i runtime smoke.
 
-- „Predmeti“ umesto „Istražite znanje koje pokreće budućnost“.
-- „Pretraži predmete“ umesto „Pronađite svoju putanju“.
-- „Nastavno osoblje“, „Obaveštenja“, „Kontakt“, „Materijali“ — terminologija mora biti dosledna kroz meni, naslove i akcije.
-- Objašnjenja jednu do dve rečenice; relevantne informacije pre marketinga.
-- Ne izmišljati zaposlene, studente, događaje, statistiku, projekte ni referencu da je ovo zvanična migracija istorijskog sajta.
+## Granice
 
-## UX verifikacija
-
-- Student sa početne do predmeta i materijala u najviše dva klika, ako se zna naziv predmeta.
-- Posetilac sa svake stranice do kontakta jednim klikom iz glavne navigacije.
-- Nastavnik sa radnog prostora do svog predmeta jednim klikom.
-- Telefon 390 px: navigacija, pretraga, filteri, tabele, forme i dugmad bez horizontalnog skrolovanja glavne stranice.
-- Zadržati sve Playwright selektore / tokove, i po potrebi proširiti test osnovne navigacije.
-- Verifikovati `typecheck`, lint, unit/integration, build, browser E2E i produkcioni runtime CI.
+Nema promena autorizacije, šeme baze, istorijske migracije, načina izdavanja objava niti javnog deployment-a u okviru ovog vizuelnog redizajna. Produkcija zahteva zasebnu odluku i bezbednosnu reviziju.
