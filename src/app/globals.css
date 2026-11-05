@@ -612,8 +612,8 @@ body { background: var(--paper); color: var(--ink); font-size: 15px; }
 }
 
 
-/* One semantic catalog table; rows adapt to a narrow viewport without duplicate links. */
-@media (max-width: 700px) {
+/* One semantic catalog table; rows adapt on phones and compact tablets without duplicate links. */
+@media (max-width: 900px) {
   .academic-course-table-wrap { display: block; overflow: visible; border: 0; border-radius: 0; background: transparent; }
   .academic-course-table,.academic-course-table tbody { display: block; width: 100%; }
   .academic-course-table thead { display: none; }
@@ -704,4 +704,25 @@ body { background: var(--paper); color: var(--ink); font-size: 15px; }
   .institution-brand strong { border-right: 0; }
   .institution-brand::after { content: none; }
   .academic-directory-person { padding: 16px; }
+}
+
+
+/* Quiet editorial rows on informational pages, consistent with the catalog. */
+.academic-info-list { overflow: hidden; border: 1px solid #dce4ee; border-radius: 7px; background: #fff; }
+.academic-info-item { padding: 21px 25px; border-bottom: 1px solid #e1e7ef; }
+.academic-info-item:last-child { border-bottom: 0; }
+.academic-info-item h3 { color: #1a304d; font-size: 17px; font-weight: 780; letter-spacing: -.015em; line-height: 1.4; }
+.academic-info-item p { max-width: 780px; margin-top: 7px; color: #576a83; font-size: 14px; line-height: 1.75; }
+.academic-info-item a { display: inline-flex; align-items: center; min-height: 34px; margin-top: 9px; color: #174779; font-size: 13px; font-weight: 770; text-decoration: underline; }
+.academic-info-item a:hover { color: #0b2e59; }
+.academic-featured-materials,.academic-materials-link { min-height: 42px; }
+.student-header-link { min-height: 44px; }
+.header-login { min-height: 44px; }
+.academic-news-title { font-size: 14px; line-height: 1.4; }
+.academic-news-summary { font-size: 12px; line-height: 1.5; }
+.academic-news-archive .academic-news-title { font-size: 16px; }
+.academic-news-archive .academic-news-summary { font-size: 13px; }
+@media (max-width: 700px) {
+  .academic-info-item { padding: 18px; }
+  .academic-news-archive .academic-news-title { font-size: 15px; }
 }
