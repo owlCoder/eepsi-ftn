@@ -58,7 +58,7 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
           {filtered && <Link href="/predmeti" className="text-sm font-bold text-teal-700 underline">Očisti sve filtere</Link>}
         </div>
         {items.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <CourseCard key={item.id} item={item}/>)}</div>
-          : <div className="empty-state">Nema predmeta za zadatu pretragu. {filtered && <Link href="/predmeti" className="font-bold text-teal-700 underline">Obriši filtere</Link>}</div>}
+          : <div className="empty-state">{page > 1 ? "Nema predmeta na ovoj stranici. Vratite se na prethodnu stranicu." : "Nema predmeta za zadatu pretragu."} {filtered && <Link href="/predmeti" className="font-bold text-teal-700 underline">Obriši filtere</Link>}</div>}
         <nav className="mt-10 flex items-center justify-between" aria-label="Stranice">
           {page > 1 ? <Link className="btn btn-light" href={pageHref(page - 1)}>← Prethodna</Link> : <span/>}
           {hasNext && <Link className="btn btn-light" href={pageHref(page + 1)}>Sledeća →</Link>}
