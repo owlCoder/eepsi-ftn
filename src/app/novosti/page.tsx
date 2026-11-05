@@ -5,41 +5,44 @@ import { listNews } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
 export const revalidate = 300;
-
-export const metadata: Metadata = { title: "Novosti", description: "Najnovija obaveštenja i vesti sa Katedre EEPSI." };
+export const metadata: Metadata = { title: "Obaveštenja", description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka." };
 
 export default async function News({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
   const { q: rawQ, p } = await searchParams;
-  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0,80);
+  const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const results = await listNews(q, page);
   const hasNext = results.length > 12;
   const items = results.slice(0, 12);
+  const pageHref = (next: number) => "/novosti?" + new URLSearchParams({ ...(q ? { q } : {}), p: String(next) }).toString();
   return (
     <>
-      <div className="page-banner"><div className="container-page"><p className="eyebrow mb-4">Budite u toku</p><h1 className="page-title">Novosti i obaveštenja</h1><p className="section-copy mt-5 max-w-2xl">Važne informacije o nastavi, projektima, događajima i radu katedre.</p></div></div>
-      <div className="container-page py-14 md:py-20">
-        <div className="section-index"><span>01 / Pronađite novost</span><span>Pretraga</span></div>
-        <form className="mb-6 flex flex-wrap gap-3 border-b border-[#abb7b2] pb-8" role="search">
-          <label htmlFor="news-search" className="sr-only">Pretraga novosti</label>
-          <input id="news-search" name="q" className="input-field min-w-48 flex-1" type="search" placeholder="Pretraži novosti po naslovu ili opisu…" defaultValue={q}/>
-          <button className="btn btn-primary">Pretraži</button>
+      <header className="page-banner"><div className="container-page">
+        <nav aria-label="Putanja" className="mb-4 text-xs text-[#556777]"><Link href="/" className="hover:underline">Početna</Link> / Obaveštenja</nav>
+        <h1 className="page-title">Obaveštenja</h1>
+        <p className="section-copy mt-3 max-w-2xl">Najnovije objave i informacije o nastavi, događajima i aktivnostima katedre, poređane od najnovijih.</p>
+      </div></header>
+      <div className="container-page py-9 md:py-12">
+        <form action="/novosti" role="search" className="flex flex-wrap items-end gap-3 rounded-lg border border-[#dce3e9] bg-white p-5">
+          <div className="min-w-[200px] flex-1"><label htmlFor="news-search" className="form-label">Pretraga obaveštenja</label>
+            <input id="news-search" name="q" type="search" maxLength={80} className="input-field" placeholder="Naslov ili opis obaveštenja" defaultValue={q}/>
+          </div>
+          <button className="btn btn-primary" type="submit">Pretraži</button>
+          {q && <Link href="/novosti" className="btn btn-light">Očisti</Link>}
         </form>
-        {q && <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-500">Rezultati za „{q}“</p>
-          <Link href="/novosti" className="text-sm font-bold text-teal-700 underline">Očisti pretragu</Link>
-        </div>}
-        <div className="section-index mt-10"><span>02 / Objavljene novosti</span><span>Strana {page}</span></div>
-        {items.length ? <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">{items.map((item) => <NewsCard key={item.id} item={item}/>)}</div>
-          : <div className="empty-state">
-            <p className="mb-3 text-lg font-bold text-slate-700">{page > 1 ? "Nema novosti na ovoj stranici." : "Nema pronađenih novosti."}</p>
-            <p className="text-sm">{page > 1 ? "Vratite se na prethodnu stranicu da nastavite pregled." : "Pokušajte sa drugim izrazom ili pogledajte sva obaveštenja."}</p>
-            {q && <Link href="/novosti" className="btn btn-light mt-5">Sve novosti</Link>}
-          </div>}
-        <nav className="mt-10 flex items-center justify-between border-t border-[#d3d6ce] pt-6" aria-label="Stranice">
-          {page > 1 ? <Link href={"/novosti?q=" + encodeURIComponent(q) + "&p=" + (page-1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-          {hasNext && <Link href={"/novosti?q=" + encodeURIComponent(q) + "&p=" + (page+1)} className="btn btn-light">Sledeća →</Link>}
-        </nav>
+        <section className="mt-9" aria-label="Lista obaveštenja">
+          <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-xl font-bold">Objavljena obaveštenja</h2>
+            <p role="status" className="text-sm text-[#556777]">{q ? `Rezultati za „${q}“ · ` : ""}strana {page}</p>
+          </div>
+          {items.length ? <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">{items.map(item => <NewsCard key={item.id} item={item}/>)}</div>
+            : <div className="empty-state"><p>{page > 1 ? "Na ovoj stranici nema obaveštenja." : q ? "Nema obaveštenja za zadatu pretragu." : "Trenutno nema objavljenih obaveštenja."}</p>
+              {q && <Link href="/novosti" className="mt-3 inline-block font-semibold text-[#173b63] underline">Prikaži sva obaveštenja</Link>}</div>}
+          <nav className="mt-6 flex items-center justify-between gap-3" aria-label="Stranice">
+            {page > 1 ? <Link href={pageHref(page-1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+            {hasNext && <Link href={pageHref(page+1)} className="btn btn-light">Sledeća →</Link>}
+          </nav>
+        </section>
       </div>
     </>
   );

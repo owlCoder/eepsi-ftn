@@ -6,8 +6,7 @@ import { readPage } from "@/lib/pagination";
 import { parseCourseFilters } from "@/domain/courses/filters";
 
 export const revalidate = 300;
-
-export const metadata: Metadata = { title: "Predmeti", description: "Pregled predmeta Katedre EEPSI na FTN-u." };
+export const metadata: Metadata = { title: "Predmeti", description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u." };
 
 export default async function Courses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }) {
   const { q: rawQ, p, level: rawLevel, semester: rawSemester } = await searchParams;
@@ -18,53 +17,49 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
   const hasNext = results.length > 18;
   const items = results.slice(0, 18);
   const filtered = Boolean(q || filters.level || filters.semester);
-  function pageHref(nextPage: number) {
+  function pageHref(next: number) {
     const query = new URLSearchParams();
     if (q) query.set("q", q);
     if (filters.level) query.set("level", filters.level);
     if (filters.semester) query.set("semester", String(filters.semester));
-    query.set("p", String(nextPage));
+    query.set("p", String(next));
     return "/predmeti?" + query.toString();
   }
   return (
     <>
-      <div className="page-banner"><div className="container-page"><p className="eyebrow mb-4">Studijski program</p><h1 className="page-title">Katalog predmeta</h1><p className="section-copy mt-5 max-w-2xl">Svi predmeti, osnovne informacije, nastavno osoblje i dostupni materijali.</p></div></div>
-      <div className="container-page py-14 md:py-20">
-        <div className="section-index"><span>01 / Pretraga predmeta</span><span>Filteri</span></div>
-        <form className="mb-9 grid gap-4 border-b border-[#abb7b2] pb-8 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_170px_160px_auto]" role="search">
-          <div>
-            <label htmlFor="course-search" className="form-label">Pretraga</label>
-            <input id="course-search" className="input-field" name="q" type="search" placeholder="Naziv ili šifra predmeta…" defaultValue={q}/>
+      <header className="page-banner"><div className="container-page">
+        <nav aria-label="Putanja" className="mb-4 text-xs text-[#556777]"><Link href="/" className="hover:underline">Početna</Link> / Predmeti</nav>
+        <h1 className="page-title">Katalog predmeta</h1>
+        <p className="section-copy mt-3 max-w-2xl">Pronađite predmet prema nazivu, šifri, nivou studija ili semestru. Na stranici predmeta dostupni su opis, materijali i nastavno osoblje.</p>
+      </div></header>
+      <div className="container-page py-9 md:py-12">
+        <section aria-label="Pretraga i filteri" className="rounded-lg border border-[#dce3e9] bg-white p-5 md:p-6">
+          <h2 className="mb-5 text-lg font-bold">Pretraga predmeta</h2>
+          <form action="/predmeti" role="search" className="grid items-end gap-4 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_148px_148px_auto]">
+            <div><label htmlFor="course-search" className="form-label">Naziv ili šifra</label><input id="course-search" name="q" type="search" className="input-field" maxLength={80} placeholder="Unesite naziv ili šifru" defaultValue={q}/></div>
+            <div><label htmlFor="course-level" className="form-label">Nivo studija</label><select id="course-level" name="level" className="input-field" defaultValue={filters.level ?? ""}>
+              <option value="">Svi nivoi</option><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option>
+            </select></div>
+            <div><label htmlFor="course-semester" className="form-label">Semestar</label><select id="course-semester" name="semester" className="input-field" defaultValue={filters.semester ? String(filters.semester) : ""}>
+              <option value="">Svi semestri</option>{Array.from({ length: 8 }, (_, i) => <option key={i+1} value={i+1}>{i+1}. semestar</option>)}
+            </select></div>
+            <button type="submit" className="btn btn-primary">Prikaži</button>
+          </form>
+        </section>
+
+        <section aria-label="Rezultati pretrage" className="mt-9">
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+            <div><h2 className="text-xl font-bold">Predmeti</h2><p role="status" className="mt-1 text-sm text-[#556777]">Prikazano {items.length} predmeta · strana {page}</p></div>
+            {filtered && <Link href="/predmeti" className="text-sm font-semibold text-[#173b63] underline">Očisti sve filtere</Link>}
           </div>
-          <div>
-            <label htmlFor="course-level" className="form-label">Nivo studija</label>
-            <select id="course-level" name="level" className="input-field" defaultValue={filters.level ?? ""}>
-              <option value="">Svi nivoi</option>
-              <option value="OAS">OAS</option>
-              <option value="MAS">MAS</option>
-              <option value="DAS">DAS</option>
-            </select>
-          </div>
-          <div>
-            <label htmlFor="course-semester" className="form-label">Semestar</label>
-            <select id="course-semester" name="semester" className="input-field" defaultValue={filters.semester ? String(filters.semester) : ""}>
-              <option value="">Svi semestri</option>
-              {Array.from({ length: 8 }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}. semestar</option>)}
-            </select>
-          </div>
-          <div className="flex items-end"><button className="btn btn-primary w-full" type="submit">Prikaži</button></div>
-        </form>
-        <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-          <span className="meta-label">02 / Rezultati</span>
-          <p className="text-sm font-semibold text-slate-500">Prikazano predmeta na ovoj strani: {items.length}</p>
-          {filtered && <Link href="/predmeti" className="text-sm font-bold text-teal-700 underline">Očisti sve filtere</Link>}
-        </div>
-        {items.length ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <CourseCard key={item.id} item={item}/>)}</div>
-          : <div className="empty-state">{page > 1 ? "Nema predmeta na ovoj stranici. Vratite se na prethodnu stranicu." : "Nema predmeta za zadatu pretragu."} {filtered && <Link href="/predmeti" className="font-bold text-teal-700 underline">Obriši filtere</Link>}</div>}
-        <nav className="mt-10 flex items-center justify-between border-t border-[#d3d6ce] pt-6" aria-label="Stranice">
-          {page > 1 ? <Link className="btn btn-light" href={pageHref(page - 1)}>← Prethodna</Link> : <span/>}
-          {hasNext && <Link className="btn btn-light" href={pageHref(page + 1)}>Sledeća →</Link>}
-        </nav>
+          {items.length ? <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">{items.map(item => <CourseCard key={item.id} item={item}/>)}</div>
+            : <div className="empty-state"><p>{page > 1 ? "Na ovoj stranici nema predmeta." : filtered ? "Nema predmeta koji odgovaraju filterima." : "Katalog još nema objavljenih predmeta."}</p>
+              {filtered && <Link href="/predmeti" className="mt-3 inline-block font-semibold text-[#173b63] underline">Prikaži sve predmete</Link>}</div>}
+          <nav className="mt-6 flex items-center justify-between gap-3" aria-label="Stranice">
+            {page > 1 ? <Link href={pageHref(page-1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+            {hasNext && <Link href={pageHref(page+1)} className="btn btn-light">Sledeća →</Link>}
+          </nav>
+        </section>
       </div>
     </>
   );
