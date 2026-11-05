@@ -41,6 +41,6 @@ export function UserAccessForm({ id, name, initialRole, initialActive }: {
         message={"Promeniti ulogu ili status naloga „" + name + "“? Promena globalne uloge ili deaktivacija uklanja postojeća angažovanja na predmetima."}>
         Sačuvaj
       </ConfirmSubmitButton>
-      : <SubmitButton className="btn btn-light whitespace-nowrap">Sačuvaj</SubmitButton>}
+      : <SubmitButton className="btn btn-light whitespace-nowrap" disabled={!changed}>Sačuvaj</SubmitButton>}
   </form>;
 }

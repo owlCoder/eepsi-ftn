@@ -270,6 +270,39 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     }
   });
 
+  test("account permissions are only saved after an explicit change and confirmation", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    await login(page, admin.email);
+    await page.goto("/admin/korisnici?q=" + encodeURIComponent(student.email));
+
+    const accessForm = page.locator('form:has(select[name="active"]):has(input[name="id"][value="' + student.id + '"])');
+    const save = accessForm.getByRole("button", { name: "Sačuvaj" });
+    await expect(save).toBeDisabled();
+    await accessForm.getByLabel("Status za " + student.name).selectOption("false");
+    await expect(save).toBeEnabled();
+
+    await save.click();
+    const dialog = page.getByRole("dialog", { name: "Potvrdite promenu pristupa" });
+    await expect(dialog.getByRole("button", { name: "Odustani" })).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+
+    // The staged change must not be persisted after cancelling the modal.
+    await page.reload();
+    await expect(accessForm.getByLabel("Status za " + student.name)).toHaveValue("true");
+    await expect(save).toBeDisabled();
+
+    // Administration should remain within the phone viewport, including edit forms.
+    for (const route of ["/admin", "/admin/predmeti", "/admin/predmeti/" + course.id, "/admin/novosti", "/admin/korisnici", "/admin/profil"]) {
+      await page.goto(route);
+      const dimensions = await page.evaluate(() => ({
+        content: document.documentElement.scrollWidth,
+        viewport: window.innerWidth,
+      }));
+      expect(dimensions.content, `Horizontal overflow on ${route}`).toBeLessThanOrEqual(dimensions.viewport);
+    }
+  });
+
   test("password rotation invalidates other sessions and old credentials", async ({ page, browser }) => {
     const previousContext = await browser.newContext();
     const updatedPassword = password + "-rotated";
