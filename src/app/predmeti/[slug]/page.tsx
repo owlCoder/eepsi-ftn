@@ -11,7 +11,12 @@ export const revalidate = 300;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const course = await courseBySlug(slug);
-  return { title: course?.title || "Predmet" };
+  const description = course?.description.slice(0, 160) || "Nastavni plan, tim i materijali predmeta Katedre EEPSI.";
+  return {
+    title: course?.title || "Predmet",
+    description,
+    ...(course ? { openGraph: { title: course.title, description, type: "article" as const } } : {}),
+  };
 }
 
 export default async function CourseDetails({ params }: { params: Promise<{ slug: string }> }) {

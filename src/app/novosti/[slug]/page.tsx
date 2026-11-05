@@ -10,7 +10,11 @@ export const revalidate = 300;
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const news = await newsBySlug(slug);
-  return { title: news?.title || "Novost", description: news?.summary };
+  return {
+    title: news?.title || "Novost",
+    description: news?.summary,
+    ...(news ? { openGraph: { title: news.title, description: news.summary, type: "article" as const } } : {}),
+  };
 }
 
 export default async function NewsDetails({ params }: { params: Promise<{ slug: string }> }) {

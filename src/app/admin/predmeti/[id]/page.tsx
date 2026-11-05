@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, FilePlus2, Users, Trash2 } from "lucide-react";
 import { ConfirmSubmitButton } from "@/components/confirm-submit-button";
 import { SubmitButton } from "@/components/submit-button";
-import { can } from "@/application/authorization";
+import { currentUser } from "@/application/authorization";
+import { hasGlobalPermission, hasScopedPermission } from "@/domain/authorization/permissions";
 import { createMaterialAction, deleteMaterialAction, deleteCourseAction, updateMaterialAction, updateCourseAction } from "@/app/actions/courses";
 import { db } from "@/infrastructure/db/prisma";
 import { materialKindLabels, materialKinds } from "@/domain/content/material-kinds";
@@ -20,11 +21,20 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     ...(materialSearch ? { title: { contains: materialSearch } } : {}),
     ...(materialKind ? { kind: materialKind } : {}),
   };
-  const [mayEdit, mayUpload, canManageTeam] = await Promise.all([
-    can("courses.edit", id),
-    can("materials.create", id),
-    can("users.manage"),
-  ]);
+  const actor = await currentUser();
+  if (!actor) notFound();
+  // A single membership lookup covers both scoped permissions for faculty.
+  const globalEdit = hasGlobalPermission(actor.role, "courses.edit");
+  const membership = !globalEdit && (actor.role === "PROFESSOR" || actor.role === "ASSISTANT")
+    ? await db.courseMembership.findUnique({
+      where: { userId_courseId: { userId: actor.id, courseId: id } },
+      select: { role: true },
+    })
+    : null;
+  const scope = membership?.role ?? null;
+  const mayEdit = hasScopedPermission(actor.role, "courses.edit", scope);
+  const mayUpload = hasScopedPermission(actor.role, "materials.create", scope);
+  const canManageTeam = hasGlobalPermission(actor.role, "users.manage");
   if (!mayEdit && !mayUpload && !canManageTeam) notFound();
   const course = await db.course.findUnique({
     where: { id },
