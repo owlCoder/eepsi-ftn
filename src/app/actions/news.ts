@@ -74,15 +74,18 @@ export async function togglePublishNewsAction(data: FormData) {
   if (!id || id.length > 40) throw new Error("Neispravan ID novosti.");
   const intent = data.get("publish");
   if (intent !== "true" && intent !== "false") throw new Error("Neispravna akcija za objavljivanje.");
+  const expectedUpdatedAt = new Date(String(data.get("updatedAt") ?? ""));
+  if (Number.isNaN(expectedUpdatedAt.getTime())) throw new Error("Neispravna verzija novosti. Osvežite stranicu.");
   const publish = intent === "true";
   const desiredStatus = publish ? "PUBLISHED" : "DRAFT";
-  const news = await db.news.findUnique({ where: { id }, select: { status: true, slug: true } });
+  const news = await db.news.findUnique({ where: { id }, select: { status: true, slug: true, updatedAt: true } });
   if (!news) throw new Error("Novost nije pronađena.");
-  // Never invert a newer status just because the editor is using an old tab.
+  // A stale editor must not publish or withdraw content changed in another tab.
+  if (news.updatedAt.getTime() !== expectedUpdatedAt.getTime()) redirect("/admin/novosti?error=stale");
   if (news.status === desiredStatus) redirect("/admin/novosti?unchanged=1");
   await db.$transaction(async (tx) => {
     const result = await tx.news.updateMany({
-      where: { id, status: news.status },
+      where: { id, status: news.status, updatedAt: expectedUpdatedAt },
       data: {
         status: publish ? "PUBLISHED" : "DRAFT",
         publishedAt: publish ? new Date() : null,
