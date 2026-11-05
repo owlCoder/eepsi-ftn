@@ -1,46 +1,50 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowLeft, ArrowUpRight } from "lucide-react";
+import { ArrowRight, ExternalLink } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Naučno-istraživački rad",
-  description: "Elektroenergetski sistemi, pametne mreže i primenjeno softversko inženjerstvo na Katedri EEPSI.",
+  title: "Istraživanje",
+  description: "Naučno-istraživačke oblasti Katedre EEPSI na Fakultetu tehničkih nauka.",
 };
+
 const areas = [
-  { number: "01", title: "Elektroenergetski sistemi", copy: "Modelovanje, analiza i upravljanje prenosnim i distributivnim mrežama, uz integraciju obnovljivih izvora energije." },
-  { number: "02", title: "Primenjeno softversko inženjerstvo", copy: "Softverski alati, informacioni sistemi i automatizacija koji podržavaju složene infrastrukturne procese." },
-  { number: "03", title: "Pametne mreže", copy: "Digitalizacija, simulacija i koordinacija savremenih elektroenergetskih sistema i distribuiranih resursa." },
-];
+  { title: "Elektroenergetski sistemi", detail: "Modelovanje, analiza i upravljanje elektroenergetskim mrežama, uključujući integraciju obnovljivih izvora energije." },
+  { title: "Primenjeno softversko inženjerstvo", detail: "Softverski alati, informacioni sistemi i automatizacija kao podrška složenim infrastrukturnim procesima." },
+  { title: "Pametne elektroenergetske mreže", detail: "Digitalizacija, simulacija i koordinacija savremenih energetskih sistema i distribuiranih resursa." },
+] as const;
+
 export default function ResearchPage() {
-  return <>
-    <header className="page-banner"><div className="container-page">
-      <Link href="/o-katedri" className="mb-7 inline-flex items-center gap-2 text-sm font-bold text-[#8b371d]"><ArrowLeft size={16}/> O katedri</Link>
-      <p className="eyebrow mb-5">Oblast / Istraživanje</p>
-      <h1 className="page-title">Naučno-istraživački rad</h1>
-      <p className="section-copy mt-6 max-w-2xl">Elektroenergetski sistemi i softver potreban za njihovo vođenje, zaštitu i razvoj.</p>
-    </div></header>
-    <div className="container-page py-15 md:py-21">
-      <div className="section-index"><span>01 / Fokus</span><span>Tri oblasti</span></div>
-      <section className="grid gap-10 lg:grid-cols-[.75fr_1.25fr]">
-        <div><h2 className="section-heading">Od modela do sistema.</h2><p className="section-copy mt-6 max-w-sm">Istraživanje uključuje analizu energetskih mreža, digitalne alate i njihovu primenu u realnim tehničkim procesima.</p></div>
-        <div className="divide-y divide-[#d3d6ce] border-t border-b border-[#d3d6ce]">
-          {areas.map(item => <article key={item.number} className="grid gap-3 py-7 sm:grid-cols-[42px_minmax(0,1fr)] sm:gap-5">
-            <span className="num-marker pt-2">{item.number}</span>
-            <div><h3 className="text-xl font-semibold tracking-tight">{item.title}</h3><p className="mt-3 text-sm leading-7 text-[#5a6b6d]">{item.copy}</p></div>
-          </article>)}
-        </div>
-      </section>
-      <section className="mt-18 border-t border-[#abb7b2] pt-9 md:mt-24">
-        <div className="grid items-center gap-9 lg:grid-cols-[1fr_auto]">
-          <div><p className="eyebrow mb-4">02 / Publikacije</p><h2 className="section-heading !text-[clamp(28px,3.3vw,40px)]">Izabrani naučni radovi</h2>
-            <p className="section-copy mt-4 max-w-2xl">Zvanična prezentacija Katedre sadrži izabrane naučne radove. Aktuelne spiskove proverite u izvornom pregledu.</p></div>
-          <a className="btn btn-primary" href="https://www.eepsi.ftn.uns.ac.rs/nau%C4%8Dno-istra%C5%BEiva%C4%8Dki-rad" target="_blank" rel="noopener noreferrer">Pregled radova <ArrowUpRight size={16}/></a>
-        </div>
-      </section>
-      <nav className="mt-14 grid gap-3 sm:grid-cols-2" aria-label="Povezane oblasti">
-        <Link href="/laboratorija" className="dashboard-action">Smart Grid laboratorija <ArrowUpRight size={17}/></Link>
-        <Link href="/saradnja" className="dashboard-action">Saradnja sa privredom <ArrowUpRight size={17}/></Link>
-      </nav>
-    </div>
-  </>;
+  return (
+    <>
+      <header className="page-banner"><div className="container-page">
+        <nav aria-label="Putanja" className="mb-4 text-xs text-[#556777]"><Link href="/" className="hover:underline">Početna</Link> / Istraživanje</nav>
+        <h1 className="page-title">Istraživanje</h1>
+        <p className="section-copy mt-3 max-w-3xl">Istraživanja na preseku elektroenergetskih sistema i primenjenog softverskog inženjerstva.</p>
+      </div></header>
+      <div className="container-page py-11 md:py-15">
+        <section aria-labelledby="research-areas" className="max-w-4xl">
+          <h2 id="research-areas" className="section-heading mb-5">Oblasti istraživanja</h2>
+          <div className="divide-y divide-[#dce3e9] rounded-lg border border-[#dce3e9] bg-white">
+            {areas.map((item) => <article key={item.title} className="p-5 sm:p-6">
+              <h3 className="text-lg font-bold">{item.title}</h3>
+              <p className="mt-2 text-sm leading-7 text-[#556777]">{item.detail}</p>
+            </article>)}
+          </div>
+        </section>
+        <section aria-labelledby="research-publications" className="mt-11 grid gap-8 border-t border-[#dce3e9] pt-9 lg:grid-cols-[minmax(0,1fr)_minmax(270px,.55fr)]">
+          <div><h2 id="research-publications" className="text-xl font-bold">Naučni radovi i publikacije</h2>
+            <p className="section-copy mt-3 max-w-2xl">Pregled izabranih naučnih radova objavljen je na prezentaciji katedre. Za spiskove publikacija i dodatne informacije koristite zvanični izvor.</p>
+            <a href="https://www.eepsi.ftn.uns.ac.rs/nau%C4%8Dno-istra%C5%BEiva%C4%8Dki-rad" target="_blank" rel="noopener noreferrer" className="btn btn-light mt-5">Izabrani radovi <ExternalLink size={16}/></a>
+          </div>
+          <aside className="rounded-lg border border-[#dce3e9] bg-white p-5">
+            <h3 className="mb-4 font-bold">Povezane teme</h3>
+            <nav aria-label="Povezane stranice" className="divide-y divide-[#dce3e9]">
+              <Link href="/laboratorija" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#173b63]">Smart Grid laboratorija <ArrowRight size={16}/></Link>
+              <Link href="/saradnja" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#173b63]">Saradnja sa privredom <ArrowRight size={16}/></Link>
+            </nav>
+          </aside>
+        </section>
+      </div>
+    </>
+  );
 }
