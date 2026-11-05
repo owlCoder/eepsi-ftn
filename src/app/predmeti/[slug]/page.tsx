@@ -13,6 +13,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const description = course?.description.slice(0, 160) || "Opis, nastavni materijali i osoblje predmeta Katedre EEPSI.";
   return {
     title: course?.title || "Predmet",
+    ...(!course ? { robots: { index: false, follow: false } } : {}),
     description,
     ...(course ? { openGraph: { title: course.title, description, type: "article" as const } } : {}),
   };
