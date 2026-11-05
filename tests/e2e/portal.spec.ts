@@ -159,6 +159,19 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
     await page.goto("/predmeti/" + course.slug);
     await expect(page.getByRole("heading", { name: "Vežbe", exact: true })).toBeVisible();
+
+    await page.goto("/admin/predmeti/" + course.id);
+    const staleCourseTab = await page.context().newPage();
+    await staleCourseTab.goto("/admin/predmeti/" + course.id);
+    await page.locator('#podaci-predmeta textarea[name="description"]').fill("Ažurirani opis sintetičkog predmeta sa novim informacijama.");
+    await page.locator("#podaci-predmeta").getByRole("button", { name: "Sačuvaj izmene" }).click();
+    await expect(page).toHaveURL(/saved=1/);
+    await staleCourseTab.locator('#podaci-predmeta textarea[name="description"]').fill("Zastareli opis koji ne sme da pregazi nove podatke predmeta.");
+    await staleCourseTab.locator("#podaci-predmeta").getByRole("button", { name: "Sačuvaj izmene" }).click();
+    await expect(staleCourseTab).toHaveURL(/error=stale/);
+    await expect(staleCourseTab.getByRole("alert").filter({ hasText: "zastarela verzija nije sačuvana" })).toBeVisible();
+    await staleCourseTab.close();
+
     await page.goto("/admin/korisnici");
     await expect(page.getByRole("heading", { name: "Korisnici i RBAC" })).toHaveCount(0);
   });

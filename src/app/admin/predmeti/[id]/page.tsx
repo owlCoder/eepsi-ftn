@@ -64,6 +64,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
+    {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">Podaci o predmetu su u međuvremenu izmenjeni ili obrisani. Vaša zastarela verzija nije sačuvana. Proverite najnovije podatke pre ponovnog uređivanja.</p>}
     {error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nastavnik nije dodeljen. Nalog mora postojati, biti aktivan i imati odgovarajuću globalnu ulogu.</p>}
     {(saved || (material && material !== "conflict") || (team && team !== "unchanged")) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
     {material === "conflict" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">Materijal je u međuvremenu izmenjen ili uklonjen. Zastarela verzija nije sačuvana. Proverite najnovije podatke pre ponovne izmene.</p>}
@@ -75,6 +76,11 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     </nav>
     {mayEdit && <div className="admin-panel" id="podaci-predmeta"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
       <input type="hidden" name="id" value={course.id}/>
+      <input type="hidden" name="originalCode" value={course.code}/>
+      <input type="hidden" name="originalTitle" value={course.title}/>
+      <input type="hidden" name="originalDescription" value={course.description}/>
+      <input type="hidden" name="originalSemester" value={course.semester}/>
+      <input type="hidden" name="originalStudyLevel" value={course.studyLevel}/>
       <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" title="Samo latinična slova, brojevi i crtica" required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5} maxLength={180}/></div></div>
       <div className="form-grid"><div><label htmlFor="level" className="form-label">Nivo studija</label><select id="level" name="studyLevel" className="input-field" defaultValue={course.studyLevel}><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option></select></div><div><label htmlFor="semester" className="form-label">Semestar</label><select id="semester" name="semester" className="input-field" defaultValue={course.semester}>{Array.from({length:8},(_,i)=><option key={i} value={i+1}>{i+1}.</option>)}</select></div></div>
       <div><label htmlFor="description" className="form-label">Opis</label><textarea id="description" name="description" className="input-field" rows={6} required minLength={15} maxLength={5000} defaultValue={course.description}/></div>

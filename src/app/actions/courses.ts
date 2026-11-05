@@ -58,14 +58,32 @@ export async function updateCourseAction(data: FormData) {
   const input = courseInput.parse(courseFields(data));
   const duplicate = await db.course.findUnique({ where: { code: input.code }, select: { id: true } });
   if (duplicate && duplicate.id !== id) redirect("/admin/predmeti/" + id + "?error=duplicate");
-  const course = await db.$transaction(async (tx) => {
-    const updated = await tx.course.update({ where: { id }, data: input });
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "course.update", subjectType: "Course", subjectId: updated.id } });
-    return updated;
+  // A course has no updatedAt field. Compare all original editable values so
+  // another teacher cannot silently overwrite a more recent update.
+  const original = courseInput.safeParse({
+    title: String(data.get("originalTitle") ?? ""),
+    code: String(data.get("originalCode") ?? ""),
+    description: String(data.get("originalDescription") ?? ""),
+    semester: String(data.get("originalSemester") ?? ""),
+    studyLevel: String(data.get("originalStudyLevel") ?? ""),
   });
+  if (!original.success) throw new Error("Neispravna verzija predmeta. Osvežite stranicu.");
+  const slug = await db.$transaction(async (tx) => {
+    const result = await tx.course.updateMany({
+      where: { id, ...original.data },
+      data: input,
+    });
+    if (result.count !== 1) return null;
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "course.update", subjectType: "Course", subjectId: id },
+    });
+    const saved = await tx.course.findUnique({ where: { id }, select: { slug: true } });
+    return saved?.slug ?? null;
+  });
+  if (!slug) redirect("/admin/predmeti/" + id + "?error=stale");
   revalidatePath("/");
   revalidatePath("/predmeti");
-  revalidatePath("/predmeti/" + course.slug);
+  revalidatePath("/predmeti/" + slug);
   revalidatePath("/nastavnici");
   redirect("/admin/predmeti/" + id + "?saved=1");
 }
