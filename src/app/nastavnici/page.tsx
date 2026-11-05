@@ -71,9 +71,9 @@ export default async function TeachingStaffPage({
           </div>
         </section>)
         : <div className="empty-state"><Users size={28} className="mx-auto mb-3 text-teal-700"/>
-          <p className="font-bold text-slate-700">{q ? "Nema rezultata za ovu pretragu." : "Nastavni tim još nije objavljen."}</p>
-          <p className="mt-2 text-sm">{q ? "Pokušajte sa drugim imenom ili nazivom predmeta." : "Nastavno osoblje će biti prikazano kada administrator dodeli angažovanja."}</p>
-          {q && <Link href="/nastavnici" className="btn btn-light mt-5">Prikaži kompletan tim</Link>}
+          <p className="font-bold text-slate-700">{page > 1 ? "Na ovoj stranici nema rezultata." : q ? "Nema rezultata za ovu pretragu." : "Nastavni tim još nije objavljen."}</p>
+          <p className="mt-2 text-sm">{page > 1 ? "Vratite se na prethodnu stranicu rezultata." : q ? "Pokušajte sa drugim imenom ili nazivom predmeta." : "Nastavno osoblje će biti prikazano kada administrator dodeli angažovanja."}</p>
+          {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light mt-5">Prethodna stranica</Link> : q && <Link href="/nastavnici" className="btn btn-light mt-5">Prikaži kompletan tim</Link>}
         </div>}
       <nav className="flex items-center justify-between gap-3" aria-label="Stranice nastavnog tima">
         {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
