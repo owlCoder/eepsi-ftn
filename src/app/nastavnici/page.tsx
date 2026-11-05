@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowUpRight, BookOpen, GraduationCap, Search, Users } from "lucide-react";
 import { publicTeachingStaff } from "@/infrastructure/repositories/content";
+import { readPage } from "@/lib/pagination";
 
 export const metadata: Metadata = {
   title: "Nastavni tim",
@@ -11,20 +12,17 @@ export const revalidate = 300;
 
 export default async function TeachingStaffPage({
   searchParams,
-}: { searchParams: Promise<{ q?: string }> }) {
-  const { q: rawQ } = await searchParams;
+}: { searchParams: Promise<{ q?: string; p?: string }> }) {
+  const { q: rawQ, p } = await searchParams;
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
-  const people = await publicTeachingStaff();
-  const search = q.toLocaleLowerCase("sr-RS");
-  const staff = search
-    ? people.filter((person) =>
-      person.name.toLocaleLowerCase("sr-RS").includes(search) ||
-      person.memberships.some((membership) =>
-        membership.course.title.toLocaleLowerCase("sr-RS").includes(search) ||
-        membership.course.code.toLocaleLowerCase("sr-RS").includes(search),
-      ),
-    )
-    : people;
+  const page = readPage(p);
+  const results = await publicTeachingStaff(q, page);
+  const hasNext = results.length > 20;
+  const staff = results.slice(0, 20);
+  const pageHref = (next: number) => "/nastavnici?" + new URLSearchParams({
+    ...(q ? { q } : {}),
+    p: String(next),
+  }).toString();
   const professors = staff.filter((person) => person.role === "PROFESSOR");
   const assistants = staff.filter((person) => person.role === "ASSISTANT");
 
@@ -47,7 +45,7 @@ export default async function TeachingStaffPage({
         <button className="btn btn-primary" type="submit">Pretraži</button>
         {q && <Link href="/nastavnici" className="btn btn-light">Očisti</Link>}
       </form>
-      {q && <p className="text-sm font-semibold text-slate-500">Pronađeno osoba: {staff.length}. Pretraga za „{q}“.</p>}
+      {q && <p className="text-sm font-semibold text-slate-500">Rezultati za „{q}“ · strana {page}</p>}
       {staff.length ? [
         { heading: "Nastavnici", entries: professors },
         { heading: "Saradnici", entries: assistants },
@@ -77,6 +75,10 @@ export default async function TeachingStaffPage({
           <p className="mt-2 text-sm">{q ? "Pokušajte sa drugim imenom ili nazivom predmeta." : "Nastavno osoblje će biti prikazano kada administrator dodeli angažovanja."}</p>
           {q && <Link href="/nastavnici" className="btn btn-light mt-5">Prikaži kompletan tim</Link>}
         </div>}
+      <nav className="flex items-center justify-between gap-3" aria-label="Stranice nastavnog tima">
+        {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+        {hasNext && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
+      </nav>
     </div>
   </>;
 }

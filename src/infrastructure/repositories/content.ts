@@ -3,13 +3,19 @@ import { cache } from "react";
 import { db } from "@/infrastructure/db/prisma";
 import type { CourseFilters } from "@/domain/courses/filters";
 
-export async function publicTeachingStaff() {
+export async function publicTeachingStaff(q = "", page = 1) {
   if (!process.env.DATABASE_URL) return [];
   return db.user.findMany({
     where: {
       active: true,
       role: { in: ["PROFESSOR", "ASSISTANT"] },
       memberships: { some: {} },
+      ...(q ? { OR: [
+        { name: { contains: q } },
+        { memberships: { some: { course: { OR: [
+          { title: { contains: q } }, { code: { contains: q } },
+        ] } } } },
+      ] } : {}),
     },
     select: {
       id: true,
@@ -24,8 +30,9 @@ export async function publicTeachingStaff() {
 
       },
     },
-    orderBy: { name: "asc" },
-    take: 200,
+    orderBy: [{ name: "asc" }, { id: "asc" }],
+    skip: (page - 1) * 20,
+    take: 21,
   });
 }
 
