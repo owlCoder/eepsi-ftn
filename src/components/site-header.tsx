@@ -29,6 +29,17 @@ export function SiteHeader() {
   // Browser back/forward navigation does not trigger a menu link click.
   useEffect(() => { closeMenu(); }, [pathname]);
 
+  // The native details element stays open when users tap outside its panel.
+  useEffect(() => {
+    const onPointerDown = (event: PointerEvent) => {
+      if (menu.current?.open && !menu.current.contains(event.target as Node)) {
+        closeMenu();
+      }
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => document.removeEventListener("pointerdown", onPointerDown);
+  }, []);
+
   return (
     <header className="site-header">
       <div className="site-institution">
