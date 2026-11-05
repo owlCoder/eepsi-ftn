@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { ArrowUpRight, Search, X } from "lucide-react";
+import { ArrowUpRight, FileText, Search, X } from "lucide-react";
 import { groupMaterialsByKind, materialKindLabels, materialKinds, type MaterialKind } from "@/domain/content/material-kinds";
 
 type Material = { id: string; title: string; url: string; kind: MaterialKind };
@@ -25,7 +25,7 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
       <input type="search" id="course-material-search" aria-label="Pretraži materijale"
         placeholder="Pronađi prezentaciju, vežbu ili dokument…"
         value={search} onChange={(event) => setSearch(event.target.value)}
-        className="input-field !pl-11 !pr-12"/>
+        className="input-field !min-h-12 !pl-11 !pr-12"/>
       {search && <button type="button" onClick={() => setSearch("")}
         className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
         aria-label="Obriši pretragu materijala"><X size={17}/></button>}
@@ -45,14 +45,17 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
     <p className="mt-4 text-xs font-semibold text-slate-500" aria-live="polite">
       Prikazano {filtered.length} od {materials.length} materijala
     </p>
-    {grouped.length ? <div className="mt-6 space-y-7">{grouped.map((group) =>
-      <section key={group.kind} aria-label={group.label}>
-        <h3 className="mb-1 text-lg font-extrabold tracking-tight">{group.label}</h3>
-        <div className="divide-y divide-slate-100">{group.items.map((material) =>
+    {grouped.length ? <div className="mt-6 space-y-6">{grouped.map((group) =>
+      <section key={group.kind} aria-label={group.label} className="overflow-hidden rounded-2xl border border-[#e4e8f0] bg-white">
+        <h3 className="border-b border-[#e4e8f0] bg-[#fafbfe] px-5 py-4 text-[17px] font-extrabold tracking-tight">{group.label}</h3>
+        <div className="divide-y divide-[#e4e8f0]">{group.items.map((material) =>
           <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer"
-            className="group flex min-h-14 items-center justify-between gap-4 py-4 text-sm font-semibold text-[#173b63] hover:text-[#173b63]">
-            <span className="min-w-0 break-words">{material.title}</span>
-            <ArrowUpRight size={18} aria-hidden="true" className="shrink-0 transition-transform group-hover:-translate-y-1 group-hover:translate-x-1"/>
+            className="group flex min-h-16 items-center justify-between gap-3 px-4 py-3.5 text-sm font-bold text-[#263a69] hover:bg-[#f1f5ff]">
+            <span className="flex min-w-0 items-center gap-3">
+              <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#edf1ff] text-[#284cdb]"><FileText size={19}/></span>
+              <span className="min-w-0 break-words">{material.title}</span>
+            </span>
+            <ArrowUpRight size={18} aria-hidden="true" className="shrink-0 text-[#284cdb]"/>
           </a>)}</div>
       </section>)}</div>
       : <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
