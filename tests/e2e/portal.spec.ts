@@ -289,7 +289,22 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.setViewportSize({ width: 390, height: 844 });
     await page.goto("/");
     const mobileMenu = page.locator("header details");
-    await mobileMenu.locator('summary[aria-label="Otvori meni"]').click();
+    const menuToggle = mobileMenu.locator("summary");
+    await expect(menuToggle).toHaveAttribute("aria-label", "Otvori meni");
+    await menuToggle.click();
+    await expect(menuToggle).toHaveAttribute("aria-label", "Zatvori meni");
+
+    // Escape closes the panel and restores keyboard focus to its trigger.
+    await page.keyboard.press("Escape");
+    await expect(mobileMenu).not.toHaveAttribute("open", "");
+    await expect(menuToggle).toBeFocused();
+    await expect(menuToggle).toHaveAttribute("aria-label", "Otvori meni");
+
+    // Tapping outside should also dismiss it without changing the route.
+    await menuToggle.click();
+    await page.locator("main").click({ position: { x: 8, y: 8 } });
+    await expect(mobileMenu).not.toHaveAttribute("open", "");
+    await menuToggle.click();
     await expect(mobileMenu.getByRole("link", { name: "Predmeti" })).toBeVisible();
     await mobileMenu.getByRole("link", { name: "Predmeti" }).click();
     await expect(page.getByRole("heading", { name: "Katalog predmeta" })).toBeVisible();
@@ -311,9 +326,21 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page.getByText(title, { exact: true })).toBeVisible();
 
     await page.goto("/");
-    await mobileMenu.locator('summary[aria-label="Otvori meni"]').click();
+    await menuToggle.click();
     await mobileMenu.getByRole("link", { name: "Kontakt" }).click();
     await expect(page.locator("main").getByRole("heading", { name: "Kontakt", exact: true })).toBeVisible();
     await expect(page.locator("main").getByRole("link", { name: "eespsi@uns.ac.rs" })).toBeVisible();
+  });
+
+  test("public pages fit a 390px viewport without horizontal scrolling", async ({ page }) => {
+    await page.setViewportSize({ width: 390, height: 844 });
+    for (const route of ["/", "/predmeti", "/nastavnici", "/novosti", "/kontakt", "/prijava", "/o-katedri"]) {
+      await page.goto(route);
+      const dimensions = await page.evaluate(() => ({
+        content: document.documentElement.scrollWidth,
+        viewport: window.innerWidth,
+      }));
+      expect(dimensions.content, `Horizontal overflow on ${route}`).toBeLessThanOrEqual(dimensions.viewport);
+    }
   });
 });

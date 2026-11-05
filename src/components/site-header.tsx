@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
@@ -23,22 +23,31 @@ const mobileExtraSections = [
 export function SiteHeader() {
   const pathname = usePathname();
   const menu = useRef<HTMLDetailsElement>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
-  const closeMenu = () => { if (menu.current) menu.current.open = false; };
+  const closeMenu = useCallback(() => { if (menu.current) menu.current.open = false; }, []);
 
   // Browser back/forward navigation does not trigger a menu link click.
-  useEffect(() => { closeMenu(); }, [pathname]);
+  useEffect(() => { closeMenu(); }, [pathname, closeMenu]);
 
-  // The native details element stays open when users tap outside its panel.
+  // Close the native details panel when interacting elsewhere or pressing Escape.
   useEffect(() => {
     const onPointerDown = (event: PointerEvent) => {
-      if (menu.current?.open && !menu.current.contains(event.target as Node)) {
-        closeMenu();
-      }
+      if (menu.current?.open && !menu.current.contains(event.target as Node)) closeMenu();
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape" || !menu.current?.open) return;
+      const focusWasInside = menu.current.contains(document.activeElement);
+      closeMenu();
+      if (focusWasInside) menu.current.querySelector("summary")?.focus();
     };
     document.addEventListener("pointerdown", onPointerDown);
-    return () => document.removeEventListener("pointerdown", onPointerDown);
-  }, []);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [closeMenu]);
 
   return (
     <header className="site-header">
@@ -62,13 +71,8 @@ export function SiteHeader() {
         <div className="hidden shrink-0 items-center gap-2 xl:flex">
           <Link href="/admin" className="btn btn-primary">Moj portal</Link>
         </div>
-        <details ref={menu} className="group relative ml-auto xl:hidden" onKeyDown={(event) => {
-          if (event.key === "Escape" && menu.current?.open) {
-            closeMenu();
-            menu.current?.querySelector("summary")?.focus();
-          }
-        }}>
-          <summary className="flex h-11 w-11 list-none items-center justify-center rounded-md border border-[#b8c6d2] bg-white text-[#173b63]" aria-label="Otvori meni">
+        <details ref={menu} className="group relative ml-auto xl:hidden" onToggle={(event) => setMenuOpen(event.currentTarget.open)}>
+          <summary className="flex h-11 w-11 list-none items-center justify-center rounded-md border border-[#b8c6d2] bg-white text-[#173b63]" aria-label={menuOpen ? "Zatvori meni" : "Otvori meni"}>
             <Menu size={22} className="group-open:hidden" aria-hidden="true"/>
             <X size={21} className="hidden group-open:block" aria-hidden="true"/>
           </summary>
