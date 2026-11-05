@@ -176,7 +176,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await staleEditor.getByLabel("Opis").fill("Zastareli opis koji ne sme da pregazi objavljenu novost.");
     await staleEditor.getByRole("button", { name: "Sačuvaj izmene" }).click();
     await expect(staleEditor).toHaveURL(/error=stale/);
-    await expect(staleEditor.getByRole("alert")).toContainText("zastarela verzija nije sačuvana");
+    await expect(staleEditor.getByRole("alert").filter({ hasText: "zastarela verzija nije sačuvana" })).toBeVisible();
     await staleEditor.close();
 
     await page.goto("/novosti?q=" + marker);
