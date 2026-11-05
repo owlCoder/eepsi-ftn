@@ -7,8 +7,8 @@ import { Menu, X } from "lucide-react";
 
 const sections = [
   { href: "/predmeti", label: "Predmeti" },
-  { href: "/nastavnici", label: "Nastavno osoblje" },
   { href: "/novosti", label: "Obaveštenja" },
+  { href: "/nastavnici", label: "Nastavno osoblje" },
   { href: "/istrazivanje", label: "Istraživanje" },
   { href: "/o-katedri", label: "O katedri" },
   { href: "/kontakt", label: "Kontakt" },
@@ -57,7 +57,7 @@ export function SiteHeader() {
           <span className="hidden text-slate-600 sm:inline">Novi Sad</span>
         </div>
       </div>
-      <div className="container-page flex min-h-[78px] items-center justify-between gap-4">
+      <div className="container-page flex min-h-[66px] items-center justify-between gap-4">
         <Link href="/" className="flex min-w-0 items-center gap-3 py-2" aria-label="EEPSI — početna">
           <span className="brand-mark" aria-hidden="true">E</span>
           <span className="min-w-0">
@@ -86,6 +86,12 @@ export function SiteHeader() {
           </nav>
         </details>
       </div>
+      <nav aria-label="Brzi pristup studentima" className="container-page flex gap-2 pb-3 xl:hidden">
+        <Link href="/predmeti" aria-current={isActive("/predmeti") ? "page" : undefined}
+          className={"student-header-link " + (isActive("/predmeti") ? "student-header-link-active" : "")}>Predmeti</Link>
+        <Link href="/novosti" aria-current={isActive("/novosti") ? "page" : undefined}
+          className={"student-header-link " + (isActive("/novosti") ? "student-header-link-active" : "")}>Obaveštenja</Link>
+      </nav>
     </header>
   );
 }
