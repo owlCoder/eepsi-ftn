@@ -626,3 +626,82 @@ body { background: var(--paper); color: var(--ink); font-size: 15px; }
   .academic-course-table td:nth-child(4)::before { content: "Semestar: "; color: #66768d; }
   .academic-course-table td:last-child { padding-top: 8px; border-top: 1px solid #e5ebf3; }
 }
+
+
+/* Final academic UI refinement: restrained directory, contact and account pages. */
+.institution-brand .institution-brand-mobile { display: none; }
+.academic-directory { display: grid; gap: 32px; }
+.academic-directory-section { min-width: 0; }
+.academic-directory-list { border: 1px solid var(--line); border-radius: 7px; background: #fff; }
+.academic-directory-person { display: grid; grid-template-columns: minmax(165px,.68fr) minmax(0,1.32fr); align-items: start; gap: 30px; padding: 23px 25px; border-bottom: 1px solid var(--line); }
+.academic-directory-person:last-child { border-bottom: 0; }
+.academic-directory-person:hover { background: #fafcff; }
+.academic-directory-identity h3 { overflow-wrap: anywhere; color: #162d4b; font-size: 17px; font-weight: 790; line-height: 1.4; letter-spacing: -.018em; }
+.academic-directory-identity p { margin-top: 4px; color: #65758c; font-size: 12px; }
+.academic-directory-courses { min-width: 0; }
+.academic-directory-courses h4 { margin-bottom: 6px; color: #68788e; font-size: 10px; font-weight: 800; letter-spacing: .07em; text-transform: uppercase; }
+.academic-directory-courses ul { display: grid; gap: 1px; }
+.academic-directory-courses li a { display: inline-flex; align-items: center; gap: 7px; max-width: 100%; min-height: 34px; padding-block: 5px; color: #16416f; font-size: 13px; font-weight: 680; line-height: 1.35; text-decoration: none; }
+.academic-directory-courses li a span { min-width: 0; overflow-wrap: anywhere; }
+.academic-directory-courses li a svg { flex-shrink: 0; }
+.academic-directory-courses li a:hover { text-decoration: underline; color: #0c2c56; }
+.academic-contact-grid { display: grid; grid-template-columns: minmax(0,1fr) minmax(265px,350px); gap: 28px; align-items: start; max-width: 1120px; }
+.academic-contact-details { border: 1px solid var(--line); border-radius: 7px; background: #fff; padding: 25px 30px; }
+.academic-contact-details h2,.academic-contact-related h2 { margin-bottom: 14px; color: #152944; font-size: 18px; font-weight: 810; letter-spacing: -.02em; }
+.academic-contact-list > div { display: grid; grid-template-columns: minmax(95px,.35fr) minmax(0,1fr); gap: 14px; padding: 18px 0; border-top: 1px solid #e1e7f0; }
+.academic-contact-list dt { color: #67758a; font-size: 13px; font-weight: 690; }
+.academic-contact-list dd { min-width: 0; color: #1e3658; font-size: 15px; font-weight: 640; line-height: 1.75; overflow-wrap: anywhere; }
+.academic-contact-list address { font-style: normal; }
+.academic-contact-list dd a { color: #144477; text-decoration: underline; font-weight: 760; }
+.academic-contact-related { border: 1px solid #d9e4f2; border-radius: 7px; background: #edf3fb; padding: 23px; }
+.academic-contact-related > p { color: #516884; font-size: 13px; line-height: 1.65; }
+.academic-contact-links { display: grid; margin-top: 15px; }
+.academic-contact-links a { display: flex; align-items: center; justify-content: space-between; gap: 9px; min-height: 47px; padding-block: 10px; border-top: 1px solid #d5e1ef; color: #133961; font-size: 13px; font-weight: 730; text-decoration: none; }
+.academic-contact-links a:hover { color: #0e4f91; text-decoration: underline; }
+.academic-login-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(340px,440px); align-items: start; gap: clamp(30px,6vw,90px); width: min(100%,1080px); margin: 13px auto 32px; }
+.academic-login-kicker { color: #31557d; font-size: 11px; font-weight: 810; letter-spacing: .085em; }
+.academic-login-intro > h1 { margin-top: 15px; color: #122744; font-size: clamp(33px,4.3vw,49px); font-weight: 820; line-height: 1.11; letter-spacing: -.04em; }
+.academic-login-intro > p:not(.academic-login-kicker) { max-width: 420px; margin-top: 13px; color: #5a6a82; font-size: 15px; line-height: 1.7; }
+.academic-login-public { margin-top: 55px; padding-top: 23px; border-top: 1px solid #d8e0ea; }
+.academic-login-public h2 { max-width: 400px; color: #1d3555; font-size: 18px; font-weight: 790; line-height: 1.42; }
+.academic-login-public > p { margin-top: 8px; color: #5c6f87; font-size: 13px; line-height: 1.65; }
+.academic-login-public nav { display: grid; gap: 6px; margin-top: 17px; }
+.academic-login-public a { display: inline-flex; align-items: center; gap: 7px; width: fit-content; min-height: 35px; color: #174576; font-size: 13px; font-weight: 750; text-decoration: none; }
+.academic-login-public a:hover { text-decoration: underline; }
+.academic-login-form { min-width: 0; border: 1px solid #dce4ee; border-radius: 7px; background: white; padding: 31px; }
+.academic-login-form > h2 { color: #142846; font-size: 20px; font-weight: 800; }
+.academic-login-form > p { margin-top: 7px; color: #5f7089; font-size: 13px; }
+.academic-login-form form .form-label { color: #354d68; }
+.academic-login-help { margin-top: 24px; padding-top: 21px; border-top: 1px solid #e0e7f0; }
+.academic-login-help p { color: #62718a; font-size: 13px; line-height: 1.5; }
+.academic-login-help a { display: inline-block; margin-top: 7px; color: #194779; font-size: 13px; font-weight: 750; text-decoration: underline; }
+.academic-materials-search:focus-within { border-color: #366cae; box-shadow: 0 0 0 3px #254d8824; }
+.academic-materials-search input:focus-visible { outline: 0; }
+.academic-shortcut:focus-visible,.academic-news-link:focus-visible,.academic-featured-title:focus-visible { outline: 3px solid #4778b9; outline-offset: 3px; }
+@media (max-width: 900px) {
+  .academic-contact-grid { grid-template-columns: minmax(0,1fr); }
+  .academic-contact-related { max-width: none; }
+  .academic-login-layout { grid-template-columns: minmax(0,1fr) minmax(310px,1fr); gap: 27px; }
+}
+@media (max-width: 700px) {
+  .institution-brand .institution-brand-long { display: none; }
+  .institution-brand span.institution-brand-mobile { display: inline-flex; align-items: center; min-height: 28px; padding-left: 13px; border-left: 1px solid #c4d1e0; font-size: 14px; font-weight: 830; letter-spacing: .015em; }
+  .institution-brand strong { padding-right: 0; border-right: 0; }
+  .institution-brand::after { content: none; }
+  .academic-directory { gap: 27px; }
+  .academic-directory-person { grid-template-columns: minmax(0,1fr); gap: 13px; padding: 19px; }
+  .academic-directory-courses h4 { margin-bottom: 4px; }
+  .academic-contact-details { padding: 20px; }
+  .academic-contact-list > div { grid-template-columns: minmax(0,1fr); gap: 4px; padding: 14px 0; }
+  .academic-login-layout { grid-template-columns: minmax(0,1fr); margin-top: 3px; gap: 23px; }
+  .academic-login-intro > h1 { margin-top: 11px; font-size: 32px; }
+  .academic-login-intro > p:not(.academic-login-kicker) { margin-top: 9px; font-size: 14px; }
+  .academic-login-public { display: none; }
+  .academic-login-form { padding: 23px 20px; }
+}
+@media (max-width: 420px) {
+  .institution-brand span.institution-brand-mobile { display: inline-flex; }
+  .institution-brand strong { border-right: 0; }
+  .institution-brand::after { content: none; }
+  .academic-directory-person { padding: 16px; }
+}
