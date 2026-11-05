@@ -16,16 +16,17 @@ const areas = [
 export default function ResearchPage() {
   return (
     <>
-      <header className="page-banner"><div className="container-page">
-        <nav aria-label="Putanja" className="mb-4 text-xs text-[#556777]"><Link href="/" className="hover:underline">Početna</Link> / Istraživanje</nav>
-        <h1 className="page-title">Istraživanje</h1>
+      <header className="portal-page-hero"><div className="container-page">
+        <nav aria-label="Putanja" className="breadcrumbs"><Link href="/" className="hover:underline">Početna</Link> / Istraživanje</nav>
+        <p className="section-kicker !mb-2">KATEDRA / ISTRAŽIVANJE</p>
+        <h1>Istraživanje</h1>
         <p className="section-copy mt-3 max-w-3xl">Istraživanja na preseku elektroenergetskih sistema i primenjenog softverskog inženjerstva.</p>
       </div></header>
       <div className="container-page py-11 md:py-15">
         <section aria-labelledby="research-areas" className="max-w-4xl">
           <h2 id="research-areas" className="section-heading mb-5">Oblasti istraživanja</h2>
-          <div className="divide-y divide-[#dce3e9] rounded-lg border border-[#dce3e9] bg-white">
-            {areas.map((item) => <article key={item.title} className="p-5 sm:p-6">
+          <div className="grid gap-4 sm:grid-cols-2">
+            {areas.map((item) => <article key={item.title} className="card-surface p-6">
               <h3 className="text-lg font-bold">{item.title}</h3>
               <p className="mt-2 text-sm leading-7 text-[#556777]">{item.detail}</p>
             </article>)}
@@ -39,8 +40,8 @@ export default function ResearchPage() {
           <aside className="rounded-lg border border-[#dce3e9] bg-white p-5">
             <h3 className="mb-4 font-bold">Povezane teme</h3>
             <nav aria-label="Povezane stranice" className="divide-y divide-[#dce3e9]">
-              <Link href="/laboratorija" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#173b63]">Smart Grid laboratorija <ArrowRight size={16}/></Link>
-              <Link href="/saradnja" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#173b63]">Saradnja sa privredom <ArrowRight size={16}/></Link>
+              <Link href="/laboratorija" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#284cdb]">Smart Grid laboratorija <ArrowRight size={16}/></Link>
+              <Link href="/saradnja" className="flex items-center justify-between gap-2 py-3 text-sm font-semibold text-[#284cdb]">Saradnja sa privredom <ArrowRight size={16}/></Link>
             </nav>
           </aside>
         </section>
