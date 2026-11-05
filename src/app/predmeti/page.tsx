@@ -30,7 +30,8 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
     <>
       <div className="page-banner"><div className="container-page"><p className="eyebrow mb-4">Studijski program</p><h1 className="page-title">Katalog predmeta</h1><p className="section-copy mt-5 max-w-2xl">Svi predmeti, osnovne informacije, nastavno osoblje i dostupni materijali.</p></div></div>
       <div className="container-page py-14 md:py-20">
-        <form className="card-surface mb-9 grid gap-4 p-5 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_170px_160px_auto]" role="search">
+        <div className="section-index"><span>01 / Pretraga predmeta</span><span>Filteri</span></div>
+        <form className="mb-9 grid gap-4 border-b border-[#abb7b2] pb-8 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_170px_160px_auto]" role="search">
           <div>
             <label htmlFor="course-search" className="form-label">Pretraga</label>
             <input id="course-search" className="input-field" name="q" type="search" placeholder="Naziv ili šifra predmeta…" defaultValue={q}/>
@@ -54,12 +55,13 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
           <div className="flex items-end"><button className="btn btn-primary w-full" type="submit">Prikaži</button></div>
         </form>
         <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+          <span className="meta-label">02 / Rezultati</span>
           <p className="text-sm font-semibold text-slate-500">Prikazano predmeta na ovoj strani: {items.length}</p>
           {filtered && <Link href="/predmeti" className="text-sm font-bold text-teal-700 underline">Očisti sve filtere</Link>}
         </div>
-        {items.length ? <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <CourseCard key={item.id} item={item}/>)}</div>
+        {items.length ? <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{items.map((item) => <CourseCard key={item.id} item={item}/>)}</div>
           : <div className="empty-state">{page > 1 ? "Nema predmeta na ovoj stranici. Vratite se na prethodnu stranicu." : "Nema predmeta za zadatu pretragu."} {filtered && <Link href="/predmeti" className="font-bold text-teal-700 underline">Obriši filtere</Link>}</div>}
-        <nav className="mt-10 flex items-center justify-between" aria-label="Stranice">
+        <nav className="mt-10 flex items-center justify-between border-t border-[#d3d6ce] pt-6" aria-label="Stranice">
           {page > 1 ? <Link className="btn btn-light" href={pageHref(page - 1)}>← Prethodna</Link> : <span/>}
           {hasNext && <Link className="btn btn-light" href={pageHref(page + 1)}>Sledeća →</Link>}
         </nav>

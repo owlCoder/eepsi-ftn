@@ -22,6 +22,7 @@ const aboutLinks = [
 export function SiteHeader() {
   const pathname = usePathname();
   const mobileMenu = useRef<HTMLDetailsElement>(null);
+  const aboutMenu = useRef<HTMLDetailsElement>(null);
   const active = (href: string) => href === "/" ? pathname === "/" : pathname.startsWith(href);
   const aboutActive = aboutLinks.some(link => active(link.href));
   const closeMobile = () => { if (mobileMenu.current) mobileMenu.current.open = false; };
@@ -42,9 +43,9 @@ export function SiteHeader() {
       </Link>
       <nav className="hidden items-center gap-1 lg:flex" aria-label="Glavna navigacija">
         {links.map(link => <Link key={link.href} href={link.href} className={"nav-link " + (active(link.href) ? "nav-link-active" : "")} aria-current={active(link.href) ? "page" : undefined}>{link.label}</Link>)}
-        <details className="nav-menu">
+        <details ref={aboutMenu} className="nav-menu">
           <summary className={"nav-link list-none " + (aboutActive ? "nav-link-active" : "")}>Katedra <ChevronDown size={14}/></summary>
-          <div className="nav-menu-content">{aboutLinks.map(link => <Link key={link.href} href={link.href} aria-current={active(link.href) ? "page" : undefined}>{link.label}<ArrowUpRight size={15}/></Link>)}</div>
+          <div className="nav-menu-content">{aboutLinks.map(link => <Link key={link.href} href={link.href} onClick={() => { if (aboutMenu.current) aboutMenu.current.open = false; }} aria-current={active(link.href) ? "page" : undefined}>{link.label}<ArrowUpRight size={15}/></Link>)}</div>
         </details>
       </nav>
       <div className="hidden items-center gap-2 lg:flex">
