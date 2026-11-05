@@ -14,8 +14,8 @@ export default function ContactPage() {
         <div className="container-page">
           <nav aria-label="Putanja" className="breadcrumbs"><Link href="/">Početna</Link><span aria-hidden="true">/</span><span>Kontakt</span></nav>
           <p className="section-kicker !mb-2">KATEDRA / KONTAKT</p>
-          <h1>Tu smo za vas.</h1>
-          <p>Lokacija i podaci za kontakt Katedre za elektroenergetiku i primenjeno softversko inženjerstvo.</p>
+          <h1>Kontakt</h1>
+          <p>Tu smo za vas. Adresa, telefon i email Katedre za elektroenergetiku i primenjeno softversko inženjerstvo.</p>
         </div>
       </header>
       <div className="container-page py-9 md:py-14">
