@@ -160,7 +160,14 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <input type="hidden" name="userId" value={entry.userId}/>
               <input type="hidden" name="courseId" value={course.id}/>
               <input type="hidden" name="returnToCourse" value="1"/>
-              <button className="text-xs font-bold text-rose-700 underline" type="submit">Ukloni angažovanje</button>
+              <ConfirmSubmitButton
+                dialogTitle="Potvrdite uklanjanje angažovanja"
+                confirmLabel="Ukloni angažovanje"
+                warning="Korisniku se opoziva postojeća sesija i pristup ovom predmetu."
+                message={"Ukloniti angažovanje osobe „" + entry.user.name + "“ na predmetu „" + course.title + "“?"}
+                className="inline-flex min-h-10 items-center text-xs font-bold text-rose-700 underline">
+                Ukloni angažovanje
+              </ConfirmSubmitButton>
             </form>}
           </div>)}</div>
         : <p className="text-sm text-slate-500">Nastavni tim još nije dodeljen.</p>}

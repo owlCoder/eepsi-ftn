@@ -83,7 +83,7 @@ jobs:
             cat /tmp/eepsi-start.log
             exit 1
           fi
-          for path in / /predmeti /nastavnici /novosti /prijava /robots.txt /sitemap.xml /api/auth/providers; do
+          for path in / /o-katedri /istrazivanje /saradnja /laboratorija /predmeti /nastavnici /novosti /prijava /robots.txt /sitemap.xml /api/auth/providers; do
             curl --fail --silent --show-error "http://localhost:3000$path" > /dev/null
           done
           curl --fail --silent --show-error "http://localhost:3000/predmeti?level=OAS&semester=2" > /dev/null

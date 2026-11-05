@@ -194,6 +194,9 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
       await login(page, admin.email);
       await page.goto("/admin/predmeti/" + course.id);
       await page.getByRole("button", { name: "Ukloni angažovanje" }).click();
+      const revokeDialog = page.getByRole("dialog", { name: "Potvrdite uklanjanje angažovanja" });
+      await expect(revokeDialog).toBeVisible();
+      await revokeDialog.getByRole("button", { name: "Ukloni angažovanje" }).click();
       await expect(page).toHaveURL(/team=updated/);
 
       await professorPage.goto("/admin/predmeti/" + course.id);
