@@ -353,7 +353,7 @@ body { background: var(--paper); color: var(--ink); font-size: 15px; }
 /* Homepage: institutional photography, clear search, no invented schedules. */
 .academic-home { padding-block: 18px 52px; }
 .academic-hero { isolation: isolate; position: relative; overflow: hidden; min-height: 306px; display: flex; align-items: center; border-radius: 8px; background: #10294e; color: white; }
-.academic-hero::before { content: ""; position: absolute; z-index: -2; inset: 0 0 0 37%; background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Fakultet_tehni%C4%8Dkih_nauka_Univerziteta_u_Novom_Sadu_04.jpg/3840px-Fakultet_tehni%C4%8Dkih_nauka_Univerziteta_u_Novom_Sadu_04.jpg") center 46% / cover no-repeat; }
+.academic-hero::before { content: ""; position: absolute; z-index: -2; inset: 0 0 0 37%; background: url("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Fakultet_tehni%C4%8Dkih_nauka_Univerziteta_u_Novom_Sadu_04.jpg/1280px-Fakultet_tehni%C4%8Dkih_nauka_Univerziteta_u_Novom_Sadu_04.jpg") center 46% / cover no-repeat; }
 .academic-hero::after { content: ""; position: absolute; z-index: -1; inset: 0; background: #10294e; clip-path: polygon(0 0, 72% 0, 53% 100%, 0 100%); }
 .academic-hero-inner { width: min(770px,70%); padding: 40px 54px; }
 .academic-hero-eyebrow { color: #c7d5e8; font-size: 11px; font-weight: 760; letter-spacing: .07em; }
