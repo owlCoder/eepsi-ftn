@@ -8,9 +8,18 @@ import { createMaterialAction, deleteMaterialAction, deleteCourseAction, updateM
 import { db } from "@/infrastructure/db/prisma";
 import { materialKindLabels, materialKinds } from "@/domain/content/material-kinds";
 import { assignCourseMemberAction, revokeCourseMemberAction } from "@/app/actions/users";
+import { readPage } from "@/lib/pagination";
 
-export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string; team?: string; error?: string }> }) {
+export default async function EditCourse({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; material?: string; team?: string; error?: string; mq?: string; mk?: string; mp?: string }> }) {
   const { id } = await params;
+  const { saved, material, team, error, mq, mk, mp } = await searchParams;
+  const materialSearch = (typeof mq === "string" ? mq : "").trim().slice(0, 80);
+  const materialKind = materialKinds.find((kind) => kind === mk);
+  const materialPage = readPage(mp);
+  const materialFilter = {
+    ...(materialSearch ? { title: { contains: materialSearch } } : {}),
+    ...(materialKind ? { kind: materialKind } : {}),
+  };
   const [mayEdit, mayUpload, canManageTeam] = await Promise.all([
     can("courses.edit", id),
     can("materials.create", id),
@@ -20,7 +29,13 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
   const course = await db.course.findUnique({
     where: { id },
     include: {
-      materials: { orderBy: { createdAt: "desc" } },
+      materials: {
+        where: materialFilter,
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+        skip: (materialPage - 1) * 20,
+        take: 21,
+      },
+      _count: { select: { materials: true } },
       memberships: {
         orderBy: { role: "desc" },
         include: { user: { select: { name: true, email: true, active: true } } },
@@ -28,7 +43,13 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     },
   });
   if (!course) notFound();
-  const { saved, material, team, error } = await searchParams;
+  const hasNextMaterials = course.materials.length > 20;
+  const visibleMaterials = course.materials.slice(0, 20);
+  const materialsHref = (page: number) => "/admin/predmeti/" + course.id + "?" + new URLSearchParams({
+    ...(materialSearch ? { mq: materialSearch } : {}),
+    ...(materialKind ? { mk: materialKind } : {}),
+    mp: String(page),
+  }).toString() + "#materijali-predmeta";
   return <div className="space-y-7">
     <Link href="/admin/predmeti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Moji predmeti</Link>
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
@@ -38,7 +59,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     {team === "unchanged" && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Ova osoba je već angažovana na predmetu. Nisu potrebne dodatne izmene.</p>}
     <nav className="flex flex-wrap items-center gap-2" aria-label="Sekcije predmeta">
       {mayEdit && <a href="#podaci-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Podaci o predmetu</a>}
-      {mayUpload && <a href="#materijali-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Materijali ({course.materials.length})</a>}
+      {mayUpload && <a href="#materijali-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Materijali ({course._count.materials})</a>}
       <a href="#nastavni-tim" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Nastavni tim ({course.memberships.length})</a>
     </nav>
     {mayEdit && <div className="admin-panel" id="podaci-predmeta"><h2>Podaci o predmetu</h2><form action={updateCourseAction} className="space-y-5">
@@ -59,7 +80,26 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
         </div>
         <SubmitButton pendingText="Dodavanje…">Dodaj materijal</SubmitButton>
       </form>
-      <div className="mt-8 border-t border-slate-100 pt-6"><h3 className="font-bold">Objavljeni materijali</h3><div className="mt-4 space-y-3">{course.materials.length ? course.materials.map((item) =>
+      <div className="mt-8 border-t border-slate-100 pt-6">
+        <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
+          <h3 className="font-extrabold">Objavljeni materijali <span className="text-xs font-normal text-slate-500">· ukupno {course._count.materials}</span></h3>
+        </div>
+        <form role="search" action={"/admin/predmeti/" + course.id + "#materijali-predmeta"} className="mb-5 grid gap-3 sm:grid-cols-[minmax(0,1fr)_165px_auto]">
+          <label htmlFor="admin-material-search" className="sr-only">Pretraži materijale na predmetu</label>
+          <input id="admin-material-search" name="mq" type="search" maxLength={80} className="input-field"
+            placeholder="Naziv materijala…" defaultValue={materialSearch}/>
+          <label htmlFor="admin-material-kind" className="sr-only">Kategorija materijala</label>
+          <select id="admin-material-kind" name="mk" defaultValue={materialKind ?? ""} className="input-field">
+            <option value="">Sve kategorije</option>
+            {materialKinds.map((kind) => <option key={kind} value={kind}>{materialKindLabels[kind]}</option>)}
+          </select>
+          <button className="btn btn-primary" type="submit">Pretraži</button>
+        </form>
+        {(materialSearch || materialKind) && <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <p className="text-xs text-slate-500">Filtrirani materijali · strana {materialPage}</p>
+          <Link href={"/admin/predmeti/" + course.id + "#materijali-predmeta"} className="text-xs font-bold text-teal-700 hover:underline">Očisti filtere</Link>
+        </div>}
+        <div className="space-y-3">{visibleMaterials.length ? visibleMaterials.map((item) =>
         <div key={item.id} className="rounded-xl border border-slate-200 p-4">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex min-w-0 flex-wrap items-center gap-3">
@@ -82,7 +122,12 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <SubmitButton className="btn btn-primary w-fit">Sačuvaj materijal</SubmitButton>
             </form>
           </details>
-        </div>) : <p className="text-sm text-slate-500">Nema materijala.</p>}</div></div>
+        </div>) : <p className="text-sm text-slate-500">Nema materijala za izabrane kriterijume.</p>}</div>
+        <nav aria-label="Stranice nastavnih materijala" className="mt-6 flex items-center justify-between gap-3">
+          {materialPage > 1 ? <Link href={materialsHref(materialPage - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+          {hasNextMaterials && <Link href={materialsHref(materialPage + 1)} className="btn btn-light">Sledeća →</Link>}
+        </nav>
+      </div>
     </div>}
     <section className="admin-panel" id="nastavni-tim">
       <h2 className="flex items-center gap-3"><Users className="text-teal-700" size={23}/> Nastavni tim</h2>
