@@ -163,7 +163,11 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.goto("/admin/predmeti/" + course.id);
     const staleCourseTab = await page.context().newPage();
     await staleCourseTab.goto("/admin/predmeti/" + course.id);
-    await page.locator('#podaci-predmeta textarea[name="description"]').fill("Ažurirani opis sintetičkog predmeta sa novim informacijama.");
+    await page.locator('#podaci-predmeta textarea[name="description"]').fill("Ažurirani opis sintetičkog predmeta sa novim informacijama.\nDrugi pasus opisa.");
+    await page.locator("#podaci-predmeta").getByRole("button", { name: "Sačuvaj izmene" }).click();
+    await expect(page).toHaveURL(/saved=1/);
+    // The next save must recognize the same multi-paragraph original text.
+    await page.locator('#podaci-predmeta textarea[name="description"]').fill("Ponovo ažuriran opis sintetičkog predmeta.\nDodatna uputstva za nastavu.");
     await page.locator("#podaci-predmeta").getByRole("button", { name: "Sačuvaj izmene" }).click();
     await expect(page).toHaveURL(/saved=1/);
     await staleCourseTab.locator('#podaci-predmeta textarea[name="description"]').fill("Zastareli opis koji ne sme da pregazi nove podatke predmeta.");

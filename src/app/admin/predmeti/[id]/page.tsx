@@ -78,7 +78,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       <input type="hidden" name="id" value={course.id}/>
       <input type="hidden" name="originalCode" value={course.code}/>
       <input type="hidden" name="originalTitle" value={course.title}/>
-      <input type="hidden" name="originalDescription" value={course.description}/>
+      <input type="hidden" name="originalDescriptionBase64" value={Buffer.from(course.description, "utf8").toString("base64")}/>
       <input type="hidden" name="originalSemester" value={course.semester}/>
       <input type="hidden" name="originalStudyLevel" value={course.studyLevel}/>
       <div className="form-grid"><div><label htmlFor="code" className="form-label">Šifra</label><input id="code" name="code" className="input-field" defaultValue={course.code} minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" title="Samo latinična slova, brojevi i crtica" required/></div><div><label htmlFor="title" className="form-label">Naziv</label><input id="title" name="title" className="input-field" defaultValue={course.title} required minLength={5} maxLength={180}/></div></div>

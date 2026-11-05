@@ -63,7 +63,8 @@ export async function updateCourseAction(data: FormData) {
   const original = courseInput.safeParse({
     title: String(data.get("originalTitle") ?? ""),
     code: String(data.get("originalCode") ?? ""),
-    description: String(data.get("originalDescription") ?? ""),
+    // Base64 preserves line endings verbatim across browser form submission.
+    description: Buffer.from(String(data.get("originalDescriptionBase64") ?? ""), "base64").toString("utf8"),
     semester: String(data.get("originalSemester") ?? ""),
     studyLevel: String(data.get("originalStudyLevel") ?? ""),
   });
