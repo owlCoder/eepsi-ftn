@@ -7,19 +7,23 @@ import { can } from "@/application/authorization";
 import { updateNewsAction, togglePublishNewsAction, deleteNewsAction } from "@/app/actions/news";
 import { db } from "@/infrastructure/db/prisma";
 
-export default async function EditNews({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string }> }) {
+export default async function EditNews({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; error?: string }> }) {
   if (!(await can("news.write"))) notFound();
   const { id } = await params;
   const item = await db.news.findUnique({ where: { id } });
   if (!item) notFound();
-  const { saved } = await searchParams;
+  const { saved, error } = await searchParams;
   return <div className="space-y-7"><Link href="/admin/novosti" className="inline-flex items-center gap-2 text-sm font-bold text-teal-700"><ArrowLeft size={17}/> Sve novosti</Link>
     <div><p className="eyebrow mb-2">Uređivanje</p><h1 className="text-3xl font-extrabold tracking-tight">{item.title}</h1>
       {item.status === "PUBLISHED" && <Link className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700" href={"/novosti/" + item.slug} target="_blank">Pogledaj objavu <ExternalLink size={16}/></Link>}
     </div>
     {saved && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su sačuvane.</p>}
+    {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
+      Novost je u međuvremenu izmenjena ili uklonjena. Vaša zastarela verzija nije sačuvana. Proverite trenutno prikazani tekst pre ponovnog uređivanja.
+    </p>}
     <div className="admin-panel"><form action={updateNewsAction} className="space-y-5">
       <input type="hidden" name="id" value={item.id}/>
+      <input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/>
       <div><label htmlFor="news-title" className="form-label">Naslov</label><input id="news-title" name="title" className="input-field" required minLength={5} maxLength={180} defaultValue={item.title}/></div>
       <div><label htmlFor="news-summary" className="form-label">Opis</label><textarea id="news-summary" name="summary" className="input-field" required minLength={10} maxLength={300} rows={3} defaultValue={item.summary}/></div>
       <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} maxLength={30000} rows={11} defaultValue={item.body}/></div>

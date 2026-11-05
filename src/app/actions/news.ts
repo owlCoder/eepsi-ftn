@@ -45,15 +45,27 @@ export async function updateNewsAction(data: FormData) {
   const id = String(data.get("id") ?? "");
   if (!id || id.length > 40) throw new Error("Neispravan ID novosti.");
   const input = newsInput.parse(fields(data));
+  const expectedUpdatedAt = new Date(String(data.get("updatedAt") ?? ""));
+  if (Number.isNaN(expectedUpdatedAt.getTime())) {
+    throw new Error("Neispravna verzija novosti. Osvežite stranicu.");
+  }
+  // Two editors must not silently overwrite one another's changes.
   const news = await db.$transaction(async (tx) => {
-    const updated = await tx.news.update({ where: { id }, data: input });
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "news.update", subjectType: "News", subjectId: updated.id } });
-    return updated;
+    const result = await tx.news.updateMany({
+      where: { id, updatedAt: expectedUpdatedAt },
+      data: input,
+    });
+    if (result.count !== 1) return null;
+    await tx.auditLog.create({
+      data: { actorId: actor.id, action: "news.update", subjectType: "News", subjectId: id },
+    });
+    return tx.news.findUnique({ where: { id }, select: { slug: true } });
   });
+  if (!news) redirect("/admin/novosti/" + id + "?error=stale");
   revalidatePath("/");
   revalidatePath("/novosti");
   revalidatePath("/novosti/" + news.slug);
-  redirect("/admin/novosti/" + news.id + "?saved=1");
+  redirect("/admin/novosti/" + id + "?saved=1");
 }
 
 export async function togglePublishNewsAction(data: FormData) {

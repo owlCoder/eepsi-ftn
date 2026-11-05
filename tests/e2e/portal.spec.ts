@@ -167,8 +167,17 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page.getByText(newsTitle, { exact: true })).toHaveCount(0);
 
     await page.goto(editUrl);
+    const staleEditor = await page.context().newPage();
+    await staleEditor.goto(editUrl);
     await page.getByRole("button", { name: "Objavi sada" }).click();
     await expect(page).toHaveURL(/\/admin\/novosti(?:\?|$)/);
+
+    // Editing an old browser tab after another editor's publication must not overwrite it.
+    await staleEditor.getByLabel("Opis").fill("Zastareli opis koji ne sme da pregazi objavljenu novost.");
+    await staleEditor.getByRole("button", { name: "Sačuvaj izmene" }).click();
+    await expect(staleEditor).toHaveURL(/error=stale/);
+    await expect(staleEditor.getByRole("alert")).toContainText("zastarela verzija nije sačuvana");
+    await staleEditor.close();
 
     await page.goto("/novosti?q=" + marker);
     await expect(page.getByRole("heading", { name: newsTitle })).toBeVisible();
