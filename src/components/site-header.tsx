@@ -14,6 +14,12 @@ const sections = [
   { href: "/kontakt", label: "Kontakt" },
 ] as const;
 
+// These pages are linked in the footer but must also be reachable from the mobile menu.
+const mobileExtraSections = [
+  { href: "/laboratorija", label: "Smart Grid laboratorija" },
+  { href: "/saradnja", label: "Saradnja sa privredom" },
+] as const;
+
 export function SiteHeader() {
   const pathname = usePathname();
   const menu = useRef<HTMLDetailsElement>(null);
@@ -50,6 +56,7 @@ export function SiteHeader() {
           <nav className="mobile-menu" aria-label="Mobilna navigacija">
             <p className="px-3 pb-2 pt-1 text-xs font-semibold text-[#556777]">Navigacija</p>
             {sections.map((link) => <Link key={link.href} href={link.href} onClick={closeMenu} aria-current={isActive(link.href) ? "page" : undefined} className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
+            {mobileExtraSections.map((link) => <Link key={link.href} href={link.href} onClick={closeMenu} aria-current={isActive(link.href) ? "page" : undefined} className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
             <div className="mt-3 border-t border-[#dce3e9] px-2 pt-3">
               <Link href="/admin" onClick={closeMenu} className="btn btn-primary w-full">Moj portal / prijava</Link>
             </div>
