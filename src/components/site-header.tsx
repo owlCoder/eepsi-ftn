@@ -52,7 +52,8 @@ export function SiteHeader() {
         <div className="container-page header-main">
           <Link href="/" className="institution-brand" aria-label="EEPSI — početna">
             <strong>FTN</strong>
-            <span>UNIVERZITET U NOVOM SADU<br/>FAKULTET TEHNIČKIH NAUKA</span>
+            <span className="institution-brand-long">UNIVERZITET U NOVOM SADU<br/>FAKULTET TEHNIČKIH NAUKA</span>
+            <span className="institution-brand-mobile">EEPSI</span>
           </Link>
           <div className="institution-department">
             Katedra za elektroenergetiku<br/>i primenjeno softversko inženjerstvo
