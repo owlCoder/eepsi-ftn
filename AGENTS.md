@@ -83,10 +83,10 @@ Protect `SUPER_ADMIN` accounts from editing via ordinary admin forms. Revoke obs
 
 The interface is a modern academic information portal. The design and sitemap are documented in docs/ACADEMIC_REDESIGN.md.
 
-- Use one sober academic accent (#173b63 navy) with white, #f5f7fa backgrounds and gray text/lines. Use green and red only for semantic success, errors, or destructive actions.
-- Prefer readable sans-serif UI and headings. Do not introduce multicolor layouts, copper accents, serif slogans, technical network illustrations, gradients, floating panels or decorative icon bubbles.
+- The current public visual system (November 2026 redesign) uses a midnight #152341 hero, cobalt #284cdb as the only interactive accent, white cards, #f5f6fa surfaces and muted slate text. Preserve sufficient contrast; use green and red only for semantic success, errors or destructive actions.
+- Prefer large, readable sans-serif headings, purposeful whitespace and clear interaction states. Keep the public homepage search-led, with actual latest news in the hero and direct course-material links. Avoid gradients, invented stats, stock imagery, unrelated decorative illustrations and clutter.
 - Prioritize **Predmeti, Nastavno osoblje, Obaveštenja, Kontakt**. Keep the search for courses prominent on the homepage and preserve the direct-contact route.
-- Build for scanning: short labels, descriptive links, direct routes, lists/tables with visible metadata, coherent breadcrumbs and usable filters. Do not invent institutional information or metrics.
+- Build for scanning: short labels, descriptive links, direct routes, clear course tiles and chronological news rows, coherent breadcrumbs and usable filters. Keep dense tables inside administration, not in public catalogues. Do not invent institutional information or metrics.
 - Public content remains readable without login; personal and administrative actions remain behind current RBAC. Public staff pages never expose login email addresses.
 - Maintain mobile and keyboard access, labels, focus states, accessible menus and confirmation dialogs. Keep existing user flows and Playwright tests working.
 - Centralize CSS rules in src/app/globals.css, reuse site primitives (page-banner, card-surface, input-field, btn, admin-panel) and avoid accumulating conflicting overrides.
