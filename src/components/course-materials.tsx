@@ -6,66 +6,62 @@ import { groupMaterialsByKind, materialKindLabels, materialKinds, type MaterialK
 
 type Material = { id: string; title: string; url: string; kind: MaterialKind };
 
-/** Fast, local filtering; changing a filter never reloads the course page. */
+/** Instant local filtering, without reloading the course page. */
 export function CourseMaterials({ materials }: { materials: Material[] }) {
   const [search, setSearch] = useState("");
   const [kind, setKind] = useState<MaterialKind | "ALL">("ALL");
   const normalized = search.trim().toLocaleLowerCase("sr-RS");
-  const filtered = materials.filter((item) =>
+  const filtered = materials.filter(item =>
     (kind === "ALL" || item.kind === kind) &&
     (!normalized || item.title.toLocaleLowerCase("sr-RS").includes(normalized)),
   );
   const grouped = groupMaterialsByKind(filtered);
-  const counts = useMemo(() => new Map(materialKinds.map((item) => [item, materials.filter((material) => material.kind === item).length] as const)), [materials]);
+  const counts = useMemo(() => new Map(materialKinds.map(item =>
+    [item, materials.filter(material => material.kind === item).length] as const)), [materials]);
   const reset = () => { setSearch(""); setKind("ALL"); };
 
-  return <div className="mt-6">
-    <div className="relative">
-      <Search size={18} aria-hidden="true" className="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-slate-400"/>
-      <input type="search" id="course-material-search" aria-label="Pretraži materijale"
-        placeholder="Pronađi prezentaciju, vežbu ili dokument…"
-        value={search} onChange={(event) => setSearch(event.target.value)}
-        className="input-field !min-h-12 !pl-11 !pr-12"/>
-      {search && <button type="button" onClick={() => setSearch("")}
-        className="absolute right-2 top-1/2 flex h-9 w-9 -translate-y-1/2 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100"
-        aria-label="Obriši pretragu materijala"><X size={17}/></button>}
-    </div>
-    <div className="mt-4 flex flex-wrap gap-2" role="group" aria-label="Filtriraj materijale po kategoriji">
-      <button type="button" onClick={() => setKind("ALL")}
-        aria-pressed={kind === "ALL"}
-        className={"material-filter " + (kind === "ALL" ? "material-filter-active" : "")}>
-        Svi <span className="opacity-70">({materials.length})</span>
-      </button>
-      {materialKinds.filter((item) => counts.get(item)).map((item) =>
-        <button type="button" key={item} onClick={() => setKind(item)}
-          aria-pressed={kind === item} className={"material-filter " + (kind === item ? "material-filter-active" : "")}>
-          {materialKindLabels[item]} <span className="opacity-70">({counts.get(item)})</span>
-        </button>)}
-    </div>
-    <p className="mt-4 text-xs font-semibold text-slate-500" aria-live="polite">
-      Prikazano {filtered.length} od {materials.length} materijala
-    </p>
-    {grouped.length ? <div className="mt-6 space-y-6">{grouped.map((group) =>
-      <section key={group.kind} aria-label={group.label} className="overflow-hidden rounded-2xl border border-[#e4e8f0] bg-white">
-        <h3 className="border-b border-[#e4e8f0] bg-[#fafbfe] px-5 py-4 text-[17px] font-extrabold tracking-tight">{group.label}</h3>
-        <div className="divide-y divide-[#e4e8f0]">{group.items.map((material) =>
-          <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer"
-            className="group flex min-h-16 items-center justify-between gap-3 px-4 py-3.5 text-sm font-bold text-[#263a69] hover:bg-[#f1f5ff]">
-            <span className="flex min-w-0 items-center gap-3">
-              <span aria-hidden="true" className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#edf1ff] text-[#284cdb]"><FileText size={19}/></span>
-              <span className="min-w-0 break-words">{material.title}</span>
-            </span>
-            <ArrowUpRight size={18} aria-hidden="true" className="shrink-0 text-[#284cdb]"/>
-          </a>)}</div>
-      </section>)}</div>
-      : <div className="mt-6 rounded-xl border border-slate-200 bg-slate-50 p-6 text-center">
-        <p className="font-semibold text-slate-700">Nema materijala za izabrane kriterijume.</p>
-        <button type="button" onClick={reset} className="mt-3 min-h-10 text-sm font-bold text-[#173b63] underline">
-          Prikaži sve materijale
+  return (
+    <div className="academic-materials">
+      <div className="academic-materials-search">
+        <Search size={18} aria-hidden="true"/>
+        <input id="course-material-search" type="search" aria-label="Pretraži materijale"
+          placeholder="Pronađi dokument ili prezentaciju…" value={search}
+          onChange={event => setSearch(event.target.value)}/>
+        {search && <button type="button" onClick={() => setSearch("")} aria-label="Obriši pretragu materijala">
+          <X size={17} aria-hidden="true"/>
+        </button>}
+      </div>
+      <div className="academic-material-filters" role="group" aria-label="Filtriraj materijale po kategoriji">
+        <button type="button" onClick={() => setKind("ALL")} aria-pressed={kind === "ALL"}>
+          Svi ({materials.length})
         </button>
+        {materialKinds.filter(item => counts.get(item)).map(item => (
+          <button key={item} type="button" onClick={() => setKind(item)} aria-pressed={kind === item}>
+            {materialKindLabels[item]} ({counts.get(item)})
+          </button>
+        ))}
+      </div>
+      <p className="academic-material-count" aria-live="polite">Prikazano {filtered.length} od {materials.length} materijala</p>
+      {grouped.length ? <div className="academic-material-groups">
+        {grouped.map(group => (
+          <section key={group.kind} aria-label={group.label}>
+            <h3>{group.label}</h3>
+            <div className="academic-material-list">
+              {group.items.map(material => (
+                <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer">
+                  <FileText size={18} aria-hidden="true" className="academic-material-icon"/>
+                  <span>{material.title}</span>
+                  <ArrowUpRight size={18} aria-hidden="true" className="academic-material-open"/>
+                </a>
+              ))}
+            </div>
+          </section>
+        ))}
+      </div> : <div className="empty-state">
+        <p>Nema materijala za izabrane kriterijume.</p>
+        <button type="button" onClick={reset} className="academic-text-link">Prikaži sve materijale</button>
       </div>}
-    <p className="mt-8 border-t border-slate-100 pt-5 text-xs leading-6 text-slate-500">
-      Materijali se otvaraju na eksternim HTTPS stranicama. Proverite izvor pre preuzimanja datoteka.
-    </p>
-  </div>;
+      <p className="academic-material-notice">Materijali se otvaraju na eksternim HTTPS stranicama. Proverite izvor pre preuzimanja.</p>
+    </div>
+  );
 }
