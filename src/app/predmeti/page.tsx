@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ArrowRight, SlidersHorizontal } from "lucide-react";
+import { FileText, Search } from "lucide-react";
 import { CourseCard } from "@/components/content-cards";
 import { listCourses } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
@@ -28,76 +28,75 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
   }
 
   return (
-    <>
-      <header className="portal-page-hero">
-        <div className="container-page">
-          <nav aria-label="Putanja" className="breadcrumbs">
-            <Link href="/">Početna</Link><span aria-hidden="true">/</span><span>Predmeti</span>
-          </nav>
-          <p className="section-kicker !mb-2">NASTAVA / KATALOG</p>
-          <div className="flex flex-wrap items-end justify-between gap-4">
-            <div>
-              <h1>Katalog predmeta</h1>
-              <p>Pronađi predmet i otvori nastavne materijale. Bez prijave.</p>
-            </div>
-            <Link href="/novosti" className="section-action">Obaveštenja <ArrowRight size={18} aria-hidden="true"/></Link>
+    <div className="container-page academic-inner-page">
+      <nav aria-label="Putanja" className="breadcrumbs"><Link href="/">Početna</Link><span aria-hidden="true">/</span><span>Predmeti</span></nav>
+      <div className="academic-page-heading">
+        <h1>Katalog predmeta</h1>
+        <p>Pregled predmeta i nastavnih materijala. Pristup je slobodan, bez prijave.</p>
+      </div>
+      <form action="/predmeti" role="search" aria-label="Pretraga i filteri predmeta" className="academic-filters">
+        <div>
+          <label htmlFor="course-level" className="form-label">Nivo studija</label>
+          <select id="course-level" name="level" className="input-field" defaultValue={filters.level ?? ""}>
+            <option value="">Svi nivoi</option><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option>
+          </select>
+        </div>
+        <div>
+          <label htmlFor="course-semester" className="form-label">Semestar</label>
+          <select id="course-semester" name="semester" className="input-field" defaultValue={filters.semester ? String(filters.semester) : ""}>
+            <option value="">Svi semestri</option>{Array.from({ length: 8 }, (_, i) => <option key={i + 1} value={i + 1}>{i + 1}. semestar</option>)}
+          </select>
+        </div>
+        <div className="academic-filter-search">
+          <label htmlFor="course-search" className="form-label">Naziv ili šifra predmeta</label>
+          <div className="academic-search-field">
+            <Search size={18} aria-hidden="true"/>
+            <input id="course-search" name="q" type="search" maxLength={80} placeholder="Pretraži predmete…" defaultValue={q}/>
           </div>
         </div>
-      </header>
-      <div className="container-page py-7 md:py-11">
-        <section className="filter-panel" aria-labelledby="course-filters-heading">
-          <div className="mb-4 flex items-center gap-2.5">
-            <SlidersHorizontal size={17} className="text-[#284cdb]" aria-hidden="true"/>
-            <h2 id="course-filters-heading" className="text-[15px] font-extrabold">Pretraga i filteri</h2>
-          </div>
-          <form action="/predmeti" role="search"
-            className="grid items-end gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_140px_140px_auto]">
-            <div>
-              <label htmlFor="course-search" className="form-label">Naziv ili šifra predmeta</label>
-              <input id="course-search" name="q" type="search" className="input-field" maxLength={80}
-                placeholder="Upiši naziv ili šifru" defaultValue={q}/>
-            </div>
-            <div>
-              <label htmlFor="course-level" className="form-label">Nivo studija</label>
-              <select id="course-level" name="level" className="input-field" defaultValue={filters.level ?? ""}>
-                <option value="">Svi nivoi</option><option value="OAS">OAS</option><option value="MAS">MAS</option><option value="DAS">DAS</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor="course-semester" className="form-label">Semestar</label>
-              <select id="course-semester" name="semester" className="input-field" defaultValue={filters.semester ? String(filters.semester) : ""}>
-                <option value="">Svi semestri</option>
-                {Array.from({ length: 8 }, (_, i) => <option key={i+1} value={i+1}>{i+1}. semestar</option>)}
-              </select>
-            </div>
-            <button type="submit" className="btn btn-primary">Prikaži</button>
-          </form>
-        </section>
+        <button className="btn btn-primary" type="submit">Prikaži</button>
+        {filtered && <Link href="/predmeti" className="academic-filter-clear">Očisti</Link>}
+      </form>
 
-        <section aria-label="Rezultati pretrage" className="mt-9">
-          <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
-            <div>
-              <h2 className="text-xl font-extrabold tracking-tight">Predmeti</h2>
-              <p role="status" className="result-meta mt-1">Prikazano {items.length} predmeta · strana {page}</p>
+      <section className="academic-results" aria-labelledby="catalog-heading">
+        <div className="academic-results-heading">
+          <h2 id="catalog-heading">Predmeti</h2>
+          <p role="status">Prikazano {items.length} predmeta · strana {page}</p>
+        </div>
+        {items.length ? (
+          <>
+            <div className="academic-course-table-wrap">
+              <table className="academic-course-table">
+                <thead><tr>
+                  <th scope="col">Šifra</th><th scope="col">Naziv predmeta</th><th scope="col">Nivo</th>
+                  <th scope="col">Semestar</th><th scope="col">Materijali</th>
+                </tr></thead>
+                <tbody>{items.map(item => (
+                  <tr key={item.id}>
+                    <td><span className="academic-code">{item.code}</span></td>
+                    <td><Link href={"/predmeti/" + item.slug} className="academic-course-name">{item.title}</Link></td>
+                    <td>{item.studyLevel}</td>
+                    <td>{item.semester}.</td>
+                    <td><Link href={"/predmeti/" + item.slug + "#materijali"} className="academic-materials-link">
+                      <FileText size={15} aria-hidden="true"/> Materijali{item._count ? ` (${item._count.materials})` : ""}
+                    </Link></td>
+                  </tr>
+                ))}</tbody>
+              </table>
             </div>
-            {filtered && <Link href="/predmeti" className="section-action !min-h-10">Očisti sve filtere</Link>}
-          </div>
-          {items.length ? (
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="academic-course-mobile-list">
               {items.map(item => <CourseCard key={item.id} item={item}/>)}
             </div>
-          ) : (
-            <div className="empty-state">
-              <p>{page > 1 ? "Na ovoj stranici nema predmeta." : filtered ? "Nema predmeta koji odgovaraju filterima." : "Katalog još nema objavljenih predmeta."}</p>
-              {filtered && <Link href="/predmeti" className="mt-3 inline-block font-semibold text-[#284cdb] underline">Prikaži sve predmete</Link>}
-            </div>
-          )}
-          <nav aria-label="Stranice" className="mt-7 flex items-center justify-between gap-3">
-            {page > 1 ? <Link href={pageHref(page-1)} className="btn btn-light">← Prethodna</Link> : <span/>}
-            {hasNext && <Link href={pageHref(page+1)} className="btn btn-light">Sledeća →</Link>}
-          </nav>
-        </section>
-      </div>
-    </>
+          </>
+        ) : <div className="empty-state">
+          <p>{page > 1 ? "Na ovoj stranici nema predmeta." : filtered ? "Nema predmeta koji odgovaraju filterima." : "Katalog još nema objavljenih predmeta."}</p>
+          {filtered && <Link href="/predmeti" className="mt-3 inline-block font-semibold text-[var(--primary)] underline">Prikaži sve predmete</Link>}
+        </div>}
+        <nav aria-label="Stranice" className="academic-pagination">
+          {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
+          {hasNext && <Link href={pageHref(page + 1)} className="btn btn-light">Sledeća →</Link>}
+        </nav>
+      </section>
+    </div>
   );
 }
