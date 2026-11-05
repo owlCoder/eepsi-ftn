@@ -123,16 +123,33 @@ export async function updateMaterialAction(data: FormData) {
   });
   if (!material) throw new Error("Materijal nije pronađen.");
   const actor = await requirePermission("materials.edit", material.courseId);
-  await db.$transaction(async (tx) => {
+  // The original values are a compare-and-swap token. They are not used for
+  // authorization, only to avoid overwriting changes saved by another editor.
+  const original = materialEditInput.safeParse({
+    materialId: input.materialId,
+    title: String(data.get("originalTitle") ?? ""),
+    url: String(data.get("originalUrl") ?? ""),
+    kind: String(data.get("originalKind") ?? ""),
+  });
+  if (!original.success) throw new Error("Neispravna verzija materijala. Osvežite stranicu.");
+  const updated = await db.$transaction(async (tx) => {
     const result = await tx.material.updateMany({
-      where: { id: input.materialId, courseId: material.courseId },
+      where: {
+        id: input.materialId,
+        courseId: material.courseId,
+        title: original.data.title,
+        url: original.data.url,
+        kind: original.data.kind,
+      },
       data: { title: input.title, url: input.url, kind: input.kind },
     });
-    if (result.count !== 1) throw new Error("Materijal nije moguće ažurirati.");
+    if (result.count !== 1) return false;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "material.update", subjectType: "Material", subjectId: input.materialId },
     });
+    return true;
   });
+  if (!updated) redirect(materialReturnUrl(material.courseId, data, "conflict"));
   revalidatePath("/predmeti/" + material.course.slug);
   redirect(materialReturnUrl(material.courseId, data, "updated"));
 }

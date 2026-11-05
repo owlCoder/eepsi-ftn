@@ -65,7 +65,8 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
     <div><p className="eyebrow mb-2">{course.code}</p><h1 className="text-3xl font-extrabold tracking-tight">{course.title}</h1><Link href={"/predmeti/"+course.slug} className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-teal-700">Otvori javnu stranicu <ArrowUpRight size={16}/></Link></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Drugi predmet već koristi ovu šifru. Izaberite jedinstvenu šifru.</p>}
     {error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nastavnik nije dodeljen. Nalog mora postojati, biti aktivan i imati odgovarajuću globalnu ulogu.</p>}
-    {(saved || material || (team && team !== "unchanged")) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
+    {(saved || (material && material !== "conflict") || (team && team !== "unchanged")) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmene su uspešno sačuvane.</p>}
+    {material === "conflict" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">Materijal je u međuvremenu izmenjen ili uklonjen. Zastarela verzija nije sačuvana. Proverite najnovije podatke pre ponovne izmene.</p>}
     {team === "unchanged" && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Ova osoba je već angažovana na predmetu. Nisu potrebne dodatne izmene.</p>}
     <nav className="flex flex-wrap items-center gap-2" aria-label="Sekcije predmeta">
       {mayEdit && <a href="#podaci-predmeta" className="rounded-full border border-teal-100 bg-white px-4 py-2 text-xs font-bold text-teal-800 hover:bg-teal-50">Podaci o predmetu</a>}
@@ -129,6 +130,9 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
               <input type="hidden" name="returnMq" value={materialSearch}/>
               <input type="hidden" name="returnMk" value={materialKind ?? ""}/>
               <input type="hidden" name="returnMp" value={materialPage}/>
+              <input type="hidden" name="originalTitle" value={item.title}/>
+              <input type="hidden" name="originalUrl" value={item.url}/>
+              <input type="hidden" name="originalKind" value={item.kind}/>
               <div><label htmlFor={"material-name-" + item.id} className="form-label">Naziv</label><input id={"material-name-" + item.id} name="title" className="input-field" defaultValue={item.title} minLength={3} maxLength={180} required/></div>
               <div><label htmlFor={"material-link-" + item.id} className="form-label">HTTPS link</label><input id={"material-link-" + item.id} name="url" className="input-field" type="url" pattern="https://.*" maxLength={1500} defaultValue={item.url} required/></div>
               <div><label htmlFor={"material-kind-" + item.id} className="form-label">Kategorija</label>

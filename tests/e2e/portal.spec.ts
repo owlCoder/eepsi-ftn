@@ -140,11 +140,22 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await page.goto("/admin/predmeti/" + course.id);
     await expect(page.getByRole("heading", { name: title })).toBeVisible();
 
+    // Open a second tab before saving to check that stale editors cannot overwrite changes.
+    const staleTab = await page.context().newPage();
+    await staleTab.goto("/admin/predmeti/" + course.id);
     const details = page.locator("details").filter({ hasText: "Uredi naziv ili link" }).first();
     await details.locator("summary").click();
     await details.locator('select[name="kind"]').selectOption("EXERCISE");
     await details.getByRole("button", { name: "Sačuvaj materijal" }).click();
     await expect(page).toHaveURL(/material=updated/);
+
+    const staleDetails = staleTab.locator("details").filter({ hasText: "Uredi naziv ili link" }).first();
+    await staleDetails.locator("summary").click();
+    await staleDetails.locator('select[name="kind"]').selectOption("LAB");
+    await staleDetails.getByRole("button", { name: "Sačuvaj materijal" }).click();
+    await expect(staleTab).toHaveURL(/material=conflict/);
+    await expect(staleTab.getByRole("alert").filter({ hasText: "Zastarela verzija nije sačuvana" })).toBeVisible();
+    await staleTab.close();
 
     await page.goto("/predmeti/" + course.slug);
     await expect(page.getByRole("heading", { name: "Vežbe", exact: true })).toBeVisible();
