@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X } from "lucide-react";
+import { ArrowUpRight, Menu, X } from "lucide-react";
 
 const sections = [
   { href: "/predmeti", label: "Predmeti" },
@@ -27,10 +27,8 @@ export function SiteHeader() {
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/");
   const closeMenu = useCallback(() => { if (menu.current) menu.current.open = false; }, []);
 
-  // Browser back/forward navigation does not trigger a menu link click.
   useEffect(() => { closeMenu(); }, [pathname, closeMenu]);
 
-  // Close the native details panel when interacting elsewhere or pressing Escape.
   useEffect(() => {
     const onPointerDown = (event: PointerEvent) => {
       if (menu.current?.open && !menu.current.contains(event.target as Node)) closeMenu();
@@ -52,41 +50,49 @@ export function SiteHeader() {
   return (
     <header className="site-header">
       <div className="site-institution">
-        <div className="container-page flex min-h-8 items-center justify-between gap-3 py-1 text-[11px]">
-          <span>Univerzitet u Novom Sadu <span className="px-1 text-slate-400">/</span> Fakultet tehničkih nauka</span>
-          <span className="hidden text-slate-600 sm:inline">Novi Sad</span>
+        <div className="container-page flex items-center justify-between gap-2">
+          <span>UNIVERZITET U NOVOM SADU <span aria-hidden="true" className="mx-2 opacity-40">/</span> FAKULTET TEHNIČKIH NAUKA</span>
+          <span className="hidden sm:block">NOVI SAD, SRBIJA</span>
         </div>
       </div>
-      <div className="container-page flex min-h-[66px] items-center justify-between gap-4">
-        <Link href="/" className="flex min-w-0 items-center gap-3 py-2" aria-label="EEPSI — početna">
-          <span className="brand-mark" aria-hidden="true">E</span>
-          <span className="min-w-0">
-            <strong className="block text-[20px] font-extrabold leading-tight tracking-[-.03em] text-[#173b63]">EEPSI <span className="text-[13px] font-semibold text-slate-500">/ FTN</span></strong>
-            <span className="hidden max-w-[320px] truncate text-[11px] leading-5 text-[#556777] sm:block">Katedra za elektroenergetiku i primenjeno softversko inženjerstvo</span>
+      <div className="container-page flex min-h-[76px] items-center gap-4 lg:gap-8">
+        <Link href="/" className="brand flex min-w-0 shrink-0 items-center gap-3" aria-label="EEPSI — početna">
+          <span className="brand-mark" aria-hidden="true">E<span className="brand-mark-dot"/></span>
+          <span className="brand-wordmark">
+            <strong>EEPSI<span className="brand-wordmark-dot">.</span></strong>
+            <small>FTN · NOVI SAD</small>
           </span>
         </Link>
-        <nav className="hidden items-center gap-0 xl:flex" aria-label="Glavna navigacija">
-          {sections.map((link) => <Link key={link.href} href={link.href} aria-current={isActive(link.href) ? "page" : undefined} className={"nav-link " + (isActive(link.href) ? "nav-link-active" : "")}>{link.label}</Link>)}
+        <nav className="ml-auto hidden items-center gap-1 xl:flex" aria-label="Glavna navigacija">
+          {sections.map(link => (
+            <Link href={link.href} key={link.href}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              className={"nav-link " + (isActive(link.href) ? "nav-link-active" : "")}>{link.label}</Link>
+          ))}
         </nav>
-        <div className="hidden shrink-0 items-center gap-2 xl:flex">
-          <Link href="/admin" className="btn btn-primary">Moj portal</Link>
-        </div>
-        <details ref={menu} className="group relative ml-auto xl:hidden" onToggle={(event) => setMenuOpen(event.currentTarget.open)}>
-          <summary className="flex h-11 w-11 list-none items-center justify-center rounded-md border border-[#b8c6d2] bg-white text-[#173b63]" aria-label={menuOpen ? "Zatvori meni" : "Otvori meni"}>
+        <Link href="/admin" className="header-login hidden shrink-0 items-center gap-1.5 xl:inline-flex">
+          Moj portal <ArrowUpRight size={15} aria-hidden="true"/>
+        </Link>
+        <details ref={menu} className="group relative ml-auto xl:hidden"
+          onToggle={event => setMenuOpen(event.currentTarget.open)}>
+          <summary className="menu-toggle flex h-11 w-11 items-center justify-center" aria-label={menuOpen ? "Zatvori meni" : "Otvori meni"}>
             <Menu size={22} className="group-open:hidden" aria-hidden="true"/>
-            <X size={21} className="hidden group-open:block" aria-hidden="true"/>
+            <X size={22} className="hidden group-open:block" aria-hidden="true"/>
           </summary>
           <nav className="mobile-menu" aria-label="Mobilna navigacija">
-            <p className="px-3 pb-2 pt-1 text-xs font-semibold text-[#556777]">Navigacija</p>
-            {sections.map((link) => <Link key={link.href} href={link.href} onClick={closeMenu} aria-current={isActive(link.href) ? "page" : undefined} className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
-            {mobileExtraSections.map((link) => <Link key={link.href} href={link.href} onClick={closeMenu} aria-current={isActive(link.href) ? "page" : undefined} className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
-            <div className="mt-3 border-t border-[#dce3e9] px-2 pt-3">
-              <Link href="/admin" onClick={closeMenu} className="btn btn-primary w-full">Moj portal / prijava</Link>
+            <p className="menu-caption">MENI / NAVIGACIJA</p>
+            {sections.map(link => <Link key={link.href} href={link.href} onClick={closeMenu}
+              aria-current={isActive(link.href) ? "page" : undefined}
+              className={"mobile-menu-link " + (isActive(link.href) ? "mobile-menu-link-active" : "")}>{link.label}</Link>)}
+            {mobileExtraSections.map(link => <Link key={link.href} href={link.href} onClick={closeMenu}
+              className="mobile-menu-link">{link.label}</Link>)}
+            <div className="mt-3 border-t border-[#e4e8f0] pt-3">
+              <Link href="/admin" className="btn btn-primary w-full" onClick={closeMenu}>Moj portal / prijava</Link>
             </div>
           </nav>
         </details>
       </div>
-      <nav aria-label="Brzi pristup studentima" className="container-page flex gap-2 pb-3 xl:hidden">
+      <nav aria-label="Brzi pristup studentima" className="container-page student-header-nav flex gap-2 pb-3 xl:hidden">
         <Link href="/predmeti" aria-current={isActive("/predmeti") ? "page" : undefined}
           className={"student-header-link " + (isActive("/predmeti") ? "student-header-link-active" : "")}>Predmeti</Link>
         <Link href="/novosti" aria-current={isActive("/novosti") ? "page" : undefined}
