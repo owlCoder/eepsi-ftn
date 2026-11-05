@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ArrowLeft, BookOpen, Files, UsersRound } from "lucide-react";
 import { CourseMaterials } from "@/components/course-materials";
 import { ShareButton } from "@/components/share-button";
 import { courseBySlug } from "@/infrastructure/repositories/content";
@@ -23,59 +24,84 @@ export default async function CourseDetails({ params }: { params: Promise<{ slug
   const { slug } = await params;
   const course = await courseBySlug(slug);
   if (!course) notFound();
+
   return (
     <>
-      <header className="page-banner compact-banner"><div className="container-page">
-        <nav aria-label="Putanja" className="mb-3 text-xs text-[#556777]">
-          <Link href="/" className="hover:underline">Početna</Link> / <Link href="/predmeti" className="hover:underline">Predmeti</Link> / {course.code}
-        </nav>
-        <p className="eyebrow mb-3">Predmet · {course.studyLevel} · {course.semester}. semestar</p>
-        <h1 className="page-title">{course.title}</h1>
-        <div className="mt-5 flex flex-wrap items-center gap-4">
-          <span className="pill">{course.code}</span>
-          <ShareButton/>
+      <header className="detail-hero">
+        <div className="container-page">
+          <nav aria-label="Putanja" className="breadcrumbs">
+            <Link href="/">Početna</Link><span aria-hidden="true">/</span>
+            <Link href="/predmeti">Predmeti</Link><span aria-hidden="true">/</span><span>{course.code}</span>
+          </nav>
+          <p className="section-kicker !mb-3">PREDMET / {course.studyLevel}</p>
+          <h1 className="page-title">{course.title}</h1>
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <span className="course-tile-code">{course.code}</span>
+            <span className="pill pill-neutral">{course.studyLevel} · {course.semester}. semestar</span>
+            <ShareButton/>
+          </div>
         </div>
-      </div></header>
+      </header>
 
-      <div className="container-page grid items-start gap-7 py-6 md:py-9 lg:grid-cols-[minmax(0,1fr)_260px] lg:gap-10">
-        <div className="min-w-0 space-y-9">
-          <section aria-labelledby="course-materials" id="materijali">
-            <div className="mb-1 flex flex-wrap items-center justify-between gap-3">
-              <h2 id="course-materials" className="text-xl font-bold">Nastavni materijali</h2>
-              <span className="text-xs font-semibold text-[#556777]">{course.materials.length} materijala</span>
+      <div className="container-page grid items-start gap-6 py-8 md:py-12 lg:grid-cols-[minmax(0,1fr)_290px] lg:gap-7">
+        <div className="min-w-0 space-y-6">
+          <section aria-labelledby="course-materials" id="materijali" className="detail-panel">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <span className="feature-icon" aria-hidden="true"><Files size={21}/></span>
+                <h2 id="course-materials">Nastavni materijali</h2>
+              </div>
+              <span className="pill">{course.materials.length} materijala</span>
             </div>
-            {course.materials.length
-              ? <CourseMaterials materials={course.materials.map(({ id, title, url, kind }) => ({ id, title, url, kind }))}/>
-              : <p className="mt-4 text-sm text-[#556777]">Za ovaj predmet trenutno nema dostupnih materijala.</p>}
+            {course.materials.length ? (
+              <CourseMaterials materials={course.materials.map(({ id, title, url, kind }) => ({ id, title, url, kind }))}/>
+            ) : <p className="mt-5 text-sm text-[#5c6880]">Za ovaj predmet trenutno nema dostupnih materijala.</p>}
           </section>
 
-          <section aria-labelledby="course-overview" id="opis-predmeta">
-            <h2 id="course-overview" className="mb-4 text-xl font-bold">Opis predmeta</h2>
+          <section aria-labelledby="course-overview" id="opis-predmeta" className="detail-panel">
+            <div className="mb-5 flex items-center gap-3">
+              <span className="feature-icon" aria-hidden="true"><BookOpen size={21}/></span>
+              <h2 id="course-overview">O predmetu</h2>
+            </div>
             <p className="prose-copy">{course.description}</p>
           </section>
-
         </div>
 
-        <aside className="space-y-6 lg:sticky lg:top-29">
-          <section className="rounded-lg border border-[#dce3e9] bg-white p-5">
-            <h2 className="mb-4 text-lg font-bold">Informacije o predmetu</h2>
-            <dl className="space-y-3 text-sm">
-              <div className="border-b border-[#dce3e9] pb-3"><dt className="text-xs text-[#556777]">Šifra</dt><dd className="mt-1 font-semibold">{course.code}</dd></div>
-              <div className="border-b border-[#dce3e9] pb-3"><dt className="text-xs text-[#556777]">Nivo studija</dt><dd className="mt-1 font-semibold">{course.studyLevel}</dd></div>
-              <div><dt className="text-xs text-[#556777]">Semestar</dt><dd className="mt-1 font-semibold">{course.semester}. semestar</dd></div>
+        <aside className="min-w-0 space-y-5 lg:sticky lg:top-32">
+          <section className="detail-aside">
+            <h2>Osnovni podaci</h2>
+            <dl className="mt-5 divide-y divide-[#e4e8f0]">
+              <div className="flex items-start justify-between gap-3 py-3 first:pt-0">
+                <dt className="text-xs text-[#65728a]">Šifra predmeta</dt>
+                <dd className="text-sm font-bold">{course.code}</dd>
+              </div>
+              <div className="flex items-start justify-between gap-3 py-3">
+                <dt className="text-xs text-[#65728a]">Nivo studija</dt>
+                <dd className="text-sm font-bold">{course.studyLevel}</dd>
+              </div>
+              <div className="flex items-start justify-between gap-3 py-3">
+                <dt className="text-xs text-[#65728a]">Semestar</dt>
+                <dd className="text-sm font-bold">{course.semester}.</dd>
+              </div>
             </dl>
-            <a href="#materijali" className="btn btn-light mt-5 w-full">Idi na materijale</a>
+            <a href="#materijali" className="btn btn-primary mt-5 w-full">Otvori materijale</a>
           </section>
-          <section className="rounded-lg border border-[#dce3e9] bg-white p-5">
-            <h2 className="mb-4 text-lg font-bold">Nastavno osoblje</h2>
-            {course.memberships.length ? <ul className="divide-y divide-[#dce3e9]">
-              {course.memberships.map(member => <li key={member.user.id} className="py-3 first:pt-0 last:pb-0">
-                <span className="block text-sm font-semibold">{member.user.name}</span>
-                <span className="mt-1 block text-xs text-[#556777]">{member.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</span>
-              </li>)}
-            </ul> : <p className="text-sm text-[#556777]">Nastavno osoblje trenutno nije navedeno.</p>}
-            <Link href="/nastavnici" className="mt-5 inline-block text-sm font-semibold text-[#173b63] underline">Pregled nastavnog osoblja</Link>
+          <section className="detail-aside">
+            <div className="flex items-center gap-2">
+              <UsersRound size={18} className="text-[#284cdb]" aria-hidden="true"/>
+              <h2>Nastavno osoblje</h2>
+            </div>
+            {course.memberships.length ? <ul className="mt-4 divide-y divide-[#e4e8f0]">
+              {course.memberships.map(member => (
+                <li key={member.user.id} className="py-3 first:pt-0 last:pb-0">
+                  <strong className="block text-sm">{member.user.name}</strong>
+                  <span className="mt-1 block text-xs text-[#65728a]">{member.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</span>
+                </li>
+              ))}
+            </ul> : <p className="mt-4 text-sm text-[#65728a]">Nastavno osoblje trenutno nije navedeno.</p>}
+            <Link href="/nastavnici" className="section-action mt-4 !min-h-8">Svo nastavno osoblje</Link>
           </section>
+          <Link href="/predmeti" className="section-action"><ArrowLeft size={17} aria-hidden="true"/> Nazad na katalog</Link>
         </aside>
       </div>
     </>
