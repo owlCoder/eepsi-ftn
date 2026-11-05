@@ -31,8 +31,19 @@ export async function createUserAction(data: FormData) {
 export async function assignCourseMemberAction(data: FormData) {
   const actor = await requirePermission("users.manage");
   const returnToCourse = data.get("returnToCourse") === "1";
+  // The global users screen identifies courses by their unique code rather than
+  // silently limiting the course selector to the first 200 records.
+  const rawCourseId = String(data.get("courseId") ?? "");
+  const rawCode = String(data.get("courseCode") ?? "").trim().toUpperCase();
+  let courseId = rawCourseId;
+  if (!courseId && /^[A-Z0-9-]{2,30}$/.test(rawCode)) {
+    const course = await db.course.findUnique({ where: { code: rawCode }, select: { id: true } });
+    if (!course) redirect("/admin/korisnici?error=course");
+    courseId = course.id;
+  }
+  if (!courseId) redirect("/admin/korisnici?error=course");
   const input = membershipInput.parse({
-    courseId: String(data.get("courseId") ?? ""),
+    courseId,
     email: String(data.get("email") ?? ""),
     role: String(data.get("role") ?? ""),
   });

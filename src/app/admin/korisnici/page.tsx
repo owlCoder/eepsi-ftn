@@ -16,7 +16,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
   const active = query.active === "true" ? true : query.active === "false" ? false : undefined;
   const page = readPage(query.p);
   const memberPage = readPage(query.mp);
-  const [users, courses, members] = await Promise.all([
+  const [users, members] = await Promise.all([
     db.user.findMany({
       where: {
         ...(q ? { OR: [{ name: { contains: q } }, { email: { contains: q } }] } : {}),
@@ -28,7 +28,6 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       skip: (page - 1) * 30,
       take: 31,
     }),
-    db.course.findMany({ select: { id: true, title: true, code: true }, orderBy: { title: "asc" }, take: 200 }),
     db.courseMembership.findMany({
       include: { user: { select: { name: true } }, course: { select: { title: true } } },
       skip: (memberPage - 1) * 30,
@@ -62,6 +61,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
     {(query.created || query.assigned || query.revoked || query.updated || query.reset || query.details) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-teal-700">Izmena je sačuvana.</p>}
     {query.unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Nema izmena — podaci ili angažovanje su već bili sačuvani.</p>}
     {query.error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nalog sa tom email adresom već postoji. Koristite pretragu da biste ga pronašli.</p>}
+    {query.error === "course" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Predmet sa unetom šifrom nije pronađen. Proverite šifru u katalogu predmeta.</p>}
     {query.error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Angažovanje nije sačuvano. Proverite email, aktivnost naloga i da li je njegova globalna uloga odgovarajuća.</p>}
     <div className="admin-panel" id="spisak-naloga">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
@@ -156,8 +156,8 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
     <div className="admin-panel" id="angazovanja"><h2>Angažovanje na predmetu</h2><p className="mb-5 text-sm leading-7 text-slate-500">Nalog mora prvo imati odgovarajuću globalnu ulogu PROFESSOR ili ASSISTANT.</p>
       <form action={assignCourseMemberAction} className="space-y-4">
         <div><label htmlFor="user-email" className="form-label">Email nastavnika / saradnika</label><input id="user-email" name="email" type="email" required className="input-field"/></div>
-        <div className="form-grid"><div><label htmlFor="course" className="form-label">Predmet</label><select id="course" name="courseId" className="input-field" required>{courses.map((course)=><option key={course.id} value={course.id}>{course.code} — {course.title}</option>)}</select></div><div><label htmlFor="member-role" className="form-label">Uloga na predmetu</label><select id="member-role" name="role" className="input-field"><option value="PROFESSOR">Nastavnik</option><option value="ASSISTANT">Saradnik</option></select></div></div>
-        <SubmitButton pendingText="Dodeljivanje…" disabled={!courses.length}>Dodeli predmet</SubmitButton>
+        <div className="form-grid"><div><label htmlFor="course" className="form-label">Šifra predmeta</label><input id="course" name="courseCode" className="input-field" required minLength={2} maxLength={30} pattern="[A-Za-z0-9-]{2,30}" placeholder="Unesite tačnu šifru predmeta" aria-describedby="course-code-help"/><p id="course-code-help" className="mt-2 text-xs text-slate-500">Šifru možete pronaći u <Link href="/predmeti" className="font-bold text-teal-700 underline">katalogu predmeta</Link>. Dostupni su svi predmeti, bez ograničenja liste.</p></div><div><label htmlFor="member-role" className="form-label">Uloga na predmetu</label><select id="member-role" name="role" className="input-field"><option value="PROFESSOR">Nastavnik</option><option value="ASSISTANT">Saradnik</option></select></div></div>
+        <SubmitButton pendingText="Dodeljivanje…">Dodeli predmet</SubmitButton>
       </form>
       <h3 className="mt-8 border-t border-slate-100 pt-6 font-extrabold">Dodeljena članstva — strana {memberPage}</h3>
       {pageMembers.length ? <div className="table-wrap mt-4"><table className="data-table stacked-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{pageMembers.map((m)=>
