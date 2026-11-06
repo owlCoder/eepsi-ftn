@@ -112,10 +112,17 @@ export async function deleteNewsAction(data: FormData) {
   if (!id || id.length > 40) throw new Error("Neispravna novost.");
   const expectedUpdatedAt = new Date(String(data.get("updatedAt") ?? ""));
   if (Number.isNaN(expectedUpdatedAt.getTime())) throw new Error("Neispravna verzija novosti. Osvežite stranicu.");
+  // Removing a published post also withdraws public content; editors without
+  // publishing rights may only delete drafts.
+  const current = await db.news.findUnique({ where: { id }, select: { status: true } });
+  if (!current) redirect("/admin/novosti?error=stale");
+  if (current.status === "PUBLISHED") await requirePermission("news.publish");
   const news = await db.$transaction(async (tx) => {
     const existing = await tx.news.findUnique({ where: { id }, select: { slug: true } });
     if (!existing) return null;
-    const result = await tx.news.deleteMany({ where: { id, updatedAt: expectedUpdatedAt } });
+    // A concurrent publish must not turn an authorized draft deletion into
+    // deletion of public content.
+    const result = await tx.news.deleteMany({ where: { id, updatedAt: expectedUpdatedAt, status: current.status } });
     if (result.count !== 1) return null;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "news.delete", subjectType: "News", subjectId: id },
