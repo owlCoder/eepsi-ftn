@@ -49,10 +49,16 @@ export async function updateNewsAction(data: FormData) {
   if (Number.isNaN(expectedUpdatedAt.getTime())) {
     throw new Error("Neispravna verzija novosti. Osvežite stranicu.");
   }
-  // Two editors must not silently overwrite one another's changes.
+  // Editing published content changes the public site, so it requires
+  // publishing rights just like withdrawing or deleting a published post.
+  const current = await db.news.findUnique({ where: { id }, select: { status: true } });
+  if (!current) redirect("/admin/novosti/" + id + "?error=stale");
+  if (current.status === "PUBLISHED") await requirePermission("news.publish");
+  // Include the status in the compare-and-swap: a concurrent publication must
+  // not let a draft-only editor change newly published content.
   const news = await db.$transaction(async (tx) => {
     const result = await tx.news.updateMany({
-      where: { id, updatedAt: expectedUpdatedAt },
+      where: { id, updatedAt: expectedUpdatedAt, status: current.status },
       data: input,
     });
     if (result.count !== 1) return null;

@@ -22,14 +22,14 @@ export default async function EditNews({ params, searchParams }: { params: Promi
     {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
       Novost je u međuvremenu izmenjena ili uklonjena. Vaša zastarela verzija nije sačuvana. Proverite trenutno prikazani tekst pre ponovnog uređivanja.
     </p>}
-    <div className="admin-panel"><form action={updateNewsAction} className="space-y-5">
+    {(item.status === "DRAFT" || mayPublish) ? <div className="admin-panel"><form action={updateNewsAction} className="space-y-5">
       <input type="hidden" name="id" value={item.id}/>
       <input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/>
       <div><label htmlFor="news-title" className="form-label">Naslov</label><input id="news-title" name="title" className="input-field" required minLength={5} maxLength={180} defaultValue={item.title}/></div>
       <div><label htmlFor="news-summary" className="form-label">Opis</label><textarea id="news-summary" name="summary" className="input-field" required minLength={10} maxLength={300} rows={3} defaultValue={item.summary}/></div>
       <div><label htmlFor="news-body" className="form-label">Sadržaj</label><textarea id="news-body" name="body" className="input-field" required minLength={20} maxLength={30000} rows={11} defaultValue={item.body}/></div>
       <SubmitButton>Sačuvaj izmene</SubmitButton>
-    </form></div>
+    </form></div> : <div className="admin-panel"><p className="text-sm text-slate-600">Objavljenu novost mogu da menjaju samo korisnici sa dozvolom za objavljivanje. Za izmene se obratite uredniku sa tom dozvolom.</p></div>}
     <div className="admin-panel">
       <details>
         <summary className="flex items-center gap-2 font-extrabold text-[#173b63] hover:text-[#0c2c4e]">Pregled sačuvanog teksta novosti</summary>
