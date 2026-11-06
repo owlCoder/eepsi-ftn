@@ -18,12 +18,22 @@ export async function createUserAction(data: FormData) {
   const duplicate = await db.user.findUnique({ where: { email: input.email }, select: { id: true } });
   if (duplicate) redirect("/admin/korisnici?error=duplicate");
   const passwordHash = await hash(input.password, 12);
-  await db.$transaction(async (tx) => {
-    const created = await tx.user.create({
-      data: { name: input.name, email: input.email, passwordHash, role: input.role },
+  try {
+    await db.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: { name: input.name, email: input.email, passwordHash, role: input.role },
+      });
+      await tx.auditLog.create({ data: { actorId: actor.id, action: "user.create", subjectType: "User", subjectId: created.id } });
     });
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "user.create", subjectType: "User", subjectId: created.id } });
-  });
+  } catch (error) {
+    // The email can be claimed after the preflight lookup by another request.
+    const prismaError = error as { code?: unknown; meta?: { target?: unknown } } | null;
+    const target = prismaError?.meta?.target;
+    if (prismaError?.code === "P2002" && Array.isArray(target) && target.includes("email")) {
+      redirect("/admin/korisnici?error=duplicate");
+    }
+    throw error;
+  }
   revalidatePath("/admin/korisnici");
   redirect("/admin/korisnici?created=1");
 }
