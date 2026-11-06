@@ -259,7 +259,7 @@ export async function updateUserIdentityAction(data: FormData) {
 
   let saved: boolean;
   try {
-    const saved = await db.$transaction(async (tx) => {
+    saved = await db.$transaction(async (tx) => {
       const result = await tx.user.updateMany({
         where: {
           id: input.id,
