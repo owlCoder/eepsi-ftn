@@ -65,15 +65,17 @@ export async function assignCourseMemberAction(data: FormData) {
       select: { role: true },
     });
     if (existing?.role === input.role) return false;
+    // Claim the user's current role/status atomically before granting access.
+    // A concurrent deactivation or role change must not leave a new membership.
+    const claimed = await tx.user.updateMany({
+      where: { id: user.id, role: input.role, active: true },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    if (claimed.count !== 1) return false;
     await tx.courseMembership.upsert({
       where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
       create: { userId: user.id, courseId: input.courseId, role: input.role },
       update: { role: input.role },
-    });
-    // Re-authenticate after the scope of access changes.
-    await tx.user.update({
-      where: { id: user.id },
-      data: { sessionVersion: { increment: 1 } },
     });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
     return true;
