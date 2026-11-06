@@ -25,7 +25,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
         ...(role ? { role } : {}),
         ...(active !== undefined ? { active } : {}),
       },
-      select: { id: true, name: true, email: true, role: true, active: true },
+      select: { id: true, name: true, email: true, role: true, active: true, sessionVersion: true },
       orderBy: [{ name: "asc" }, { id: "asc" }],
       skip: (page - 1) * 30,
       take: 31,
@@ -125,6 +125,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                 <summary className="flex items-center gap-2 text-xs font-bold text-slate-600"><KeyRound size={15}/> Resetuj lozinku</summary>
                 <form action={resetUserPasswordAction} className="mt-3 space-y-3">
                   <input type="hidden" name="id" value={user.id}/>
+                  <input type="hidden" name="sessionVersion" value={user.sessionVersion}/>
                   <label htmlFor={"reset-" + user.id} className="form-label">Nova privremena lozinka (min. 12 znakova)</label>
                   <input id={"reset-" + user.id} className="input-field" name="password" type="password" autoComplete="new-password" minLength={12} maxLength={200} required/>
                   <p className="text-xs leading-5 text-slate-500">Prethodne sesije ovog korisnika biće opozvane. Lozinku prenesite korisniku bezbednim kanalom.</p>

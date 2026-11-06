@@ -172,18 +172,24 @@ export async function resetUserPasswordAction(data: FormData) {
     id: String(data.get("id") ?? ""),
     password: String(data.get("password") ?? ""),
   });
+  const expectedVersion = Number(data.get("sessionVersion"));
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0 || String(expectedVersion) !== data.get("sessionVersion")) {
+    throw new Error("Neispravna verzija naloga. Osvežite stranicu.");
+  }
   const passwordHash = await hash(input.password, 12);
-  await db.$transaction(async (tx) => {
+  const saved = await db.$transaction(async (tx) => {
     const result = await tx.user.updateMany({
-      // Another super admin cannot be reset from the general users table.
-      where: { id: input.id, role: { not: "SUPER_ADMIN" } },
+      // Reject a stale reset after another password, access or session change.
+      where: { id: input.id, role: { not: "SUPER_ADMIN" }, sessionVersion: expectedVersion },
       data: { passwordHash, sessionVersion: { increment: 1 } },
     });
-    if (result.count !== 1) throw new Error("Nalog nije pronađen ili je zaštićen.");
+    if (result.count !== 1) return false;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "user.password.reset", subjectType: "User", subjectId: input.id },
     });
+    return true;
   });
+  if (!saved) redirect("/admin/korisnici?error=stale");
   revalidatePath("/admin/korisnici");
   redirect("/admin/korisnici?reset=1");
 }
