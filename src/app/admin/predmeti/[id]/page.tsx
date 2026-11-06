@@ -48,7 +48,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
       _count: { select: { materials: true } },
       memberships: {
         orderBy: { role: "desc" },
-        include: { user: { select: { name: true, email: true, active: true } } },
+        include: { user: { select: { name: true, email: true, active: true, sessionVersion: true } } },
       },
     },
   });
@@ -171,6 +171,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             </div>
             {canManageTeam && <form action={revokeCourseMemberAction}>
               <input type="hidden" name="userId" value={entry.userId}/>
+              <input type="hidden" name="sessionVersion" value={entry.user.sessionVersion}/>
               <input type="hidden" name="courseId" value={course.id}/>
               <input type="hidden" name="returnToCourse" value="1"/>
               <ConfirmSubmitButton

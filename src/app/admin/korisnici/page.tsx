@@ -31,7 +31,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       take: 31,
     }),
     db.courseMembership.findMany({
-      include: { user: { select: { name: true } }, course: { select: { title: true } } },
+      include: { user: { select: { name: true, sessionVersion: true } }, course: { select: { title: true } } },
       skip: (memberPage - 1) * 30,
       take: 31,
       orderBy: [{ courseId: "asc" }, { userId: "asc" }],
@@ -155,7 +155,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
       </form>
       <h3 className="mt-8 border-t border-slate-100 pt-6 font-extrabold">Dodeljena članstva — strana {memberPage}</h3>
       {pageMembers.length ? <div className="table-wrap mt-4"><table className="data-table stacked-table"><thead><tr><th>Osoba</th><th>Predmet</th><th>Uloga</th><th>Akcija</th></tr></thead><tbody>{pageMembers.map((m)=>
-        <tr key={m.userId + m.courseId}><td data-label="Osoba">{m.user.name}</td><td data-label="Predmet">{m.course.title}</td><td data-label="Uloga">{m.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</td><td data-label="Akcija"><form action={revokeCourseMemberAction}><input type="hidden" name="courseId" value={m.courseId}/><input type="hidden" name="userId" value={m.userId}/><ConfirmSubmitButton message={"Ukloniti angažovanje osobe „" + m.user.name + "“ na predmetu „" + m.course.title + "“? Pristup predmetu biće odmah opozvan."} dialogTitle="Potvrdite uklanjanje angažovanja" confirmLabel="Ukloni angažovanje" warning="Osoba će izgubiti pristup predmetu. Angažovanje možete ponovo dodeliti." className="inline-flex min-h-10 items-center font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form></td></tr>)}</tbody></table></div>
+        <tr key={m.userId + m.courseId}><td data-label="Osoba">{m.user.name}</td><td data-label="Predmet">{m.course.title}</td><td data-label="Uloga">{m.role === "PROFESSOR" ? "Nastavnik" : "Saradnik"}</td><td data-label="Akcija"><form action={revokeCourseMemberAction}><input type="hidden" name="courseId" value={m.courseId}/><input type="hidden" name="userId" value={m.userId}/><input type="hidden" name="sessionVersion" value={m.user.sessionVersion}/><ConfirmSubmitButton message={"Ukloniti angažovanje osobe „" + m.user.name + "“ na predmetu „" + m.course.title + "“? Pristup predmetu biće odmah opozvan."} dialogTitle="Potvrdite uklanjanje angažovanja" confirmLabel="Ukloni angažovanje" warning="Osoba će izgubiti pristup predmetu. Angažovanje možete ponovo dodeliti." className="inline-flex min-h-10 items-center font-bold text-rose-700 underline">Ukloni</ConfirmSubmitButton></form></td></tr>)}</tbody></table></div>
         : <p className="mt-3 text-sm text-slate-500">Nema dodeljenih članstava.</p>}
       <nav className="mt-6 flex justify-between gap-3" aria-label="Stranice angažovanja">
         {memberPage > 1 ? <Link href={pageHref(page, memberPage - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}

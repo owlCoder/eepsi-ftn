@@ -106,16 +106,31 @@ export async function revokeCourseMemberAction(data: FormData) {
   if (!userId || userId.length > 40 || !courseId || courseId.length > 40) {
     throw new Error("Neispravan ID.");
   }
-  await db.$transaction(async (tx) => {
-    const removed = await tx.courseMembership.deleteMany({ where: { userId, courseId } });
-    if (removed.count) {
-      await tx.user.updateMany({
-        where: { id: userId },
-        data: { sessionVersion: { increment: 1 } },
-      });
-      await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.revoke", subjectType: "Course", subjectId: courseId } });
-    }
+  const expectedVersion = Number(data.get("sessionVersion"));
+  if (!Number.isSafeInteger(expectedVersion) || expectedVersion < 0 || String(expectedVersion) !== data.get("sessionVersion")) {
+    throw new Error("Neispravna verzija angažovanja. Osvežite stranicu.");
+  }
+  const outcome = await db.$transaction(async (tx) => {
+    const existing = await tx.courseMembership.findUnique({
+      where: { userId_courseId: { userId, courseId } },
+      select: { role: true },
+    });
+    if (!existing) return "stale" as const;
+    // Assignment and access changes increment sessionVersion. A form opened
+    // before a revocation/reassignment must not revoke the new assignment.
+    const claimed = await tx.user.updateMany({
+      where: { id: userId, sessionVersion: expectedVersion },
+      data: { sessionVersion: { increment: 1 } },
+    });
+    if (claimed.count !== 1) return "stale" as const;
+    const removed = await tx.courseMembership.deleteMany({ where: { userId, courseId, role: existing.role } });
+    if (removed.count !== 1) throw new Error("Angažovanje je promenjeno tokom opoziva.");
+    await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.revoke", subjectType: "Course", subjectId: courseId } });
+    return "revoked" as const;
   });
+  if (outcome === "stale") {
+    redirect(returnToCourse ? "/admin/predmeti/" + courseId + "?error=stale" : "/admin/korisnici?error=stale");
+  }
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/[slug]", "page");
   revalidatePath("/nastavnici");
