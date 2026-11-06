@@ -257,27 +257,38 @@ export async function updateUserIdentityAction(data: FormData) {
     if (duplicate) redirect("/admin/korisnici?error=duplicate");
   }
 
-  const saved = await db.$transaction(async (tx) => {
-    const result = await tx.user.updateMany({
-      where: {
-        id: input.id,
-        role: { not: "SUPER_ADMIN" },
-        name: target.name,
-        email: target.email,
-        sessionVersion: target.sessionVersion,
-      },
-      data: {
-        name: input.name,
-        email: input.email,
-        ...(target.email !== input.email ? { sessionVersion: { increment: 1 } } : {}),
-      },
+  let saved: boolean;
+  try {
+    const saved = await db.$transaction(async (tx) => {
+      const result = await tx.user.updateMany({
+        where: {
+          id: input.id,
+          role: { not: "SUPER_ADMIN" },
+          name: target.name,
+          email: target.email,
+          sessionVersion: target.sessionVersion,
+        },
+        data: {
+          name: input.name,
+          email: input.email,
+          ...(target.email !== input.email ? { sessionVersion: { increment: 1 } } : {}),
+        },
+      });
+      if (result.count !== 1) return false;
+      await tx.auditLog.create({
+        data: { actorId: actor.id, action: "user.identity.update", subjectType: "User", subjectId: input.id },
+      });
+      return true;
     });
-    if (result.count !== 1) return false;
-    await tx.auditLog.create({
-      data: { actorId: actor.id, action: "user.identity.update", subjectType: "User", subjectId: input.id },
-    });
-    return true;
-  });
+  } catch (error) {
+    // Another administrator may claim the email after the duplicate lookup.
+    const prismaError = error as { code?: unknown; meta?: { target?: unknown } } | null;
+    const target = prismaError?.meta?.target;
+    if (prismaError?.code === "P2002" && Array.isArray(target) && target.includes("email")) {
+      redirect("/admin/korisnici?error=duplicate");
+    }
+    throw error;
+  }
   if (!saved) redirect("/admin/korisnici?error=stale");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin");
