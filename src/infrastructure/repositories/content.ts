@@ -83,7 +83,7 @@ export async function listCourses(q = "", page = 1, filters?: CourseFilters) {
       ...(filters?.level ? { studyLevel: filters.level } : {}),
       ...(filters?.semester ? { semester: filters.semester } : {}),
     },
-    select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true, _count: { select: { materials: true } } },
+    select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, _count: { select: { materials: true } } },
     orderBy: [{ semester: "asc" }, { title: "asc" }, { id: "asc" }],
     skip: (page - 1) * 18,
     take: 19,
