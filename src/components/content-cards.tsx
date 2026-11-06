@@ -5,7 +5,7 @@ export type NewsPreview = {
   id: string; slug: string; title: string; summary: string; publishedAt: Date | null;
 };
 export type CoursePreview = {
-  id: string; slug: string; code: string; title: string; semester: number; studyLevel: string; description: string;
+  id: string; slug: string; code: string; title: string; semester: number; studyLevel: string; description?: string;
   _count?: { materials: number };
 };
 

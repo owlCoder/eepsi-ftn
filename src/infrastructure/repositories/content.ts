@@ -39,7 +39,7 @@ export async function publicTeachingStaff(q = "", page = 1) {
 export async function featuredCourses(limit = 3) {
   if (!process.env.DATABASE_URL) return [];
   return db.course.findMany({
-    select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true, description: true, _count: { select: { materials: true } } },
+    select: { id: true, title: true, slug: true, code: true, semester: true, studyLevel: true },
     orderBy: [{ semester: "asc" }, { title: "asc" }, { id: "asc" }],
     take: Math.max(1, Math.min(limit, 6)),
   });
