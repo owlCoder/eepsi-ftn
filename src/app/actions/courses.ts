@@ -81,18 +81,29 @@ export async function updateCourseAction(data: FormData) {
     studyLevel: String(data.get("originalStudyLevel") ?? ""),
   });
   if (!original.success) throw new Error("Neispravna verzija predmeta. Osvežite stranicu.");
-  const slug = await db.$transaction(async (tx) => {
-    const result = await tx.course.updateMany({
-      where: { id, ...original.data },
-      data: input,
+  let slug: string | null;
+  try {
+    slug = await db.$transaction(async (tx) => {
+      const result = await tx.course.updateMany({
+        where: { id, ...original.data },
+        data: input,
+      });
+      if (result.count !== 1) return null;
+      await tx.auditLog.create({
+        data: { actorId: actor.id, action: "course.update", subjectType: "Course", subjectId: id },
+      });
+      const saved = await tx.course.findUnique({ where: { id }, select: { slug: true } });
+      return saved?.slug ?? null;
     });
-    if (result.count !== 1) return null;
-    await tx.auditLog.create({
-      data: { actorId: actor.id, action: "course.update", subjectType: "Course", subjectId: id },
-    });
-    const saved = await tx.course.findUnique({ where: { id }, select: { slug: true } });
-    return saved?.slug ?? null;
-  });
+  } catch (error) {
+    // A concurrent request may claim the new code after the preflight lookup.
+    const prismaError = error as { code?: unknown; meta?: { target?: unknown } } | null;
+    const target = prismaError?.meta?.target;
+    if (prismaError?.code === "P2002" && Array.isArray(target) && target.includes("code")) {
+      redirect("/admin/predmeti/" + id + "?error=duplicate");
+    }
+    throw error;
+  }
   if (!slug) redirect("/admin/predmeti/" + id + "?error=stale");
   revalidatePath("/");
   revalidatePath("/predmeti");
