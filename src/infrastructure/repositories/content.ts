@@ -94,8 +94,16 @@ export const courseBySlug = cache(async (slug: string) => {
   if (!process.env.DATABASE_URL) return null;
   return db.course.findUnique({
     where: { slug },
-    include: {
-      materials: { orderBy: { createdAt: "desc" } },
+    select: {
+      title: true,
+      code: true,
+      description: true,
+      semester: true,
+      studyLevel: true,
+      materials: {
+        select: { id: true, title: true, url: true, kind: true },
+        orderBy: { createdAt: "desc" },
+      },
       memberships: {
         where: { user: { active: true } },
         select: { role: true, user: { select: { id: true, name: true } } },
