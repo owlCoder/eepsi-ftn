@@ -59,28 +59,33 @@ export async function assignCourseMemberAction(data: FormData) {
   }
   const assigned = await db.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: user.id }, select: { role: true, active: true } });
-    if (!current?.active || current.role !== input.role) throw new Error("Korisnička uloga je promenjena.");
+    if (!current?.active || current.role !== input.role) return "conflict" as const;
     const existing = await tx.courseMembership.findUnique({
       where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
       select: { role: true },
     });
-    if (existing?.role === input.role) return false;
+    if (existing?.role === input.role) return "unchanged" as const;
     // Claim the user's current role/status atomically before granting access.
     // A concurrent deactivation or role change must not leave a new membership.
     const claimed = await tx.user.updateMany({
       where: { id: user.id, role: input.role, active: true },
       data: { sessionVersion: { increment: 1 } },
     });
-    if (claimed.count !== 1) return false;
+    if (claimed.count !== 1) return "conflict" as const;
     await tx.courseMembership.upsert({
       where: { userId_courseId: { userId: user.id, courseId: input.courseId } },
       create: { userId: user.id, courseId: input.courseId, role: input.role },
       update: { role: input.role },
     });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
-    return true;
+    return "assigned" as const;
   });
-  if (!assigned) {
+  if (assigned === "conflict") {
+    redirect(returnToCourse
+      ? "/admin/predmeti/" + input.courseId + "?error=member"
+      : "/admin/korisnici?error=member");
+  }
+  if (assigned === "unchanged") {
     redirect(returnToCourse
       ? "/admin/predmeti/" + input.courseId + "?team=unchanged"
       : "/admin/korisnici?unchanged=1");
