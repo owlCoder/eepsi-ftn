@@ -1,7 +1,6 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
-import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { courseInput, materialInput, materialEditInput } from "@/application/validation";
@@ -51,8 +50,9 @@ export async function createCourseAction(data: FormData) {
       return created;
     });
   } catch (error) {
-    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002" &&
-        Array.isArray(error.meta?.target) && error.meta.target.includes("code")) {
+    const prismaError = error as { code?: unknown; meta?: { target?: unknown } } | null;
+    const target = prismaError?.meta?.target;
+    if (prismaError?.code === "P2002" && Array.isArray(target) && target.includes("code")) {
       redirect("/admin/predmeti?error=duplicate");
     }
     throw error;
