@@ -21,6 +21,8 @@ export function UserAccessForm({ id, name, initialRole, initialActive }: {
 
   return <form action={updateUserAccessAction} className="flex flex-wrap items-center gap-2">
     <input type="hidden" name="id" value={id}/>
+    <input type="hidden" name="originalRole" value={initialRole}/>
+    <input type="hidden" name="originalActive" value={String(initialActive)}/>
     <label htmlFor={"access-role-" + id} className="sr-only">Uloga za {name}</label>
     <select id={"access-role-" + id} name="role" value={role}
       onChange={(event) => setRole(event.target.value as AccessRole)}

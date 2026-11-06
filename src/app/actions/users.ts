@@ -132,21 +132,32 @@ export async function updateUserAccessAction(data: FormData) {
     throw new Error("Super administratorski nalog je zaštićen ili nalog ne postoji.");
   }
   const active = input.active === "true";
+  const originalRole = String(data.get("originalRole") ?? "");
+  const originalActive = String(data.get("originalActive") ?? "");
+  if (!["STUDENT", "ASSISTANT", "PROFESSOR", "EDITOR"].includes(originalRole) ||
+      !["true", "false"].includes(originalActive)) {
+    throw new Error("Neispravna verzija naloga. Osvežite stranicu.");
+  }
+  if (target.role !== originalRole || target.active !== (originalActive === "true")) {
+    redirect("/admin/korisnici?error=stale");
+  }
   if (target.role === input.role && target.active === active) {
     redirect("/admin/korisnici?unchanged=1");
   }
-  await db.$transaction(async (tx) => {
+  const saved = await db.$transaction(async (tx) => {
     const updated = await tx.user.updateMany({
       where: { id: input.id, role: target.role, active: target.active },
       data: { role: input.role, active, sessionVersion: { increment: 1 } },
     });
-    if (updated.count !== 1) throw new Error("Korisnička uloga ili status je u međuvremenu promenjen.");
+    if (updated.count !== 1) return false;
     // Stare dodele predmeta nikada ne preživljavaju promenu uloge ili deaktivaciju.
     if (target.role !== input.role || !active) {
       await tx.courseMembership.deleteMany({ where: { userId: input.id } });
     }
     await tx.auditLog.create({ data: { actorId: actor.id, action: "user.access.update", subjectType: "User", subjectId: input.id } });
+    return true;
   });
+  if (!saved) redirect("/admin/korisnici?error=stale");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti");
   revalidatePath("/predmeti");
