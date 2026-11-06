@@ -9,6 +9,7 @@ import { SubmitButton } from "@/components/submit-button";
 
 export default async function AdminNews({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; status?: string; deleted?: string; unchanged?: string; error?: string }> }) {
   if (!(await can("news.write"))) notFound();
+  const mayPublish = await can("news.publish");
   const { q: rawQ, p, status: rawStatus, deleted, unchanged, error } = await searchParams;
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
@@ -48,7 +49,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           <button className="btn btn-primary">Prikaži</button>
         </form>
         {pageItems.length ? <div className="table-wrap"><table className="data-table stacked-table"><thead><tr><th>Naslov</th><th>Status</th><th>Izmena</th><th>Akcija</th></tr></thead><tbody>
-          {pageItems.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-[#173b63]">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija"><form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/><input type="hidden" name="publish" value={item.status !== "PUBLISHED" ? "true" : "false"}/><button className="text-sm font-bold text-[#173b63] underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form></td></tr>)}
+          {pageItems.map((item) => <tr key={item.id}><td data-label="Naslov" className="font-semibold"><Link href={"/admin/novosti/" + item.id} className="hover:text-[#173b63]">{item.title} <ArrowUpRight className="inline" size={14}/></Link></td><td data-label="Status"><span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></td><td data-label="Izmena" className="whitespace-nowrap">{item.updatedAt.toLocaleDateString("sr-RS")}</td><td data-label="Akcija">{mayPublish && <form action={togglePublishNewsAction}><input type="hidden" name="id" value={item.id}/><input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/><input type="hidden" name="publish" value={item.status !== "PUBLISHED" ? "true" : "false"}/><button className="text-sm font-bold text-[#173b63] underline">{item.status === "PUBLISHED" ? "Povuci" : "Objavi"}</button></form>}</td></tr>)}
         </tbody></table></div> : <p className="text-sm text-slate-500">Nema novosti za zadatu pretragu. Promenite filter ili dodajte novu objavu.</p>}
         <nav aria-label="Stranice novosti" className="mt-6 flex justify-between gap-3">
           {page > 1 ? <Link href={pageHref(page - 1)} className="btn btn-light">← Prethodna</Link> : <span/>}
@@ -61,7 +62,7 @@ export default async function AdminNews({ searchParams }: { searchParams: Promis
           <div><label className="form-label" htmlFor="news-title">Naslov</label><input className="input-field" id="news-title" name="title" required minLength={5} maxLength={180}/></div>
           <div><label className="form-label" htmlFor="news-summary">Kratak opis</label><textarea className="input-field" id="news-summary" name="summary" rows={3} required minLength={10} maxLength={300}/></div>
           <div><label className="form-label" htmlFor="news-body">Tekst novosti</label><textarea className="input-field" id="news-body" name="body" rows={9} required minLength={20} maxLength={30000} placeholder="Napišite obaveštenje u kratkim, preglednim pasusima…"/></div>
-          <div className="flex flex-wrap gap-3"><SubmitButton name="publish" value="false" className="btn btn-light" pendingText="Čuvanje…">Sačuvaj nacrt</SubmitButton><SubmitButton name="publish" value="true" pendingText="Objavljivanje…">Objavi novost</SubmitButton></div>
+          <div className="flex flex-wrap gap-3"><SubmitButton name="publish" value="false" className="btn btn-light" pendingText="Čuvanje…">Sačuvaj nacrt</SubmitButton>{mayPublish && <SubmitButton name="publish" value="true" pendingText="Objavljivanje…">Objavi novost</SubmitButton>}</div>
         </form>
       </div>
 

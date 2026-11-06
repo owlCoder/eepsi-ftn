@@ -9,6 +9,7 @@ import { db } from "@/infrastructure/db/prisma";
 
 export default async function EditNews({ params, searchParams }: { params: Promise<{ id: string }>; searchParams: Promise<{ saved?: string; error?: string }> }) {
   if (!(await can("news.write"))) notFound();
+  const mayPublish = await can("news.publish");
   const { id } = await params;
   const item = await db.news.findUnique({ where: { id } });
   if (!item) notFound();
@@ -43,7 +44,7 @@ export default async function EditNews({ params, searchParams }: { params: Promi
     <div className="admin-panel"><div className="flex flex-wrap items-center justify-between gap-4">
       <div><p className="text-sm font-semibold">Status: <span className={item.status === "PUBLISHED" ? "pill" : "pill pill-neutral"}>{item.status === "PUBLISHED" ? "Objavljeno" : "Nacrt"}</span></p>
         <p className="mt-2 text-xs text-slate-500">Objavljivanje određuje dostupnost novosti na javnom portalu.</p></div>
-      <form action={togglePublishNewsAction}><input name="id" type="hidden" value={item.id}/><input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/><input type="hidden" name="publish" value={item.status !== "PUBLISHED" ? "true" : "false"}/><SubmitButton className="btn btn-light" pendingText="Ažuriranje…">{item.status === "PUBLISHED" ? "Povuci objavu" : "Objavi sada"}</SubmitButton></form>
+      {mayPublish && <form action={togglePublishNewsAction}><input name="id" type="hidden" value={item.id}/><input type="hidden" name="updatedAt" value={item.updatedAt.toISOString()}/><input type="hidden" name="publish" value={item.status !== "PUBLISHED" ? "true" : "false"}/><SubmitButton className="btn btn-light" pendingText="Ažuriranje…">{item.status === "PUBLISHED" ? "Povuci objavu" : "Objavi sada"}</SubmitButton></form>}
     </div></div>
     <div className="admin-panel border-rose-100 bg-rose-50/30">
       <h2 className="!mb-2 text-rose-900">Ukloni novost</h2>
