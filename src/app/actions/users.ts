@@ -202,6 +202,15 @@ export async function updateUserIdentityAction(data: FormData) {
   if (!target || target.role === "SUPER_ADMIN") {
     throw new Error("Super administratorski nalog je zaštićen ili nalog ne postoji.");
   }
+  const original = userIdentityInput.safeParse({
+    id: input.id,
+    name: String(data.get("originalName") ?? ""),
+    email: String(data.get("originalEmail") ?? ""),
+  });
+  if (!original.success) throw new Error("Neispravna verzija naloga. Osvežite stranicu.");
+  if (target.name !== original.data.name || target.email !== original.data.email) {
+    redirect("/admin/korisnici?error=stale");
+  }
   if (target.name === input.name && target.email === input.email) {
     redirect("/admin/korisnici?unchanged=1");
   }
@@ -210,7 +219,7 @@ export async function updateUserIdentityAction(data: FormData) {
     if (duplicate) redirect("/admin/korisnici?error=duplicate");
   }
 
-  await db.$transaction(async (tx) => {
+  const saved = await db.$transaction(async (tx) => {
     const result = await tx.user.updateMany({
       where: {
         id: input.id,
@@ -225,11 +234,13 @@ export async function updateUserIdentityAction(data: FormData) {
         ...(target.email !== input.email ? { sessionVersion: { increment: 1 } } : {}),
       },
     });
-    if (result.count !== 1) throw new Error("Nalog je u međuvremenu izmenjen.");
+    if (result.count !== 1) return false;
     await tx.auditLog.create({
       data: { actorId: actor.id, action: "user.identity.update", subjectType: "User", subjectId: input.id },
     });
+    return true;
   });
+  if (!saved) redirect("/admin/korisnici?error=stale");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin");
   revalidatePath("/nastavnici");

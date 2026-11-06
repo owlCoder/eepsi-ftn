@@ -63,7 +63,7 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
     </div>
     {(query.created || query.assigned || query.revoked || query.updated || query.reset || query.details) && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Izmena je sačuvana.</p>}
     {query.unchanged && <p role="status" className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold text-slate-600">Nema izmena — podaci ili angažovanje su već bili sačuvani.</p>}
-    {query.error === "stale" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Uloga ili status naloga su promenjeni u međuvremenu. Osvežite stranicu pre ponovnog čuvanja.</p>}
+    {query.error === "stale" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Podaci, uloga ili status naloga su promenjeni u međuvremenu. Osvežite stranicu pre ponovnog čuvanja.</p>}
     {query.error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Nalog sa tom email adresom već postoji. Koristite pretragu da biste ga pronašli.</p>}
     {query.error === "course" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Predmet sa unetom šifrom nije pronađen. Proverite šifru u katalogu predmeta.</p>}
     {query.error === "member" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Angažovanje nije sačuvano. Proverite email, aktivnost naloga i da li je njegova globalna uloga odgovarajuća.</p>}
@@ -105,6 +105,8 @@ export default async function AdminUsers({ searchParams }: { searchParams: Promi
                 <summary className="flex items-center gap-2 text-xs font-bold text-slate-600"><Pencil size={15}/> Uredi osnovne podatke</summary>
                 <form action={updateUserIdentityAction} className="mt-3 space-y-3">
                   <input type="hidden" name="id" value={user.id}/>
+                  <input type="hidden" name="originalName" value={user.name}/>
+                  <input type="hidden" name="originalEmail" value={user.email}/>
                   <div>
                     <label className="form-label" htmlFor={"edit-name-" + user.id}>Ime i prezime</label>
                     <input id={"edit-name-" + user.id} className="input-field" name="name"
