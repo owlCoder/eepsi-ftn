@@ -1,6 +1,7 @@
 "use server";
 
 import { randomUUID } from "node:crypto";
+import { Prisma } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { courseInput, materialInput, materialEditInput } from "@/application/validation";
@@ -38,13 +39,24 @@ export async function createCourseAction(data: FormData) {
   const input = courseInput.parse(courseFields(data));
   const duplicate = await db.course.findUnique({ where: { code: input.code }, select: { id: true } });
   if (duplicate) redirect("/admin/predmeti?error=duplicate");
-  const course = await db.$transaction(async (tx) => {
-    const created = await tx.course.create({
-      data: { ...input, slug: toSlug(input.title) + "-" + randomUUID().slice(0, 7) },
+  // The preflight check is only advisory: another request can insert the same
+  // code before this transaction commits. Handle the database constraint too.
+  let course;
+  try {
+    course = await db.$transaction(async (tx) => {
+      const created = await tx.course.create({
+        data: { ...input, slug: toSlug(input.title) + "-" + randomUUID().slice(0, 7) },
+      });
+      await tx.auditLog.create({ data: { actorId: actor.id, action: "course.create", subjectType: "Course", subjectId: created.id } });
+      return created;
     });
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "course.create", subjectType: "Course", subjectId: created.id } });
-    return created;
-  });
+  } catch (error) {
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002" &&
+        Array.isArray(error.meta?.target) && error.meta.target.includes("code")) {
+      redirect("/admin/predmeti?error=duplicate");
+    }
+    throw error;
+  }
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/sitemap.xml");
