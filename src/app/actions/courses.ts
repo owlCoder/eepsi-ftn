@@ -129,6 +129,8 @@ export async function createMaterialAction(data: FormData) {
     const material = await tx.material.create({ data: input });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "material.create", subjectType: "Material", subjectId: material.id } });
   });
+  // The public catalog shows each course’s material count.
+  revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
   redirect("/admin/predmeti/" + course.id + "?material=added");
 }
@@ -165,6 +167,7 @@ export async function deleteMaterialAction(data: FormData) {
     return true;
   });
   if (!deleted) redirect(materialReturnUrl(material.courseId, data, "conflict"));
+  revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
   redirect(materialReturnUrl(material.courseId, data, "deleted"));
 }
