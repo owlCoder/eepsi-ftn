@@ -13,6 +13,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   return {
     title: "Obaveštenja",
     description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka.",
+    alternates: { canonical: "/novosti" },
     ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }

@@ -13,6 +13,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   return {
     title: "Predmeti",
     description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u.",
+    alternates: { canonical: "/predmeti" },
     ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }

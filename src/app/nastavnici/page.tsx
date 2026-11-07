@@ -11,6 +11,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Promise
   return {
     title: "Nastavno osoblje",
     description: "Nastavnici i saradnici angažovani na predmetima Katedre EEPSI.",
+    alternates: { canonical: "/nastavnici" },
     ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }
