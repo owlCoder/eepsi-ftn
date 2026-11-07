@@ -4,7 +4,12 @@ const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   async headers() {
-    return [{
+    return [
+    {
+      source: "/admin/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store" }],
+    },
+    { 
       source: "/:path*",
       headers: [
         { key: "X-Content-Type-Options", value: "nosniff" },
