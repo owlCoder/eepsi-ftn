@@ -16,6 +16,8 @@ export async function updateProfileAction(data: FormData) {
   const { name } = profileInput.parse({ name: String(data.get("name") ?? "") });
   const originalName = String(data.get("originalName") ?? "");
   if (!originalName || originalName.length > 120) throw new Error("Neispravna verzija profila. Osvežite stranicu.");
+  // An unchanged form can still be stale if the profile was edited elsewhere.
+  if (actor.name !== originalName) redirect("/admin/profil?stale=1");
   if (name === originalName) redirect("/admin/profil?unchanged=1");
   const updated = await db.$transaction(async (tx) => {
     const result = await tx.user.updateMany({
