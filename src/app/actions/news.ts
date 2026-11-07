@@ -38,6 +38,7 @@ export async function createNewsAction(data: FormData) {
   if (publish) {
     revalidatePath("/");
     revalidatePath("/novosti");
+    revalidatePath("/novosti/" + news.slug);
     revalidatePath("/sitemap.xml");
   }
   redirect("/admin/novosti/" + news.id);

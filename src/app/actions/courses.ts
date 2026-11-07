@@ -59,6 +59,7 @@ export async function createCourseAction(data: FormData) {
   }
   revalidatePath("/");
   revalidatePath("/predmeti");
+  revalidatePath("/predmeti/" + course.slug);
   revalidatePath("/sitemap.xml");
   redirect("/admin/predmeti/" + course.id);
 }
