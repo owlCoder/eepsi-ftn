@@ -259,7 +259,7 @@ export async function deleteCourseAction(data: FormData) {
     });
     return existing;
   });
-  if (!slug) {
+  if (!deleted) {
     // A deletion form may refer to a course already removed by another administrator.
     const exists = await db.course.findUnique({ where: { id }, select: { id: true } });
     redirect(exists ? "/admin/predmeti/" + id + "?error=stale" : "/admin/predmeti?error=course");
