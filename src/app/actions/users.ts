@@ -57,6 +57,17 @@ export async function assignCourseMemberAction(data: FormData) {
     email: String(data.get("email") ?? ""),
     role: String(data.get("role") ?? ""),
   });
+  // A course ID submitted directly (rather than looked up by code) may be
+  // stale or fabricated. Report a form error instead of a foreign-key failure.
+  const courseExists = await db.course.findUnique({
+    where: { id: input.courseId },
+    select: { id: true },
+  });
+  if (!courseExists) {
+    redirect(returnToCourse
+      ? "/admin/predmeti?error=course"
+      : "/admin/korisnici?error=course");
+  }
   const user = await db.user.findUnique({
     where: { email: input.email },
     select: { id: true, role: true, active: true },
