@@ -105,7 +105,11 @@ export async function updateCourseAction(data: FormData) {
     }
     throw error;
   }
-  if (!slug) redirect("/admin/predmeti/" + id + "?error=stale");
+  if (!slug) {
+    // A stale form may refer to a course deleted by another administrator.
+    const exists = await db.course.findUnique({ where: { id }, select: { id: true } });
+    redirect(exists ? "/admin/predmeti/" + id + "?error=stale" : "/admin/predmeti?error=course");
+  }
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + slug);
@@ -255,7 +259,11 @@ export async function deleteCourseAction(data: FormData) {
     });
     return existing;
   });
-  if (!deleted) redirect("/admin/predmeti/" + id + "?error=stale");
+  if (!slug) {
+    // A deletion form may refer to a course already removed by another administrator.
+    const exists = await db.course.findUnique({ where: { id }, select: { id: true } });
+    redirect(exists ? "/admin/predmeti/" + id + "?error=stale" : "/admin/predmeti?error=course");
+  }
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + deleted.slug);
