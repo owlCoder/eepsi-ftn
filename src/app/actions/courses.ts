@@ -214,6 +214,8 @@ export async function updateMaterialAction(data: FormData) {
     return true;
   });
   if (!updated) redirect(materialReturnUrl(material.courseId, data, "conflict"));
+  // Keep the public catalog cache consistent with material edits, as with creation/deletion.
+  revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
   redirect(materialReturnUrl(material.courseId, data, "updated"));
 }
