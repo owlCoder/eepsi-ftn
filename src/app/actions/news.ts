@@ -34,9 +34,12 @@ export async function createNewsAction(data: FormData) {
     await tx.auditLog.create({ data: { actorId: actor.id, action: "news.create", subjectType: "News", subjectId: created.id } });
     return created;
   });
-  revalidatePath("/");
-  revalidatePath("/novosti");
-  revalidatePath("/sitemap.xml");
+  // Drafts are not visible publicly; avoid invalidating public caches.
+  if (publish) {
+    revalidatePath("/");
+    revalidatePath("/novosti");
+    revalidatePath("/sitemap.xml");
+  }
   redirect("/admin/novosti/" + news.id);
 }
 
@@ -68,9 +71,11 @@ export async function updateNewsAction(data: FormData) {
     return tx.news.findUnique({ where: { id }, select: { slug: true } });
   });
   if (!news) redirect("/admin/novosti/" + id + "?error=stale");
-  revalidatePath("/");
-  revalidatePath("/novosti");
-  revalidatePath("/novosti/" + news.slug);
+  if (current.status === "PUBLISHED") {
+    revalidatePath("/");
+    revalidatePath("/novosti");
+    revalidatePath("/novosti/" + news.slug);
+  }
   redirect("/admin/novosti/" + id + "?saved=1");
 }
 
@@ -136,9 +141,11 @@ export async function deleteNewsAction(data: FormData) {
     return existing;
   });
   if (!news) redirect("/admin/novosti?error=stale");
-  revalidatePath("/");
-  revalidatePath("/novosti");
-  revalidatePath("/novosti/" + news.slug);
-  revalidatePath("/sitemap.xml");
+  if (current.status === "PUBLISHED") {
+    revalidatePath("/");
+    revalidatePath("/novosti");
+    revalidatePath("/novosti/" + news.slug);
+    revalidatePath("/sitemap.xml");
+  }
   redirect("/admin/novosti?deleted=1");
 }
