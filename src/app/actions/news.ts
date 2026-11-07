@@ -75,6 +75,7 @@ export async function updateNewsAction(data: FormData) {
     revalidatePath("/");
     revalidatePath("/novosti");
     revalidatePath("/novosti/" + news.slug);
+    revalidatePath("/sitemap.xml");
   }
   redirect("/admin/novosti/" + id + "?saved=1");
 }
