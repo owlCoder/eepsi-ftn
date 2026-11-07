@@ -30,6 +30,7 @@ export default async function AdminCourses({ searchParams }: { searchParams: Pro
   return <div className="space-y-7">
     <div><p className="eyebrow mb-3">Upravljanje nastavom</p><h1 className="text-4xl font-extrabold tracking-tight">{canCreate ? "Upravljanje predmetima" : "Moji predmeti"}</h1><p className="mt-3 text-sm leading-7 text-slate-500">{canCreate ? "Kreirajte predmet i organizujte njegov nastavni sadržaj." : "Prikazani su samo predmeti na kojima ste angažovani."}</p></div>
     {error === "duplicate" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Šifra predmeta već postoji. Unesite drugu šifru ili izmenite postojeći predmet.</p>}
+    {error === "course" && <p role="alert" className="rounded-xl border border-rose-200 bg-rose-50 p-4 text-sm font-semibold text-rose-800">Predmet više ne postoji. Osvežite spisak i ponovo izaberite predmet pre dodeljivanja angažovanja.</p>}
     {deleted && <p role="status" className="rounded-xl border border-teal-200 bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Predmet je trajno uklonjen, zajedno sa materijalima i angažovanjima.</p>}
     <div className="admin-panel" id="spisak-predmeta">
       <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
