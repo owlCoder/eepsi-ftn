@@ -48,7 +48,7 @@ export async function assignCourseMemberAction(data: FormData) {
   let courseId = rawCourseId;
   if (!courseId && /^[A-Z0-9-]{2,30}$/.test(rawCode)) {
     const course = await db.course.findUnique({ where: { code: rawCode }, select: { id: true } });
-    if (!course) redirect("/admin/korisnici?error=course");
+    if (!course) redirect(returnToCourse ? "/admin/predmeti?error=course" : "/admin/korisnici?error=course");
     courseId = course.id;
   }
   if (!courseId) redirect("/admin/korisnici?error=course");
