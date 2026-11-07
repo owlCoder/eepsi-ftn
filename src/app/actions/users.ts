@@ -51,7 +51,7 @@ export async function assignCourseMemberAction(data: FormData) {
     if (!course) redirect(returnToCourse ? "/admin/predmeti?error=course" : "/admin/korisnici?error=course");
     courseId = course.id;
   }
-  if (!courseId) redirect("/admin/korisnici?error=course");
+  if (!courseId) redirect(returnToCourse ? "/admin/predmeti?error=course" : "/admin/korisnici?error=course");
   const input = membershipInput.parse({
     courseId,
     email: String(data.get("email") ?? ""),
