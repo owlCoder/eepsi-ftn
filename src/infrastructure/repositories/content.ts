@@ -23,8 +23,7 @@ export async function publicTeachingStaff(q = "", page = 1) {
       role: true,
       memberships: {
         select: {
-          role: true,
-          course: { select: { slug: true, title: true, code: true } },
+          course: { select: { slug: true, title: true } },
         },
         orderBy: { course: { title: "asc" } },
 
