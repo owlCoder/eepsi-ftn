@@ -7,8 +7,9 @@ import { parseCourseFilters } from "@/domain/courses/filters";
 
 export const revalidate = 300;
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }): Promise<Metadata> {
-  const { q, p, level, semester } = await searchParams;
-  const hasListingParams = [q, p, level, semester].some(value => value !== undefined);
+  // Any query string creates an alternate URL for this listing, including
+  // unknown tracking parameters that do not change its content.
+  const hasListingParams = Object.keys(await searchParams).length > 0;
   return {
     title: "Predmeti",
     description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u.",

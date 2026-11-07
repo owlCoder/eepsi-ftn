@@ -5,8 +5,9 @@ import { publicTeachingStaff } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
-  const { q, p } = await searchParams;
-  const hasListingParams = q !== undefined || p !== undefined;
+  // Any query string creates an alternate URL for this listing, including
+  // unknown tracking parameters that do not change its content.
+  const hasListingParams = Object.keys(await searchParams).length > 0;
   return {
     title: "Nastavno osoblje",
     description: "Nastavnici i saradnici angažovani na predmetima Katedre EEPSI.",

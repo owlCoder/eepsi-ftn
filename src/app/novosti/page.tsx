@@ -7,8 +7,9 @@ import { readPage } from "@/lib/pagination";
 
 export const revalidate = 300;
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
-  const { q, p } = await searchParams;
-  const hasListingParams = q !== undefined || p !== undefined;
+  // Any query string creates an alternate URL for this listing, including
+  // unknown tracking parameters that do not change its content.
+  const hasListingParams = Object.keys(await searchParams).length > 0;
   return {
     title: "Obaveštenja",
     description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka.",
