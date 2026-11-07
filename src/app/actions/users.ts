@@ -78,7 +78,9 @@ export async function assignCourseMemberAction(data: FormData) {
       : "/admin/korisnici?error=member";
     redirect(destination);
   }
-  const assigned = await db.$transaction(async (tx) => {
+  let assigned: "conflict" | "unchanged" | "assigned";
+  try {
+    assigned = await db.$transaction(async (tx) => {
     const current = await tx.user.findUnique({ where: { id: user.id }, select: { role: true, active: true } });
     if (!current?.active || current.role !== input.role) return "conflict" as const;
     const existing = await tx.courseMembership.findUnique({
@@ -100,7 +102,21 @@ export async function assignCourseMemberAction(data: FormData) {
     });
     await tx.auditLog.create({ data: { actorId: actor.id, action: "membership.assign", subjectType: "Course", subjectId: input.courseId } });
     return "assigned" as const;
-  });
+    });
+  } catch (error) {
+    // The course can be deleted after the preflight check. Only translate a
+    // foreign-key failure when the course is actually gone.
+    const prismaError = error as { code?: unknown } | null;
+    if (prismaError?.code === "P2003") {
+      const course = await db.course.findUnique({ where: { id: input.courseId }, select: { id: true } });
+      if (!course) {
+        redirect(returnToCourse
+          ? "/admin/predmeti?error=course"
+          : "/admin/korisnici?error=course");
+      }
+    }
+    throw error;
+  }
   if (assigned === "conflict") {
     redirect(returnToCourse
       ? "/admin/predmeti/" + input.courseId + "?error=member"
