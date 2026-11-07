@@ -166,6 +166,12 @@ export async function revokeCourseMemberAction(data: FormData) {
     return "revoked" as const;
   });
   if (outcome === "stale") {
+    // A course may have been deleted while the revocation form was open.
+    // Return to the course list instead of a now-missing detail page.
+    if (returnToCourse) {
+      const course = await db.course.findUnique({ where: { id: courseId }, select: { id: true } });
+      if (!course) redirect("/admin/predmeti?error=course");
+    }
     redirect(returnToCourse ? "/admin/predmeti/" + courseId + "?error=stale" : "/admin/korisnici?error=stale");
   }
   revalidatePath("/predmeti");
