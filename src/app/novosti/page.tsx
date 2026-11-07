@@ -8,12 +8,11 @@ import { readPage } from "@/lib/pagination";
 export const revalidate = 300;
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
   const { q, p } = await searchParams;
+  const hasListingParams = q !== undefined || p !== undefined;
   return {
     title: "Obaveštenja",
     description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka.",
-    ...((typeof q === "string" && q.trim()) || readPage(p) > 1
-      ? { robots: { index: false, follow: true } }
-      : {}),
+    ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

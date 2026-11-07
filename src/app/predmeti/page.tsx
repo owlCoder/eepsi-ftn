@@ -8,13 +8,11 @@ import { parseCourseFilters } from "@/domain/courses/filters";
 export const revalidate = 300;
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }): Promise<Metadata> {
   const { q, p, level, semester } = await searchParams;
-  const filters = parseCourseFilters({ level, semester });
+  const hasListingParams = [q, p, level, semester].some(value => value !== undefined);
   return {
     title: "Predmeti",
     description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u.",
-    ...(Boolean((typeof q === "string" && q.trim()) || filters.level || filters.semester || readPage(p) > 1)
-      ? { robots: { index: false, follow: true } }
-      : {}),
+    ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }
 

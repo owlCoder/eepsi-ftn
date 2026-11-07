@@ -6,12 +6,11 @@ import { readPage } from "@/lib/pagination";
 
 export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
   const { q, p } = await searchParams;
+  const hasListingParams = q !== undefined || p !== undefined;
   return {
     title: "Nastavno osoblje",
     description: "Nastavnici i saradnici angažovani na predmetima Katedre EEPSI.",
-    ...((typeof q === "string" && q.trim()) || readPage(p) > 1
-      ? { robots: { index: false, follow: true } }
-      : {}),
+    ...(hasListingParams ? { robots: { index: false, follow: true } } : {}),
   };
 }
 export const revalidate = 300;
