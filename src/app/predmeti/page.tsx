@@ -6,7 +6,17 @@ import { readPage } from "@/lib/pagination";
 import { parseCourseFilters } from "@/domain/courses/filters";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "Predmeti", description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u." };
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }): Promise<Metadata> {
+  const { q, p, level, semester } = await searchParams;
+  const filters = parseCourseFilters({ level, semester });
+  return {
+    title: "Predmeti",
+    description: "Pretraga predmeta i nastavnih materijala Katedre EEPSI na FTN-u.",
+    ...(Boolean((typeof q === "string" && q.trim()) || filters.level || filters.semester || readPage(p) > 1)
+      ? { robots: { index: false, follow: true } }
+      : {}),
+  };
+}
 
 export default async function Courses({ searchParams }: { searchParams: Promise<{ q?: string; p?: string; level?: string; semester?: string }> }) {
   const { q: rawQ, p, level: rawLevel, semester: rawSemester } = await searchParams;

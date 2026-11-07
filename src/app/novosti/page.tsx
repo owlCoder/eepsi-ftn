@@ -6,7 +6,16 @@ import { listNews } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
 export const revalidate = 300;
-export const metadata: Metadata = { title: "Obaveštenja", description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka." };
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
+  const { q, p } = await searchParams;
+  return {
+    title: "Obaveštenja",
+    description: "Obaveštenja i vesti Katedre EEPSI na Fakultetu tehničkih nauka.",
+    ...((typeof q === "string" && q.trim()) || readPage(p) > 1
+      ? { robots: { index: false, follow: true } }
+      : {}),
+  };
+}
 
 export default async function News({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
   const { q: rawQ, p } = await searchParams;

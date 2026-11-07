@@ -4,7 +4,16 @@ import { ArrowRight, Search } from "lucide-react";
 import { publicTeachingStaff } from "@/infrastructure/repositories/content";
 import { readPage } from "@/lib/pagination";
 
-export const metadata: Metadata = { title: "Nastavno osoblje", description: "Nastavnici i saradnici angažovani na predmetima Katedre EEPSI." };
+export async function generateMetadata({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }): Promise<Metadata> {
+  const { q, p } = await searchParams;
+  return {
+    title: "Nastavno osoblje",
+    description: "Nastavnici i saradnici angažovani na predmetima Katedre EEPSI.",
+    ...((typeof q === "string" && q.trim()) || readPage(p) > 1
+      ? { robots: { index: false, follow: true } }
+      : {}),
+  };
+}
 export const revalidate = 300;
 
 export default async function TeachingStaffPage({ searchParams }: { searchParams: Promise<{ q?: string; p?: string }> }) {
