@@ -33,7 +33,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <section aria-labelledby="login-form-heading" className="academic-login-form">
           <h2 id="login-form-heading">Pristup nalogu</h2>
           <p>Unesite podatke povezane sa vašim nalogom.</p>
-          {changed && <p role="status" className="mt-5 rounded-md border border-[#b6dbc8] bg-[#edf8f2] p-4 text-sm font-semibold text-[#235942]">
+          {changed === "1" && <p role="status" className="mt-5 rounded-md border border-[#b6dbc8] bg-[#edf8f2] p-4 text-sm font-semibold text-[#235942]">
             Lozinka je promenjena. Prijavite se ponovo.
           </p>}
           <div className="mt-6"><LoginForm/></div>
