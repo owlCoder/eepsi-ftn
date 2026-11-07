@@ -9,6 +9,10 @@ const nextConfig: NextConfig = {
       source: "/admin/:path*",
       headers: [{ key: "Cache-Control", value: "private, no-store" }],
     },
+    {
+      source: "/prijava",
+      headers: [{ key: "Cache-Control", value: "private, no-store" }],
+    },
     { 
       source: "/:path*",
       headers: [
