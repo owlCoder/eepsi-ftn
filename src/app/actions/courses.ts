@@ -162,7 +162,8 @@ export async function deleteMaterialAction(data: FormData) {
     const courseId = String(data.get("courseId") ?? "");
     if (!courseId || courseId.length > 40) throw new Error("Materijal nije pronađen.");
     await requirePermission("materials.delete", courseId);
-    redirect(materialReturnUrl(courseId, data, "conflict"));
+    const course = await db.course.findUnique({ where: { id: courseId }, select: { id: true } });
+    redirect(course ? materialReturnUrl(courseId, data, "conflict") : "/admin/predmeti?error=course");
   }
   const actor = await requirePermission("materials.delete", material.courseId);
   // Do not delete a material that another editor changed after this form loaded.
@@ -213,7 +214,8 @@ export async function updateMaterialAction(data: FormData) {
     const courseId = String(data.get("courseId") ?? "");
     if (!courseId || courseId.length > 40) throw new Error("Materijal nije pronađen.");
     await requirePermission("materials.edit", courseId);
-    redirect(materialReturnUrl(courseId, data, "conflict"));
+    const course = await db.course.findUnique({ where: { id: courseId }, select: { id: true } });
+    redirect(course ? materialReturnUrl(courseId, data, "conflict") : "/admin/predmeti?error=course");
   }
   const actor = await requirePermission("materials.edit", material.courseId);
   // The original values are a compare-and-swap token. They are not used for
