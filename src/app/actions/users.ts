@@ -179,6 +179,11 @@ export async function revokeCourseMemberAction(data: FormData) {
   revalidatePath("/nastavnici");
   revalidatePath("/admin/korisnici");
   revalidatePath("/admin/predmeti/" + courseId);
+  // Another administrator may delete the course after the revocation commits.
+  if (returnToCourse) {
+    const course = await db.course.findUnique({ where: { id: courseId }, select: { id: true } });
+    if (!course) redirect("/admin/predmeti?error=course");
+  }
   redirect(returnToCourse ? "/admin/predmeti/" + courseId + "?team=updated" : "/admin/korisnici?revoked=1");
 }
 
