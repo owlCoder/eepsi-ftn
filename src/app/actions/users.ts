@@ -117,6 +117,12 @@ export async function assignCourseMemberAction(data: FormData) {
     }
     throw error;
   }
+  // The course may be removed after the membership transaction (including
+  // unchanged/conflict outcomes). Avoid redirecting to a missing detail page.
+  if (returnToCourse) {
+    const course = await db.course.findUnique({ where: { id: input.courseId }, select: { id: true } });
+    if (!course) redirect("/admin/predmeti?error=course");
+  }
   if (assigned === "conflict") {
     redirect(returnToCourse
       ? "/admin/predmeti/" + input.courseId + "?error=member"
