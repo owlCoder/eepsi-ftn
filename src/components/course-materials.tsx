@@ -50,7 +50,7 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
               {group.items.map(material => (
                 <a key={material.id} href={material.url} target="_blank" rel="noopener noreferrer">
                   <FileText size={18} aria-hidden="true" className="academic-material-icon"/>
-                  <span>{material.title}</span>
+                  <span>{material.title}<span className="sr-only"> (otvara se u novoj kartici)</span></span>
                   <ArrowUpRight size={18} aria-hidden="true" className="academic-material-open"/>
                 </a>
               ))}
