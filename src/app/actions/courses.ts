@@ -129,7 +129,7 @@ export async function createMaterialAction(data: FormData) {
     where: { id: input.courseId },
     select: { id: true, slug: true },
   });
-  if (!course) throw new Error("Predmet ne postoji.");
+  if (!course) redirect("/admin/predmeti?error=course");
   try {
     await db.$transaction(async (tx) => {
       const material = await tx.material.create({ data: input });
