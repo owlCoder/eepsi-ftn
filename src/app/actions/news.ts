@@ -56,7 +56,7 @@ export async function updateNewsAction(data: FormData) {
   // Editing published content changes the public site, so it requires
   // publishing rights just like withdrawing or deleting a published post.
   const current = await db.news.findUnique({ where: { id }, select: { status: true } });
-  if (!current) redirect("/admin/novosti/" + id + "?error=stale");
+  if (!current) redirect("/admin/novosti?error=stale");
   if (current.status === "PUBLISHED") await requirePermission("news.publish");
   // Include the status in the compare-and-swap: a concurrent publication must
   // not let a draft-only editor change newly published content.
@@ -71,7 +71,11 @@ export async function updateNewsAction(data: FormData) {
     });
     return tx.news.findUnique({ where: { id }, select: { slug: true } });
   });
-  if (!news) redirect("/admin/novosti/" + id + "?error=stale");
+  if (!news) {
+    // The post may have been deleted while the edit form was open.
+    const exists = await db.news.findUnique({ where: { id }, select: { id: true } });
+    redirect(exists ? "/admin/novosti/" + id + "?error=stale" : "/admin/novosti?error=stale");
+  }
   if (current.status === "PUBLISHED") {
     revalidatePath("/");
     revalidatePath("/novosti");
@@ -92,7 +96,7 @@ export async function togglePublishNewsAction(data: FormData) {
   const publish = intent === "true";
   const desiredStatus = publish ? "PUBLISHED" : "DRAFT";
   const news = await db.news.findUnique({ where: { id }, select: { status: true, slug: true, updatedAt: true } });
-  if (!news) throw new Error("Novost nije pronađena.");
+  if (!news) redirect("/admin/novosti?error=stale");
   // A stale editor must not publish or withdraw content changed in another tab.
   if (news.updatedAt.getTime() !== expectedUpdatedAt.getTime()) redirect("/admin/novosti?error=stale");
   if (news.status === desiredStatus) redirect("/admin/novosti?unchanged=1");
