@@ -15,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: { canonical: "/novosti/" + encodeURIComponent(slug) },
     ...(!news ? { robots: { index: false, follow: false } } : {}),
     description: news?.summary,
-    ...(news ? { openGraph: { title: news.title, description: news.summary, type: "article" as const } } : {}),
+    ...(news ? { openGraph: { title: news.title, description: news.summary, type: "article" as const, ...(news.publishedAt ? { publishedTime: news.publishedAt.toISOString() } : {}) } } : {}),
   };
 }
 
