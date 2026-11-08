@@ -16,9 +16,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: new URL("/laboratorija", origin).toString(), changeFrequency: "monthly", priority: 0.6 },
     { url: new URL("/nastavnici", origin).toString(), changeFrequency: "weekly", priority: 0.7 },
     { url: new URL("/novosti", origin).toString(), changeFrequency: "daily", priority: 0.8 },
-    ...courses.map(({ slug, updatedAt }) => ({
+    ...courses.map(({ slug }) => ({
       url: new URL("/predmeti/" + encodeURIComponent(slug), origin).toString(),
-      lastModified: updatedAt,
       changeFrequency: "monthly" as const,
       priority: 0.7,
     })),
