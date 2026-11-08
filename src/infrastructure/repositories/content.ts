@@ -116,6 +116,6 @@ export const newsBySlug = cache(async (slug: string) => {
   if (!process.env.DATABASE_URL) return null;
   return db.news.findFirst({
     where: { slug, status: "PUBLISHED" },
-    select: { title: true, summary: true, body: true, publishedAt: true, author: { select: { name: true } } },
+    select: { title: true, summary: true, body: true, publishedAt: true, updatedAt: true, author: { select: { name: true } } },
   });
 });
