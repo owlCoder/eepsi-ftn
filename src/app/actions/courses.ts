@@ -200,6 +200,9 @@ export async function deleteMaterialAction(data: FormData) {
   }
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
+  // The owning course can be removed after this transaction commits.
+  const courseExists = await db.course.findUnique({ where: { id: material.courseId }, select: { id: true } });
+  if (!courseExists) redirect("/admin/predmeti?error=course");
   redirect(materialReturnUrl(material.courseId, data, "deleted"));
 }
 
@@ -257,6 +260,9 @@ export async function updateMaterialAction(data: FormData) {
   // Keep the public catalog cache consistent with material edits, as with creation/deletion.
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
+  // Avoid sending an editor to a course removed just after the update.
+  const courseExists = await db.course.findUnique({ where: { id: material.courseId }, select: { id: true } });
+  if (!courseExists) redirect("/admin/predmeti?error=course");
   redirect(materialReturnUrl(material.courseId, data, "updated"));
 }
 
