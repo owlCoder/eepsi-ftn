@@ -87,7 +87,7 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
                     <td>{item.studyLevel}</td>
                     <td>{item.semester}.</td>
                     <td><Link href={"/predmeti/" + item.slug + "#materijali"} className="academic-materials-link">
-                      <FileText size={15} aria-hidden="true"/> Materijali{item._count ? ` (${item._count.materials})` : ""}
+                      <FileText size={15} aria-hidden="true"/> Materijali{item._count ? ` (${item._count.materials})` : ""}<span className="sr-only"> za predmet {item.title}</span>
                     </Link></td>
                   </tr>
                 ))}</tbody>
