@@ -130,10 +130,20 @@ export async function createMaterialAction(data: FormData) {
     select: { id: true, slug: true },
   });
   if (!course) throw new Error("Predmet ne postoji.");
-  await db.$transaction(async (tx) => {
-    const material = await tx.material.create({ data: input });
-    await tx.auditLog.create({ data: { actorId: actor.id, action: "material.create", subjectType: "Material", subjectId: material.id } });
-  });
+  try {
+    await db.$transaction(async (tx) => {
+      const material = await tx.material.create({ data: input });
+      await tx.auditLog.create({ data: { actorId: actor.id, action: "material.create", subjectType: "Material", subjectId: material.id } });
+    });
+  } catch (error) {
+    // The course can be deleted after the initial lookup, before insertion.
+    // Only treat a foreign-key failure as a missing course when confirmed.
+    if ((error as { code?: unknown } | null)?.code === "P2003") {
+      const exists = await db.course.findUnique({ where: { id: input.courseId }, select: { id: true } });
+      if (!exists) redirect("/admin/predmeti?error=course");
+    }
+    throw error;
+  }
   // The public catalog shows each course’s material count.
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
