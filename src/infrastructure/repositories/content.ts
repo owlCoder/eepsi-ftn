@@ -45,9 +45,9 @@ export async function featuredCourses(limit = 3) {
 }
 
 export async function publicSitemapSlugs() {
-  if (!process.env.DATABASE_URL) return { courses: [] as { slug: string }[], news: [] as { slug: string; updatedAt: Date }[] };
+  if (!process.env.DATABASE_URL) return { courses: [] as { slug: string; updatedAt: Date }[], news: [] as { slug: string; updatedAt: Date }[] };
   const [courses, news] = await Promise.all([
-    db.course.findMany({ select: { slug: true }, orderBy: { createdAt: "desc" }, take: 5000 }),
+    db.course.findMany({ select: { slug: true, updatedAt: true }, orderBy: { createdAt: "desc" }, take: 5000 }),
     db.news.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true }, orderBy: { publishedAt: "desc" }, take: 5000 }),
   ]);
   return { courses, news };
