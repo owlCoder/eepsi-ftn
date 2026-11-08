@@ -157,7 +157,13 @@ export async function deleteMaterialAction(data: FormData) {
     where: { id: materialId },
     select: { id: true, courseId: true, course: { select: { slug: true } } },
   });
-  if (!material) throw new Error("Materijal nije pronađen.");
+  if (!material) {
+    // Only reveal a stale form after checking access to its originating course.
+    const courseId = String(data.get("courseId") ?? "");
+    if (!courseId || courseId.length > 40) throw new Error("Materijal nije pronađen.");
+    await requirePermission("materials.delete", courseId);
+    redirect(materialReturnUrl(courseId, data, "conflict"));
+  }
   const actor = await requirePermission("materials.delete", material.courseId);
   // Do not delete a material that another editor changed after this form loaded.
   const original = materialEditInput.safeParse({
@@ -199,7 +205,12 @@ export async function updateMaterialAction(data: FormData) {
     where: { id: input.materialId },
     select: { courseId: true, course: { select: { slug: true } } },
   });
-  if (!material) throw new Error("Materijal nije pronađen.");
+  if (!material) {
+    const courseId = String(data.get("courseId") ?? "");
+    if (!courseId || courseId.length > 40) throw new Error("Materijal nije pronađen.");
+    await requirePermission("materials.edit", courseId);
+    redirect(materialReturnUrl(courseId, data, "conflict"));
+  }
   const actor = await requirePermission("materials.edit", material.courseId);
   // The original values are a compare-and-swap token. They are not used for
   // authorization, only to avoid overwriting changes saved by another editor.

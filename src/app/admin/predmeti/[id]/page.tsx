@@ -125,6 +125,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             </div>
             <form action={deleteMaterialAction}>
               <input type="hidden" name="materialId" value={item.id}/>
+              <input type="hidden" name="courseId" value={course.id}/>
               <input type="hidden" name="originalTitle" value={item.title}/>
               <input type="hidden" name="originalUrl" value={item.url}/>
               <input type="hidden" name="originalKind" value={item.kind}/>
@@ -136,6 +137,7 @@ export default async function EditCourse({ params, searchParams }: { params: Pro
             <summary className="text-xs font-bold text-slate-600 hover:text-[#173b63]">Uredi naziv ili link</summary>
             <form action={updateMaterialAction} className="mt-4 grid gap-4">
               <input type="hidden" name="materialId" value={item.id}/>
+              <input type="hidden" name="courseId" value={course.id}/>
               <input type="hidden" name="returnMq" value={materialSearch}/>
               <input type="hidden" name="returnMk" value={materialKind ?? ""}/>
               <input type="hidden" name="returnMp" value={materialPage}/>
