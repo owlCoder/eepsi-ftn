@@ -16,7 +16,7 @@ export default async function EditNews({ params, searchParams }: { params: Promi
   const { saved, error } = await searchParams;
   return <div className="space-y-7"><Link href="/admin/novosti" className="inline-flex items-center gap-2 text-sm font-bold text-[#173b63]"><ArrowLeft size={17}/> Sve novosti</Link>
     <div><p className="eyebrow mb-2">Uređivanje</p><h1 className="text-3xl font-extrabold tracking-tight">{item.title}</h1>
-      {item.status === "PUBLISHED" && <Link className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#173b63]" href={"/novosti/" + item.slug} target="_blank">Pogledaj objavu <ExternalLink size={16}/></Link>}
+      {item.status === "PUBLISHED" && <Link className="mt-3 inline-flex items-center gap-2 text-sm font-bold text-[#173b63]" href={"/novosti/" + item.slug} target="_blank" rel="noopener noreferrer">Pogledaj objavu <span className="sr-only">(otvara se u novoj kartici)</span><ExternalLink size={16} aria-hidden="true"/></Link>}
     </div>
     {saved && <p role="status" className="rounded-xl bg-teal-50 p-4 text-sm font-semibold text-[#173b63]">Izmene su sačuvane.</p>}
     {error === "stale" && <p role="alert" className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-sm font-semibold leading-6 text-amber-900">
