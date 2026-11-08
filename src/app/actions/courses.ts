@@ -187,7 +187,11 @@ export async function deleteMaterialAction(data: FormData) {
     await tx.auditLog.create({ data: { actorId: actor.id, action: "material.delete", subjectType: "Material", subjectId: material.id } });
     return true;
   });
-  if (!deleted) redirect(materialReturnUrl(material.courseId, data, "conflict"));
+  if (!deleted) {
+    // The owning course may have been deleted while this form was open.
+    const course = await db.course.findUnique({ where: { id: material.courseId }, select: { id: true } });
+    redirect(course ? materialReturnUrl(material.courseId, data, "conflict") : "/admin/predmeti?error=course");
+  }
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
   redirect(materialReturnUrl(material.courseId, data, "deleted"));
@@ -238,7 +242,11 @@ export async function updateMaterialAction(data: FormData) {
     });
     return true;
   });
-  if (!updated) redirect(materialReturnUrl(material.courseId, data, "conflict"));
+  if (!updated) {
+    // A cascading course deletion also makes the material edit stale.
+    const course = await db.course.findUnique({ where: { id: material.courseId }, select: { id: true } });
+    redirect(course ? materialReturnUrl(material.courseId, data, "conflict") : "/admin/predmeti?error=course");
+  }
   // Keep the public catalog cache consistent with material edits, as with creation/deletion.
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + material.course.slug);
