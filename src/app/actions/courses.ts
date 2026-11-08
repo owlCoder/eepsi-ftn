@@ -144,6 +144,11 @@ export async function createMaterialAction(data: FormData) {
     }
     throw error;
   }
+  // A concurrent administrator can delete the course after the material
+  // transaction succeeds (cascading the new material). Avoid redirecting to
+  // a detail page that no longer exists.
+  const stillExists = await db.course.findUnique({ where: { id: course.id }, select: { id: true } });
+  if (!stillExists) redirect("/admin/predmeti?error=course");
   // The public catalog shows each course’s material count.
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
