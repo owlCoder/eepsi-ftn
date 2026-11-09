@@ -25,7 +25,7 @@ export async function publicTeachingStaff(q = "", page = 1) {
         select: {
           course: { select: { slug: true, title: true } },
         },
-        orderBy: { course: { title: "asc" } },
+        orderBy: [{ course: { title: "asc" } }, { courseId: "asc" }],
 
       },
     },
@@ -106,7 +106,7 @@ export const courseBySlug = cache(async (slug: string) => {
       memberships: {
         where: { user: { active: true } },
         select: { role: true, user: { select: { id: true, name: true } } },
-        orderBy: { role: "desc" },
+        orderBy: [{ role: "desc" }, { user: { name: "asc" } }, { userId: "asc" }],
       },
     },
   });
