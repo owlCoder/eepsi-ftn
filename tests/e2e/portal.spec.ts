@@ -117,7 +117,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
     await expect(page.getByRole("heading", { name: "Predavanja" })).toBeVisible();
     await expect(page.getByRole("link", { name: "E2E predavanje " + marker })).toBeVisible();
 
-    await page.goto("/nastavnici");
+    await page.goto("/nastavnici?q=" + encodeURIComponent(professor.name));
     await expect(page.getByRole("heading", { name: professor.name })).toBeVisible();
     await expect(page.locator("body")).not.toContainText(professor.email);
 
@@ -287,7 +287,7 @@ test.describe("EEPSI browser flows (disposable synthetic accounts)", () => {
 
       await professorPage.goto("/admin/predmeti/" + course.id);
       await expect(professorPage).toHaveURL(/\/prijava(?:\?|$)/);
-      await page.goto("/nastavnici");
+      await page.goto("/nastavnici?q=" + encodeURIComponent(professor.name));
       await expect(page.getByRole("heading", { name: professor.name })).toHaveCount(0);
     } finally {
       await oldContext.close();
