@@ -101,7 +101,7 @@ export const courseBySlug = cache(async (slug: string) => {
       studyLevel: true,
       materials: {
         select: { id: true, title: true, url: true, kind: true },
-        orderBy: { createdAt: "desc" },
+        orderBy: [{ createdAt: "desc" }, { id: "desc" }],
       },
       memberships: {
         where: { user: { active: true } },
