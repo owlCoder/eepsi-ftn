@@ -16,8 +16,8 @@ export function NewsCard({ item }: { item: NewsPreview }) {
       <Link href={"/novosti/" + item.slug} className="academic-news-link">
         <time dateTime={date?.toISOString()} className="academic-date">
           {date ? <>
-            <strong>{date.toLocaleDateString("sr-RS", { day: "2-digit" })}</strong>
-            <span>{date.toLocaleDateString("sr-RS", { month: "short" })}</span>
+            <strong>{date.toLocaleDateString("sr-RS", { day: "2-digit", timeZone: "Europe/Belgrade" })}</strong>
+            <span>{date.toLocaleDateString("sr-RS", { month: "short", timeZone: "Europe/Belgrade" })}</span>
           </> : <span>Novost</span>}
         </time>
         <div className="academic-news-copy">

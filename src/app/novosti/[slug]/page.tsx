@@ -35,7 +35,7 @@ export default async function NewsDetails({ params }: { params: Promise<{ slug: 
           <p className="eyebrow">Obaveštenje katedre</p>
           <h1>{news.title}</h1>
           <div className="academic-article-meta">
-            {news.publishedAt && <time dateTime={news.publishedAt.toISOString()}><CalendarDays size={16} aria-hidden="true"/> {news.publishedAt.toLocaleDateString("sr-RS")}</time>}
+            {news.publishedAt && <time dateTime={news.publishedAt.toISOString()}><CalendarDays size={16} aria-hidden="true"/> {news.publishedAt.toLocaleDateString("sr-RS", { timeZone: "Europe/Belgrade" })}</time>}
             <span><UserRound size={16} aria-hidden="true"/> {news.author.name}</span>
             <ShareButton/>
           </div>
