@@ -51,7 +51,7 @@ export default async function TeachingStaffPage({ searchParams }: { searchParams
         <button className="btn btn-primary" type="submit">Pretraži</button>
         {q && <Link href="/nastavnici" className="academic-filter-clear">Očisti</Link>}
       </form>
-      {q && <p role="status" className="result-meta mb-5">Rezultati za „{q}“ · strana {page}</p>}
+      <p role="status" className="result-meta mb-5">{q ? `Rezultati za „${q}“ · ` : ""}Prikazano {staff.length} članova osoblja · strana {page}</p>
       {staff.length ? (
         <div className="academic-directory">
           {groups.filter(group => group.entries.length > 0).map(group => (
