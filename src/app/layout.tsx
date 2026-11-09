@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="sr">
+    <html lang="sr-Latn">
       <body className="flex min-h-screen flex-col">
         <a className="skip-link" href="#glavni-sadrzaj">Preskoči navigaciju</a>
         <SiteHeader/>
