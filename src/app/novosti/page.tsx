@@ -49,7 +49,7 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
       <section className="academic-results" aria-label="Lista obaveštenja">
         <div className="academic-results-heading">
           <h2>Objavljena obaveštenja</h2>
-          <p role="status">{q ? `Rezultati za „${q}“ · ` : ""}strana {page}</p>
+          <p role="status">{q ? `Rezultati za „${q}“ · ` : ""}Prikazano {items.length} obaveštenja · strana {page}</p>
         </div>
         {items.length ? <div className="academic-news-list academic-news-archive">
           {items.map(item => <NewsCard key={item.id} item={item}/>)}
