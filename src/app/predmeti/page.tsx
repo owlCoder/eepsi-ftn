@@ -24,7 +24,8 @@ export default async function Courses({ searchParams }: { searchParams: Promise<
   const page = readPage(p);
   const filters = parseCourseFilters({ level: rawLevel, semester: rawSemester });
   const results = await listCourses(q, page, filters);
-  const hasNext = results.length > 18;
+  // readPage caps page numbers at 10,000; never link to a page that resolves back here.
+  const hasNext = page < 10000 && results.length > 18;
   const items = results.slice(0, 18);
   const filtered = Boolean(q || filters.level || filters.semester);
   function pageHref(next: number) {

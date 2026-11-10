@@ -23,7 +23,8 @@ export default async function News({ searchParams }: { searchParams: Promise<{ q
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const results = await listNews(q, page);
-  const hasNext = results.length > 12;
+  // readPage caps page numbers at 10,000; never link to a page that resolves back here.
+  const hasNext = page < 10000 && results.length > 12;
   const items = results.slice(0, 12);
   const pageHref = (next: number) => "/novosti?" + new URLSearchParams({ ...(q ? { q } : {}), p: String(next) }).toString();
 

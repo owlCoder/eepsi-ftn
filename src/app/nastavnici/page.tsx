@@ -22,7 +22,8 @@ export default async function TeachingStaffPage({ searchParams }: { searchParams
   const q = (typeof rawQ === "string" ? rawQ : "").trim().slice(0, 80);
   const page = readPage(p);
   const results = await publicTeachingStaff(q, page);
-  const hasNext = results.length > 20;
+  // readPage caps page numbers at 10,000; never link to a page that resolves back here.
+  const hasNext = page < 10000 && results.length > 20;
   const staff = results.slice(0, 20);
   const pageHref = (next: number) => "/nastavnici?" + new URLSearchParams({ ...(q ? { q } : {}), p: String(next) }).toString();
   const groups = [
