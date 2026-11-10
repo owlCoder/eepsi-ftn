@@ -10,6 +10,11 @@ const nextConfig: NextConfig = {
       headers: [{ key: "Cache-Control", value: "private, no-store" }],
     },
     {
+      // Authentication endpoints return session and CSRF data; never cache them.
+      source: "/api/auth/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store" }],
+    },
+    {
       source: "/prijava",
       headers: [{ key: "Cache-Control", value: "private, no-store" }],
     },
