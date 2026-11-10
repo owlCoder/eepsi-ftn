@@ -47,9 +47,9 @@ export async function featuredCourses(limit = 3) {
 export async function publicSitemapSlugs() {
   if (!process.env.DATABASE_URL) return { courses: [] as { slug: string }[], news: [] as { slug: string; updatedAt: Date }[] };
 
-  // Fetch in bounded batches instead of silently dropping everything after
-  // the first 5,000 records. Leave room for the sitemap's static URLs under
-  // the 50,000-URL protocol limit.
+  // Use ID keyset bounds rather than cursor references: if an administrator
+  // deletes the last item of a batch, subsequent sitemap queries still work.
+  // Leave room for static URLs under the 50,000-URL protocol limit.
   const pageSize = 1000;
   const maxPerType = 24000;
   const courses: { slug: string }[] = [];
@@ -60,9 +60,9 @@ export async function publicSitemapSlugs() {
   while (courses.length < maxPerType) {
     const batch = await db.course.findMany({
       select: { id: true, slug: true },
+      ...(courseCursor ? { where: { id: { gt: courseCursor } } } : {}),
       orderBy: { id: "asc" },
       take: Math.min(pageSize, maxPerType - courses.length),
-      ...(courseCursor ? { cursor: { id: courseCursor }, skip: 1 } : {}),
     });
     courses.push(...batch.map(({ slug }) => ({ slug })));
     if (batch.length < pageSize) break;
@@ -71,11 +71,10 @@ export async function publicSitemapSlugs() {
 
   while (news.length < maxPerType) {
     const batch = await db.news.findMany({
-      where: { status: "PUBLISHED" },
+      where: { status: "PUBLISHED", ...(newsCursor ? { id: { gt: newsCursor } } : {}) },
       select: { id: true, slug: true, updatedAt: true },
       orderBy: { id: "asc" },
       take: Math.min(pageSize, maxPerType - news.length),
-      ...(newsCursor ? { cursor: { id: newsCursor }, skip: 1 } : {}),
     });
     news.push(...batch.map(({ slug, updatedAt }) => ({ slug, updatedAt })));
     if (batch.length < pageSize) break;
