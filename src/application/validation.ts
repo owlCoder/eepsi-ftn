@@ -44,7 +44,7 @@ export const userInput = z.object({
 
 export const membershipInput = z.object({
   courseId: z.string().min(5).max(40),
-  email: z.string().trim().toLowerCase().pipe(z.email()),
+  email: z.string().trim().toLowerCase().pipe(z.email().max(191)),
   role: z.enum(["PROFESSOR", "ASSISTANT"]),
 });
 
