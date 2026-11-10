@@ -29,7 +29,9 @@ export async function publicTeachingStaff(q = "", page = 1) {
 
       },
     },
-    orderBy: [{ name: "asc" }, { id: "asc" }],
+    // Match the public directory grouping across page boundaries: professors first,
+    // then assistants, with stable alphabetical order within each group.
+    orderBy: [{ role: "desc" }, { name: "asc" }, { id: "asc" }],
     skip: (page - 1) * 20,
     take: 21,
   });
