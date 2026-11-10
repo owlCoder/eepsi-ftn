@@ -46,10 +46,42 @@ export async function featuredCourses(limit = 3) {
 
 export async function publicSitemapSlugs() {
   if (!process.env.DATABASE_URL) return { courses: [] as { slug: string }[], news: [] as { slug: string; updatedAt: Date }[] };
-  const [courses, news] = await Promise.all([
-    db.course.findMany({ select: { slug: true }, orderBy: [{ createdAt: "desc" }, { id: "desc" }], take: 5000 }),
-    db.news.findMany({ where: { status: "PUBLISHED" }, select: { slug: true, updatedAt: true }, orderBy: [{ publishedAt: "desc" }, { id: "desc" }], take: 5000 }),
-  ]);
+
+  // Fetch in bounded batches instead of silently dropping everything after
+  // the first 5,000 records. Leave room for the sitemap's static URLs under
+  // the 50,000-URL protocol limit.
+  const pageSize = 1000;
+  const maxPerType = 24000;
+  const courses: { slug: string }[] = [];
+  const news: { slug: string; updatedAt: Date }[] = [];
+  let courseCursor: string | undefined;
+  let newsCursor: string | undefined;
+
+  while (courses.length < maxPerType) {
+    const batch = await db.course.findMany({
+      select: { id: true, slug: true },
+      orderBy: { id: "asc" },
+      take: Math.min(pageSize, maxPerType - courses.length),
+      ...(courseCursor ? { cursor: { id: courseCursor }, skip: 1 } : {}),
+    });
+    courses.push(...batch.map(({ slug }) => ({ slug })));
+    if (batch.length < pageSize) break;
+    courseCursor = batch[batch.length - 1].id;
+  }
+
+  while (news.length < maxPerType) {
+    const batch = await db.news.findMany({
+      where: { status: "PUBLISHED" },
+      select: { id: true, slug: true, updatedAt: true },
+      orderBy: { id: "asc" },
+      take: Math.min(pageSize, maxPerType - news.length),
+      ...(newsCursor ? { cursor: { id: newsCursor }, skip: 1 } : {}),
+    });
+    news.push(...batch.map(({ slug, updatedAt }) => ({ slug, updatedAt })));
+    if (batch.length < pageSize) break;
+    newsCursor = batch[batch.length - 1].id;
+  }
+
   return { courses, news };
 }
 
