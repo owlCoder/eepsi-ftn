@@ -8,7 +8,8 @@ export function ShareButton() {
 
   async function copyLink() {
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      // Detail pages have canonical paths; omit tracking parameters and fragments.
+      await navigator.clipboard.writeText(window.location.origin + window.location.pathname);
       setStatus("copied");
     } catch {
       setStatus("error");
