@@ -6,7 +6,7 @@ on:
 
 jobs:
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     services:
       mysql:
         image: mysql:8.0
@@ -55,7 +55,13 @@ jobs:
       - name: Production build
         run: npm run build
       - name: Install E2E browser
-        run: npx playwright install --with-deps chromium
+        shell: bash
+        run: |
+          # Apt mirrors can have transient DNS failures on hosted runners.
+          npx playwright install --with-deps chromium || {
+            sleep 20
+            npx playwright install --with-deps chromium
+          }
       - name: Browser E2E (synthetic accounts, isolated MySQL)
         env:
           E2E_TEST_MODE: "true"
