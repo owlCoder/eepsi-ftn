@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 export const metadata: Metadata = {
   title: "Saradnja sa privredom",
   description: "Povezivanje akademskog i industrijskog rada na Katedri EEPSI.",
+  alternates: { canonical: "/saradnja" },
 };
 
 export default function CollaborationPage() {

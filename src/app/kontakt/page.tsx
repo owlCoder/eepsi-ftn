@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "Kontakt",
   description: "Kontakt i lokacija Katedre EEPSI, Fakultet tehničkih nauka, Novi Sad.",
+  alternates: { canonical: "/kontakt" },
 };
 
 export default function ContactPage() {

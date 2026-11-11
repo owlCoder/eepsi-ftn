@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 export const metadata: Metadata = {
   title: "Istraživanje",
   description: "Naučno-istraživačke oblasti Katedre EEPSI na Fakultetu tehničkih nauka.",
+  alternates: { canonical: "/istrazivanje" },
 };
 
 const areas = [

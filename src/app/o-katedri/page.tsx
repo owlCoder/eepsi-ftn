@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 export const metadata: Metadata = {
   title: "O katedri",
   description: "Informacije o Katedri za elektroenergetiku i primenjeno softversko inženjerstvo, FTN Novi Sad.",
+  alternates: { canonical: "/o-katedri" },
 };
 
 export default function About() {

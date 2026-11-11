@@ -5,6 +5,7 @@ import { ArrowRight, ExternalLink } from "lucide-react";
 export const metadata: Metadata = {
   title: "Smart Grid laboratorija",
   description: "Simulacija, emulacija i testiranje elektroenergetskih sistema na Katedri EEPSI.",
+  alternates: { canonical: "/laboratorija" },
 };
 
 export default function LaboratoryPage() {
