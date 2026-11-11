@@ -29,9 +29,9 @@ export async function publicTeachingStaff(q = "", page = 1) {
 
       },
     },
-    // Match the public directory grouping across page boundaries: professors first,
-    // then assistants, with stable alphabetical order within each group.
-    orderBy: [{ role: "desc" }, { name: "asc" }, { id: "asc" }],
+    // MySQL sorts ENUM values by declaration order (PROFESSOR before ASSISTANT).
+    // Keep directory pages grouped consistently, then sort names and IDs.
+    orderBy: [{ role: "asc" }, { name: "asc" }, { id: "asc" }],
     skip: (page - 1) * 20,
     take: 21,
   });
@@ -139,7 +139,7 @@ export const courseBySlug = cache(async (slug: string) => {
       memberships: {
         where: { user: { active: true } },
         select: { role: true, user: { select: { id: true, name: true } } },
-        orderBy: [{ role: "desc" }, { user: { name: "asc" } }, { userId: "asc" }],
+        orderBy: [{ role: "asc" }, { user: { name: "asc" } }, { userId: "asc" }],
       },
     },
   });
