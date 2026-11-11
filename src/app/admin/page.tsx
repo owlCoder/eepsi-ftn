@@ -17,7 +17,7 @@ export default async function AdminDashboard() {
     db.news.findMany({
       where: { status: "PUBLISHED" },
       select: { id: true, title: true, slug: true, publishedAt: true },
-      orderBy: { publishedAt: "desc" }, take: 4,
+      orderBy: [{ publishedAt: "desc" }, { id: "desc" }], take: 4,
     }),
     isFaculty ? db.course.findMany({
       where: { memberships: { some: { userId: actor.id } } },
@@ -66,7 +66,7 @@ export default async function AdminDashboard() {
         <div className="mb-4 flex flex-wrap items-end justify-between gap-4"><h2 id="portal-news" className="text-xl font-bold">Poslednja obaveštenja</h2><Link href="/novosti" className="text-sm font-semibold text-[#173b63] underline">Sva obaveštenja</Link></div>
         {recentNews.length ? <div className="overflow-hidden rounded-lg border border-[#dce3e9] bg-white">{recentNews.map(item =>
           <Link key={item.id} href={"/novosti/" + item.slug} className="grid gap-2 border-b border-[#dce3e9] px-5 py-4 last:border-b-0 hover:bg-[#f5f8fb] sm:grid-cols-[106px_minmax(0,1fr)_20px] sm:gap-4">
-            <time className="text-xs text-[#556777]" dateTime={item.publishedAt?.toISOString()}>{item.publishedAt?.toLocaleDateString("sr-RS")}</time>
+            <time className="text-xs text-[#556777]" dateTime={item.publishedAt?.toISOString()}>{item.publishedAt?.toLocaleDateString("sr-RS", { timeZone: "Europe/Belgrade" })}</time>
             <span className="text-sm font-semibold text-[#173b63]">{item.title}</span>
             <ArrowRight size={16} className="hidden text-[#173b63] sm:block"/>
           </Link>)}</div> : <p className="empty-state">Trenutno nema objavljenih obaveštenja.</p>}
