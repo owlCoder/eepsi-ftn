@@ -54,34 +54,41 @@ export async function publicSitemapSlugs() {
   // Leave room for static URLs under the 50,000-URL protocol limit.
   const pageSize = 1000;
   const maxPerType = 24000;
-  const courses: { slug: string }[] = [];
-  const news: { slug: string; updatedAt: Date }[] = [];
-  let courseCursor: string | undefined;
-  let newsCursor: string | undefined;
-
-  while (courses.length < maxPerType) {
-    const batch = await db.course.findMany({
-      select: { id: true, slug: true },
-      ...(courseCursor ? { where: { id: { gt: courseCursor } } } : {}),
-      orderBy: { id: "asc" },
-      take: Math.min(pageSize, maxPerType - courses.length),
-    });
-    courses.push(...batch.map(({ slug }) => ({ slug })));
-    if (batch.length < pageSize) break;
-    courseCursor = batch[batch.length - 1].id;
-  }
-
-  while (news.length < maxPerType) {
-    const batch = await db.news.findMany({
-      where: { status: "PUBLISHED", ...(newsCursor ? { id: { gt: newsCursor } } : {}) },
-      select: { id: true, slug: true, updatedAt: true },
-      orderBy: { id: "asc" },
-      take: Math.min(pageSize, maxPerType - news.length),
-    });
-    news.push(...batch.map(({ slug, updatedAt }) => ({ slug, updatedAt })));
-    if (batch.length < pageSize) break;
-    newsCursor = batch[batch.length - 1].id;
-  }
+  // Fetch independent collections concurrently to reduce sitemap generation latency.
+  const [courses, news] = await Promise.all([
+    (async () => {
+      const result: { slug: string }[] = [];
+      let cursor: string | undefined;
+      while (result.length < maxPerType) {
+        const batch = await db.course.findMany({
+          select: { id: true, slug: true },
+          ...(cursor ? { where: { id: { gt: cursor } } } : {}),
+          orderBy: { id: "asc" },
+          take: Math.min(pageSize, maxPerType - result.length),
+        });
+        result.push(...batch.map(({ slug }) => ({ slug })));
+        if (batch.length < pageSize) break;
+        cursor = batch[batch.length - 1].id;
+      }
+      return result;
+    })(),
+    (async () => {
+      const result: { slug: string; updatedAt: Date }[] = [];
+      let cursor: string | undefined;
+      while (result.length < maxPerType) {
+        const batch = await db.news.findMany({
+          where: { status: "PUBLISHED", ...(cursor ? { id: { gt: cursor } } : {}) },
+          select: { id: true, slug: true, updatedAt: true },
+          orderBy: { id: "asc" },
+          take: Math.min(pageSize, maxPerType - result.length),
+        });
+        result.push(...batch.map(({ slug, updatedAt }) => ({ slug, updatedAt })));
+        if (batch.length < pageSize) break;
+        cursor = batch[batch.length - 1].id;
+      }
+      return result;
+    })(),
+  ]);
 
   return { courses, news };
 }
