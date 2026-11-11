@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { ArrowRight, BookOpen, CalendarDays, FlaskConical, Mail, Search, UsersRound } from "lucide-react";
 import { FeaturedCourseRow, NewsCard } from "@/components/content-cards";
 import { featuredCourses, latestNews } from "@/infrastructure/repositories/content";
+
+// Keep tracking/query variants of the homepage pointing to the same indexable URL.
+export const metadata: Metadata = { alternates: { canonical: "/" } };
 
 export const revalidate = 300;
 
