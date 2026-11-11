@@ -55,13 +55,9 @@ jobs:
       - name: Production build
         run: npm run build
       - name: Install E2E browser
-        shell: bash
-        run: |
-          # Apt mirrors can have transient DNS failures on hosted runners.
-          npx playwright install --with-deps chromium || {
-            sleep 20
-            npx playwright install --with-deps chromium
-          }
+        # GitHub's Ubuntu runner already supplies Chromium runtime libraries.
+        # Avoid Playwright's apt step: hosted apt mirrors have repeatedly failed DNS.
+        run: npx playwright install chromium
       - name: Browser E2E (synthetic accounts, isolated MySQL)
         env:
           E2E_TEST_MODE: "true"
