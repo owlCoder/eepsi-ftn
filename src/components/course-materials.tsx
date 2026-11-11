@@ -16,8 +16,14 @@ export function CourseMaterials({ materials }: { materials: Material[] }) {
     (!normalized || item.title.toLocaleLowerCase("sr-RS").includes(normalized)),
   );
   const grouped = groupMaterialsByKind(filtered);
-  const counts = useMemo(() => new Map(materialKinds.map(item =>
-    [item, materials.filter(material => material.kind === item).length] as const)), [materials]);
+  // Count each material once rather than scanning the full list for every category.
+  const counts = useMemo(() => {
+    const result = new Map<MaterialKind, number>();
+    for (const material of materials) {
+      result.set(material.kind, (result.get(material.kind) ?? 0) + 1);
+    }
+    return result;
+  }, [materials]);
   const reset = () => { setSearch(""); setKind("ALL"); };
 
   return (
