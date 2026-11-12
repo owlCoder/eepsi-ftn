@@ -2,6 +2,7 @@
 
 import { randomUUID } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { revalidatePublicSitemaps } from "@/lib/revalidate-sitemaps";
 import { redirect } from "next/navigation";
 import { courseInput, materialInput, materialEditInput } from "@/application/validation";
 import { requirePermission } from "@/application/authorization";
@@ -60,7 +61,7 @@ export async function createCourseAction(data: FormData) {
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
-  revalidatePath("/sitemap/0.xml");
+  await revalidatePublicSitemaps();
   redirect("/admin/predmeti/" + course.id);
 }
 
@@ -310,6 +311,6 @@ export async function deleteCourseAction(data: FormData) {
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + deleted.slug);
   revalidatePath("/nastavnici");
-  revalidatePath("/sitemap/0.xml");
+  await revalidatePublicSitemaps();
   redirect("/admin/predmeti?deleted=1");
 }
