@@ -17,7 +17,7 @@ export function NewsCard({ item }: { item: NewsPreview }) {
         <time dateTime={date?.toISOString()} className="academic-date">
           {date ? <>
             <strong>{date.toLocaleDateString("sr-RS", { day: "2-digit", timeZone: "Europe/Belgrade" })}</strong>
-            <span>{date.toLocaleDateString("sr-RS", { month: "short", timeZone: "Europe/Belgrade" })}</span>
+            <span>{date.toLocaleDateString("sr-RS", { month: "short", year: "numeric", timeZone: "Europe/Belgrade" })}</span>
           </> : <span>Novost</span>}
         </time>
         <div className="academic-news-copy">
