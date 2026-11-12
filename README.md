@@ -173,6 +173,10 @@ E2E_TEST_MODE=true E2E_TEST_PASSWORD="$(openssl rand -hex 24)" npm run test:e2e
 
 **Zaštita baze:** E2E testovi odbijaju pokretanje bez `E2E_TEST_MODE=true`, bez dovoljno duge generisane lozinke, sa produkcionim URL-om ili kada baza nije na loopback adresi. **Nikada ih ne pokretati nad stvarnom produkcionom bazom.** GitHub Actions pokreće ih tek posle migracija, unit/integracionih testova i uspešnog produkcionog builda.
 
+### Sitemap i objavljivanje sadržaja
+
+Javne mape sajta koriste segmentirane rute `/sitemap/{id}.xml` (najviše 10.000 predmeta i 10.000 objavljenih novosti po segmentu). `robots.txt` navodi generisane segmente. Broj segmenata određuje `generateSitemaps()` tokom produkcionog builda: ISR osvežavanje sadržaja **ne garantuje** automatsko dodavanje novog segmenta kada broj predmeta ili objavljenih novosti pređe sledeći prag od 10.000. Nakon prelaska tog praga potrebno je ponovo izgraditi i objaviti aplikaciju, pa proveriti `/robots.txt` i poslednji `/sitemap/{id}.xml`. Ovo nije zamena za redovno osvežavanje sadržaja niti potvrda da je produkcioni deploy izvršen.
+
 ### Zdravlje aplikacije i održavanje
 
 - `GET /api/health` vraća `200` kada baza odgovara ili `503` kada je nedostupna. Ne izlaže connection stringove ni detalje izuzetka.
