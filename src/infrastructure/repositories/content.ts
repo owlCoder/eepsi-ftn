@@ -46,50 +46,36 @@ export async function featuredCourses(limit = 3) {
   });
 }
 
-export async function publicSitemapSlugs() {
-  if (!process.env.DATABASE_URL) return { courses: [] as { slug: string }[], news: [] as { slug: string; updatedAt: Date }[] };
+// Keep each generated sitemap below the 50,000-URL protocol limit.
+export const SITEMAP_PAGE_SIZE = 10000;
 
-  // Use ID keyset bounds rather than cursor references: if an administrator
-  // deletes the last item of a batch, subsequent sitemap queries still work.
-  // Leave room for static URLs under the 50,000-URL protocol limit.
-  const pageSize = 1000;
-  const maxPerType = 24000;
-  // Fetch independent collections concurrently to reduce sitemap generation latency.
+export async function publicSitemapPageCount() {
+  if (!process.env.DATABASE_URL) return 1;
   const [courses, news] = await Promise.all([
-    (async () => {
-      const result: { slug: string }[] = [];
-      let cursor: string | undefined;
-      while (result.length < maxPerType) {
-        const batch = await db.course.findMany({
-          select: { id: true, slug: true },
-          ...(cursor ? { where: { id: { gt: cursor } } } : {}),
-          orderBy: { id: "asc" },
-          take: Math.min(pageSize, maxPerType - result.length),
-        });
-        result.push(...batch.map(({ slug }) => ({ slug })));
-        if (batch.length < pageSize) break;
-        cursor = batch[batch.length - 1].id;
-      }
-      return result;
-    })(),
-    (async () => {
-      const result: { slug: string; updatedAt: Date }[] = [];
-      let cursor: string | undefined;
-      while (result.length < maxPerType) {
-        const batch = await db.news.findMany({
-          where: { status: "PUBLISHED", ...(cursor ? { id: { gt: cursor } } : {}) },
-          select: { id: true, slug: true, updatedAt: true },
-          orderBy: { id: "asc" },
-          take: Math.min(pageSize, maxPerType - result.length),
-        });
-        result.push(...batch.map(({ slug, updatedAt }) => ({ slug, updatedAt })));
-        if (batch.length < pageSize) break;
-        cursor = batch[batch.length - 1].id;
-      }
-      return result;
-    })(),
+    db.course.count(),
+    db.news.count({ where: { status: "PUBLISHED" } }),
   ]);
+  return Math.max(1, Math.ceil(Math.max(courses, news) / SITEMAP_PAGE_SIZE));
+}
 
+export async function publicSitemapSlugs(page = 0) {
+  if (!process.env.DATABASE_URL) return { courses: [] as { slug: string }[], news: [] as { slug: string; updatedAt: Date }[] };
+  const skip = page * SITEMAP_PAGE_SIZE;
+  const [courses, news] = await Promise.all([
+    db.course.findMany({
+      select: { slug: true },
+      orderBy: { id: "asc" },
+      skip,
+      take: SITEMAP_PAGE_SIZE,
+    }),
+    db.news.findMany({
+      where: { status: "PUBLISHED" },
+      select: { slug: true, updatedAt: true },
+      orderBy: { id: "asc" },
+      skip,
+      take: SITEMAP_PAGE_SIZE,
+    }),
+  ]);
   return { courses, news };
 }
 
