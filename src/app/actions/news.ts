@@ -39,7 +39,7 @@ export async function createNewsAction(data: FormData) {
     revalidatePath("/");
     revalidatePath("/novosti");
     revalidatePath("/novosti/" + news.slug);
-    revalidatePath("/sitemap.xml");
+    revalidatePath("/sitemap/0.xml");
   }
   redirect("/admin/novosti/" + news.id);
 }
@@ -80,7 +80,7 @@ export async function updateNewsAction(data: FormData) {
     revalidatePath("/");
     revalidatePath("/novosti");
     revalidatePath("/novosti/" + news.slug);
-    revalidatePath("/sitemap.xml");
+    revalidatePath("/sitemap/0.xml");
   }
   redirect("/admin/novosti/" + id + "?saved=1");
 }
@@ -119,7 +119,7 @@ export async function togglePublishNewsAction(data: FormData) {
   revalidatePath("/");
   revalidatePath("/novosti");
   revalidatePath("/novosti/" + news.slug);
-  revalidatePath("/sitemap.xml");
+  revalidatePath("/sitemap/0.xml");
   redirect("/admin/novosti");
 }
 
@@ -151,7 +151,7 @@ export async function deleteNewsAction(data: FormData) {
     revalidatePath("/");
     revalidatePath("/novosti");
     revalidatePath("/novosti/" + news.slug);
-    revalidatePath("/sitemap.xml");
+    revalidatePath("/sitemap/0.xml");
   }
   redirect("/admin/novosti?deleted=1");
 }

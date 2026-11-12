@@ -60,7 +60,7 @@ export async function createCourseAction(data: FormData) {
   revalidatePath("/");
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + course.slug);
-  revalidatePath("/sitemap.xml");
+  revalidatePath("/sitemap/0.xml");
   redirect("/admin/predmeti/" + course.id);
 }
 
@@ -310,6 +310,6 @@ export async function deleteCourseAction(data: FormData) {
   revalidatePath("/predmeti");
   revalidatePath("/predmeti/" + deleted.slug);
   revalidatePath("/nastavnici");
-  revalidatePath("/sitemap.xml");
+  revalidatePath("/sitemap/0.xml");
   redirect("/admin/predmeti?deleted=1");
 }
