@@ -22,7 +22,7 @@ export default async function AdminDashboard() {
     isFaculty ? db.course.findMany({
       where: { memberships: { some: { userId: actor.id } } },
       select: { id: true, title: true, code: true, _count: { select: { materials: true } } },
-      orderBy: { title: "asc" }, take: 6,
+      orderBy: [{ title: "asc" }, { id: "asc" }], take: 6,
     }) : Promise.resolve([]),
   ]);
   const quickActions = [
